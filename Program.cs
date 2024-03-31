@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using tallerbiblioteca.Context;
 using tallerbiblioteca.Services;
+using PdfSharp.Drawing;
+using PdfSharp.Fonts;
 
 var builder = WebApplication.CreateBuilder(args);
 //IMPORTANTE lo utilizamos para no estar creando objetos de tipo service en los controladores
@@ -17,8 +19,9 @@ builder.Services.AddScoped<DevolucionesServices>();
 builder.Services.AddScoped<SancionesServices>();
 builder.Services.AddScoped<PublicacionesServices>();
 builder.Services.AddScoped<BackupService>();
-builder.Services.AddScoped<AutoresServices>();
 builder.Services.AddScoped<GenerosServices>();
+builder.Services.AddScoped<AutoresServices>();
+builder.Services.AddScoped<ReservasServices>();
 
 // builder.Services.AddScoped<PeticionesServices>();
 // Add services to the container.
@@ -31,6 +34,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     options.AccessDeniedPath = "/Configuracion/AccesoDenegado"; // 
   
 });
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowLocalhostAndDevTools",
+//        builder => builder.WithOrigins("http://localhost:55878") // Ajusta el puerto según sea necesario
+//                          .AllowAnyMethod()
+//                          .AllowAnyHeader());
+//});
+
 builder.Services.AddSession();
 var app = builder.Build();
 
@@ -42,6 +54,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+// app.UseBrowserLink();
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -51,12 +65,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Home}/{action=Index}/{id?}");
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Libros}/{action=Catalog}/{id?}");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Usuarios}/{action=Login}/{id?}");

@@ -1,42 +1,37 @@
 ﻿@using System.Security.Claims;
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - tallerbiblioteca</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
      
     <link rel="stylesheet" href="~/css/Configuracion.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/select2.min.css" asp-append-version="true" />
     
     <link rel="stylesheet" href="~/css/catalogo.css" asp-append-version="true" /> 
     @*<link rel="stylesheet" href="~/css/Publicaciones.css" />*@
      <link rel="stylesheet" href="~/css/layout.css" asp-append-version="true" />
     
     <link rel="stylesheet" href="~/css/Calendario.css" asp-append-version="true" />
+     <link rel="stylesheet" href="~/css/Libros.css" asp-append-version="true" />
     
   
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <link rel="stylesheet" href="~/lib/evo-calendar-master/evo-calendar/css/evo-calendar.min.css" />
+    <script src="https://kit.fontawesome.com/718958d351.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <!-- Latest compiled and minified CSS -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,300&display=swap" rel="stylesheet">
+     <link rel="stylesheet" href="~/lib/evo-calendar-master/evo-calendar/css/evo-calendar.min.css" />
+   
 
-    
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css" rel="stylesheet">
-
-     <script src="https://kit.fontawesome.com/718958d351.js" crossorigin="anonymous"></script>
-      <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.5.0/locales/es.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
-
-     
         <style>
     /* Estilos personalizados para los botones */
     .swal2-popup .swal2-actions .swal2-confirm {
-     background-color:#14A44D;
+     background-color:#1e6042;
       color: #fff; /* Cambia el color del texto del botón Confirmar */
     }
     
@@ -44,189 +39,133 @@
       background-color: #e74c3c; /* Cambia el color de fondo del botón Cancelar */
       color: #fff; /* Cambia el color del texto del botón Cancelar */
     }
-@* 
-    .fc-toolbar{
-        background-color: rgb(20, 251, 159);
-    } *@
-    
-   
-    
-    
 
+    
      .pagination-active-bg {
-    background-color: rgb(20, 251, 159);
+    background-color: #1e6042;
   }
   </style>
 
 
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@1,300&display=swap" rel="stylesheet">
+
 </head>
 <body>
-<div class="wrapper row1">
-  <header id="header" class="hoc clear"> 
-    <!-- ################################################################################################ -->
-   <div id="logo" class="fl_left row">
-        <div class="col-9">
-            <h1><a href="index.html">BookWare</a></h1>
-        </div>
-        <div class="col-3">
-                <a class="dropdown ">
-                    <a data-bs-toggle="dropdown" aria-expanded="true">
-                        <div class="notification">
-                            <div class="notification-icon"></div>
-                            <div class="notification-badge border border-dark border-1" id="valorCampana"></div>
-                        </div>
-                    </a>
-                    <ul class="dropdown-menu" style="width: 200px;">
-                        @if (User.FindFirst(ClaimTypes.Role)?.Value == "1"|| User.FindFirst(ClaimTypes.Role)?.Value == "3")
-                        {
-                            <li id="notificacionesContainer"></li>
-                        }else{
-                            <li id="notificaiconesUsuario"></li>
-                        }
-                    </ul>
+    <nav class="navbar row1">
+        <!-- LOGO -->
+            <a class="options ms-3" data-bs-toggle="dropdown" aria-expanded="false"> &#9776;</a>
+            <ul class="dropdown-menu dropdownMain ">
+               @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                    <a class="text-light" asp-area="" asp-controller="Usuarios" asp-action="Perfil">Perfil</a>
+                    </li>
+                }
+                @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
+                {
+                    <li><a class="text-light" asp-controller="Configuracion" asp-action="Index">Configuración</a></li>
+                }
+                <li><hr class="dropdown-divider"></li>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li><a class="text-light" asp-controller="Usuarios" asp-action="Logout" >Cerrar sesión</a></li>
+                }
+            </ul>
+        
+        <div class="campana">
+            <a class="dropdownMain ">
+                <a data-bs-toggle="dropdown" aria-expanded="true">
+                    <div class="notification">
+                        <div class="notification-icon"></div>
+
+                        <div class="notification-badge border border-dark border-1" id="valorCampana"></div>
+                    </div>
                 </a>
-        </div>
-    </div>
-    
-   <div class="fl_right">
-        <div class="row">
-            <div class="col-10">
-                <ul class="nospace inline ">
-                    <li><h6 class="ms-5">
-                        @if(User.Identity.IsAuthenticated){
-                            @User.Identity.Name;
-
-                            var Roles = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role && System.Text.RegularExpressions.Regex.IsMatch(c.Value, @"^[a-zA-Z_]+$"));
-                            <br>
-                            <span>@Roles?.Value?.ToLower()</span>
-                        }else{
-                            <h6>BookWare</h6>
-                        }
-                        
-                    </li> 
-                </ul> 
-            </div>
-            <div class="col-2 pt-3">
-                <a  data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fa-solid fa-bars fa-2xl"  style="color: #82B440;">  </i>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item">Perfil</a></li>
-                    @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
+                <ul class="dropdown-menu ms-5 " style="width: 280px;">
+                    @if (User.FindFirst(ClaimTypes.Role)?.Value == "1" || User.FindFirst(ClaimTypes.Role)?.Value == "3")
                     {
-                        <li><a class="dropdown-item" asp-controller="Rol" asp-action="Index">Roles</a></li>
-                        <li><a class="dropdown-item" asp-controller="Configuracion" asp-action="Index">Configuración</a></li>
+                        <li id="notificacionesContainer"></li>
                     }
-                    <li><hr class="dropdown-divider"></li>
-                    @if (User.Identity.IsAuthenticated)
+                    else
                     {
-                        <li><a class="dropdown-item" asp-controller="Usuarios" asp-action="Logout" onclick="return confirm ('seguro deseas cerrar sesion?');">Cerrar sessión</a></li>
+                        <li id="notificaiconesUsuario"></li>
                     }
-                </ul>      
-            </div>
+                </ul>
+            </a>
         </div>
-    </div>
-    <!-- ################################################################################################ -->
-  </header>
-</div>
 
 
-    
-       <nav class="navbar navbar-expand-sm navbar-toggleable-sm  border-bottom box-shadow mb-3 text-Light">
-            <div class="container-fluid ms-5 row2">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+        <div class="ms-3 logo ">
+            <h6 class="text-light pt-2">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    @User.Identity.Name
+                    ;
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ms-5">
+                    var Roles = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role && System.Text.RegularExpressions.Regex.IsMatch(c.Value, @"^[a-zA-Z_]+$"));
+                    <br>
+                    <span>@Roles?.Value?.ToLower()</span>
+                }
+                else
+                {
+                    <li> <a asp-controller="Usuarios" style="color: white" asp-action="Login">Iniciar Sesión</a></li>
+                }
+        </div>
 
-                    <ul class="navbar-nav flex-grow-1 ms-5">
 
-    
-                        <li class="nav-item ms-5">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Libros" asp-action="Catalog">
-                                  <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAABFUlEQVR4nK3UMSuFURzH8cuVUjK4DF6CQZksBgODMlAWdoP1Lu4gvABWGUxSyqy8BZusyigGg0HJwkeH8+jc5xb3Hs93ec751fmep37P86/VugR1jIZnKR9DX7eeVHaGSyxjPOaTeMRKjizwhmlcYRi3MT/pRXaqnTXc4ALz8ZJnDObIAufYi+sjrOMDCzmywAtmkn0zXnCYIytYwl1cv2MVOx1tlwr4jWMcJPtXzGEoRxa4x2Ipe0IjRxbYSoopCOfrObIWNmOz7bL4dhOqkhXgugvZNjZiq+k3OfAjSoS7lckCmKpMVpD86P+XBbBfmaz2LZxNDoY2R/CQZJ1t/iHsj8OylWTFAO1Nlgi+JnEpa/Qi+wSeA7fONMWtEwAAAABJRU5ErkJggg==">
-                                  <span  class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Cátalogo</span>
-                            </a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Prestamos" asp-action="Index">
-                                 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAqklEQVR4nM3VIQrCYBgG4FksBo9gUE+w5k2UJTEZjWaDwQO4Ewg2wQt4id1BBKNJeUSYsOCUbX/whQ/+9PC95f+iqBC00EdccXpF5411cFIv6SdwURMrBbe+J6kKpj/ALDS4+nswCw3GfwleMMc9B6+Y4dFkwzXGGGKEY4jKG7RxaFq5mLPypHVAdcAbdvm7yiRl4CQKFSwxDQl28w92H6Ryjr5OwKDJCXgC1I1FOTug6ZkAAAAASUVORK5CYII=">
-                                 <span  class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Préstamos</span>
-                            </a>
-                        </li>
+        <!-- NAVIGATION MENU -->
+        <ul class="nav-links">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Publicaciones" asp-action="Index">
-                                <i class="fa-solid fa-bullhorn" style="color: #ffffff;"></i>
-                                <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Publicaciones</span>
-                                </a>
-                        </li>
+            <!-- USING CHECKBOX HACK -->
+            <input type="checkbox" id="checkbox_toggle" class="layout" />
 
-                        @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
-                        {
-                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Prestamos" asp-action="Calendario">
-                                 <i class="fa-sharp fa-solid fa-house" style="color: #ffffff;"></i>
-                                 <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Inicio</span>
-                                 </a>
-                            </li>
-                             
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Usuarios" asp-action="Index">
-                                  <i class="fa-solid fa-users fa-xl" style="color: #ffffff; display: inline-block; vertical-align: middle;"></i>
-                                 <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">usuarios</span> </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Libros" asp-action="Index">   
-                                    <i class="fa-solid fa-book-open" style="color: #ffffff;"></i>
-                                    <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Libros</span></a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Peticiones" asp-action="Index">
+            <label for="checkbox_toggle" class="hamburger">&#9776;</label>
 
-                                    <i class="fa-solid fa-list" style="color: #ffffff;"></i>
-                                    <span class="fw-bold fs-5"  style="display: inline-block; vertical-align: middle;">Peticiones</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">
-                                      <i class="fa-regular fa-calendar" style="color: #ffffff;"></i>
-                                      <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Reservas</span>
-                                </a>
-                            </li>
-                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Devoluciones" asp-action="Index">
-                                      <i class="fa-solid fa-arrow-rotate-left fa-xs" style="color: #ffffff;"></i>
-                                      <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Devoluciones</span>
-                                </a>
-                            </li>
-                             <li class="nav-item">
-                                <a class="nav-link text-light" asp-area="" asp-controller="Sanciones" asp-action="Index">
-                                      <i class="fa-solid fa-unlock" style="color: #ffffff;"></i>
-                                      <span class="fw-bold fs-5" style="display: inline-block; vertical-align: middle;">Sanciones</span>
-                                </a>
-                            </li>
-                            
-                        }
+            <!-- NAVIGATION MENUS -->
+            <div class="menu">
+                @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+                {
+                <li class="services">
+                    <a asp-area="" asp-controller="Libros" asp-action="Index">Libros</a>
+                    <ul class="dropdownMain">
+                        <li><a asp-area="" asp-controller="Ejemplar" asp-action="Index">Ejemplares</a></li>
+                       
                     </ul>
-                </div>
-                <div>
-                    @if (!User.Identity.IsAuthenticated)
-                    {
-                       <p><a class="nav-link text-dark boton medium" asp-area="" asp-controller="Usuarios" asp-action="Login">Iniciar sesion</a></p>
-                    }
-                </div>
+
+                </li>
+                <li><a asp-controller="Prestamos" asp-action="Calendario">Inicio</a></li>
+                }
+            <li><a asp-controller="Libros" asp-action="Catalog">Catálogo</a></li>
+            <li><a asp-controller="Publicaciones" asp-action="Index">Publicaciones</a></li>
+                @if (User.FindFirst(ClaimTypes.Role) != null && (User.FindFirst(ClaimTypes.Role).Value == "1" || User.FindFirst(ClaimTypes.Role).Value == "3"))
+                {
                 
+                <li><a asp-area="" asp-controller="Usuarios" asp-action="Index">Usuarios</a></li>
+                
+                }
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li class="services">
+                    <a asp-area="" asp-controller="Prestamos" asp-action="Index">Préstamos</a>
+                        <ul class="dropdownMain">
+                        <li><a asp-area="" asp-controller="Peticiones" asp-action="Index">Peticiones</a></li>
+                            <li><a asp-area="" asp-controller="Reservas" asp-action="Index">Reservas</a></li>
+                        </ul>
+                    </li>
+                    <li><a asp-area="" asp-controller="Devoluciones" asp-action="Index">Devoluciones</a></li>
+                    <li><a asp-area="" asp-controller="Sanciones" asp-action="Index">Sanciones</a></li>
+                }
             </div>
-        </nav> 
-    </header>
-    <div class="container mb-1">
-        <main role="main" class="pb-3">
+        </ul>
+    </nav>
+
+
+
+    
+    
+    
+    <div class="container  mb-1">
+        <main role="main" class="pb-3 mt-5 pt-5">
             @RenderBody()
         </main>
     </div>
@@ -236,28 +175,9 @@
             &copy; 2023 - tallerbiblioteca - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer> *@
-    @if (ViewData["Cerrar"]!=null && ViewData["Cerrar"].ToString()=="true")
-    {
-        <script>
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Cerrando sesión',
-                showConfirmButton: false,
-                timer: 1500
-            }).then(function () {
-                window.location.href = '@Url.Action("Login", "Usuarios")';
-            });
-        </script>
-    }
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    @* <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> *@
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
-    @* <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/js/bootstrap-select.min.js"></script> *@
-
-
-
     <script src="~/js/Configuracion.js"> </script>
    
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -265,6 +185,15 @@
     <script src="~/js/Usuarios.js"></script>
    
     <script src="~/js/Libros.js"> </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+   
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.5.0/locales/es.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+
+   
    
     @* <script src="~/js/EventManager.js"></script> *@
     
@@ -283,7 +212,54 @@
 
     @await RenderSectionAsync("Scripts", required: false)
 
+    <div class="container-fluid py-4 bg-light">
+  <div class="row justify-content-between align-items-center">
+    <div class="col-md-4 text-center">
+      <h6>Institución Educativa San Lorenzo De Aburrá</h6>
+      <h3>"Luz órden y progreso"</h3>
+    </div>
+    <div class="col-md-4 text-center">
+      <img src="~/Images/Escudo.png" height="90px" class="img-fluid" alt="Escudo institucional"/>
+    </div>
+    <div class="col-md-4 text-center">
+      <ul class="list-unstyled">
+        <li>
+          <i class="fa fa-map-marker"></i>
+          <address>
+            <strong>¿Donde nos encontramos?</strong>
+            <br>
+            Dirección: Sede Principal: Carrera 39 No. 80-33 Barrio Santa Inés
+            <br>
+            Dirección: Sede Primaria: Calle 81 No. 40 - 46
+          </address>
+        </li>
+        <li>
+          <i class="fa fa-phone"></i>
+          Teléfono: 233 19 78 / 211 82 31
+        </li>
+        <li><i class="fa fa-envelope-o"></i> bookware2024@gmail.com</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
     
 
 </body>
 </html>
+
+<script>
+    function CerrarSesion() {
+        Swal.fire({
+            title: "¿Seguro que deseas cerrar sesión?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, cerrar sesión",
+            cancelButtonText: "No",
+        }).then((result) => {
+            if (result.value) {
+                window.location.href = "@Url.Action("Login", "Usuarios")";
+            }
+        });
+    }
+</script>

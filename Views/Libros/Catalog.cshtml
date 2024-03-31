@@ -6,169 +6,174 @@
     ViewData["Title"] = "Catalogo";
 }
 
+  <h1 class="fs-1 text-center">Bienvenido a tu biblioteca BOOKWARE</h1>
 
-<div class="row">
-    <div class="col-6 ps-5 ms-5">
-        <h1>Bienvenido a tu biblioteca BOOKWARE</h1>
+<div class="row pt-3 ">
+    <div class="col-lg-4 col-12 mt-5 ps-5 ms-5">
+      
     </div>
-    <div class="col-4">
+    <div class="col-12 col-lg-4 text-center">
         <form> 
-            <p>
-                <input type="text" name="busqueda" placeholder="Nombre libro" class="form-control "/>
-                <button class="boton medium mt-2" type="submit"  value="Buscar">Buscar</button>
+            <p class="d-flex">
+                <input type="text" name="busqueda" placeholder="Busqueda" class="form-control"/>
+                <button class="button ms-2 pe-5" type="submit"  value="Buscar">Nombre libro | Autor | Genero</button>
             </p>
         </form>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-2 ">
-        <h1>Cuentanos!! que quieres leer hoy?</h1>
-        <form asp-action="Catalog" method="post">
-            @foreach(var genero in Model.CatalogoViewModel.Generos){
+<div class="row m-3 ">
+  
+    <div  class="col-12  ">
 
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="@($"check{genero.Id}")" name="generosSeleccionados" value="@genero.Id">
-                    <label class="form-check-label" for="@($"check{genero.Id}")">
-                        @genero.NombreGenero
-                    </label>
-                </div>
-            }
-            <button type="submit" class="boton medium mt-2">Buscar</button>
-        </form>
-        
-        <h1 class="mt-4">Algun Autor que quieras conocer?</h1>
-        <form action="Catalog" method="post">
-            @foreach(var autor in Model.CatalogoViewModel.Autores){
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="@($"check{autor.Id}")" name="AutoresSeleccionados" value="@autor.Id">
-                    <label class="form-check-label" for="@($"check{autor.Id}")">
-                        @autor.NombreAutor
-                    </label>
-                </div>
-            }
-            <button type="submit" class="boton medium mt-2">Buscar</button>
-        </form>
-       
+        <div class="row ">
 
-    </div>
-    <div  class="col-9">
+         
+            @foreach(var Libro in Model.Items){
 
+                <div class="col-lg-3 col-md-4 col-sm-12 col-12 mb-2">
 
-
- 
-<div class="row mt-2">
-    @foreach(var Libro in Model.Items){
-       
-        <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-            <div class="card mb-2" style="width: 100%;">
-                <img src="data:Images;base64,@Libro.ImagenLibro" style="max-height: 200px; object-fit: cover;" alt="fallo en la imagen" >
-                @* <img src="data:Images;base64,@Libro.ImagenLibro" class="card-img-top" alt="aun no hay imagen "> *@
-                <div class="card-body">
-                   
-                    <h5 class="card-title libro-nombre">@Libro.Nombre</h5>
-                    <div class="row d-flex"> 
-                        <div class="col-11">
-                            <p  class="mt-1 fs-5 text-dark">ver  informacion</p>
-                        </div>
-                        <div class="col-2">
-                            <button  class="libros-relacionados-button" data-id="@Libro.Id"  data-bs-toggle="modal" data-bs-target="#info_@Libro.Id">
-                            <i class=" ms-1 fa-solid fa-eye fa-2xl" style="color: #000000;"></i>
-                        </button>
+                    <div class="card-container ps-3">
+                        <a class="hero-image-container libros-relacionados-button ps-4 ms-5" data-id="@Libro.Id"  data-bs-toggle="modal" data-bs-target="#info_@Libro.Id"  >
+                            <img class="hero-image-container" src="data:Images;base64,@Libro.ImagenLibro" style="max-height: 200px; " alt="fallo en la imagen" >
+                        </a>
+                        <main class="main-content">
+                            <h1  class="mt-2 libro-nombre">@Libro.Nombre</h1>                        
+                        </main>
+                        <div class="card-attribute">
+                            <img src="https://i.postimg.cc/SQBzNQf1/image-avatar.png" alt="avatar" class="small-avatar"/>
+                            @foreach(var autor in Model.CatalogoViewModel.AutoresRelacionados){
+                                if(autor.Id_libro == Libro.Id){
+                                    <div class="text-center">
+                                        <p class="text-dark fw-bold fs-4 "> Autor  </p>
+                                        <div class="ms-2"> 
+                                            <span class="text-bold fs-5">  @autor.Autor.NombreAutor</span>
+                                        </div>
+                                    </div>
+                                   
+                                
+                                }
+                            }
+                            @* <p>Creation of <span><a href="#">Jules Wyvern</a></span></p> *@
                         </div>
                     </div>
-                   @* <div class="d-flex align-items-center">
-                        <p  class="mt-1 fs-5 text-dark">ver  informacion</p>
-                         <!-- Button trigger modal -->
-                        <button  class="libros-relacionados-button" data-id="@Libro.Id"  data-bs-toggle="modal" data-bs-target="#info_@Libro.Id">
-                            <i class=" ms-1 fa-solid fa-eye fa-2xl" style="color: #000000;"></i>
-                        </button>
-                   </div> *@
-                    <!-- Modal -->
-                    <div class="modal fade" id="info_@Libro.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-xl">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">@Libro.Nombre</h5>
-                                    <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                   <div class="row">
-                                        <div class="col-3">
-                                            <img class="m-4" style="max-height: 200px;" src="data:Images;base64,@Libro.ImagenLibro" alt="fallo en la imagen" srcset="">
-                                        </div> 
-                                        <div class="col-6">
-                                            <h4>@Libro.Nombre</h4>
-                                            @foreach(var autor in Model.CatalogoViewModel.AutoresRelacionados){
-                                                if(autor.Id_libro == Libro.Id){
-                                                    
-                                                    <span class="text-dark fw-bold fs-4"> Autor: </span> <span class="text-bold fs-5"> @autor.Autor.NombreAutor</span>
+                </div>
+                <div class="modal fade" id="info_@Libro.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-center" id="exampleModalLabel">Información Libro</h5>
+                                <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close">x</button>
+                            </div>
+                            <div class="modal-body">
+                            <div class="row">
+                                    <div class="col-4 col-lg-4 text-center">
+                                        <h4>@Libro.Nombre</h4>
+                                        @foreach(var autor in Model.CatalogoViewModel.AutoresRelacionados){
+                                            if(autor.Id_libro == Libro.Id){
                                                 
-                                                }
-                                            }
-                                            <br>
-                                            <span class="fs-3 fw-bold text-dark">Generos</span>
-                                            @foreach(var genero in Model.CatalogoViewModel.GenerosRelacionados){
-                                                if(genero.Id_libro == Libro.Id){
-                                                    
-                                                    <p class="text-bold etiqueta">@genero.Genero.NombreGenero</p>
-                                                }
-                                            }
-                                            @{
-                                                int cantidadEjemplaresDisponibles =  Model.CatalogoViewModel.Ejemplares.Count(Ejemplar=>Ejemplar.EstadoEjemplar == "DISPONIBLE");
-                                            }
-                                          
-                                           <form asp-controller="Peticiones" asp-action="Registrar" method="post">
-    @if (Model.CatalogoViewModel.Ejemplares.Any(ejemplar => ejemplar.Id_libro == Libro.Id && ejemplar.EstadoEjemplar == "DISPONIBLE"))
-    {
-        var primerEjemplarDisponible = Model.CatalogoViewModel.Ejemplares.First(ejemplar => ejemplar.Id_libro == Libro.Id && ejemplar.EstadoEjemplar == "DISPONIBLE");
-
-        <input type="hidden" name="Id_ejemplar" value="@primerEjemplarDisponible.Id">
-        <input type="hidden" name="motivo" value="Prestamo Libro">
-        <input type="hidden" name="Id_usuario" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)">
-        <button type="submit" class="boton medium">Prestar</button>
-    }
-    else
-    {
-        <button type="button" class="boton medium" data-bs-dismiss="modal">Reservar</button>
-    }
-</form>
-                                        </div>
-                                      
-                                        <div class="col-3">
-                                            <div class="row">
-                                                <h4>tambien te puede gustar:</h4>
-                                            </div>
-                                            <div class="relaciones-@Libro.Id">
-
-                                            </div>
+                                                <span class="text-dark fw-bold fs-4"> Autor: </span> <span class="text-bold fs-4"> @autor.Autor.NombreAutor</span>
                                             
-                                           
-                                           
-                                        </div>
-                                      
-                                   </div> 
-                                   <div class="row">
-                                    <div class="col-8">
-                                          <span class="fs-5">@Libro.Descripcion</span>
+                                            }
+                                        }
+                                        <br>
+                                        <span class="fs-3 fw-bold text-dark ">Generos</span>
+                                        <div class="d-flex flex-wrap justify-content-center">
+                                        @foreach(var genero in Model.CatalogoViewModel.GenerosRelacionados){
+                                            if(genero.Id_libro == Libro.Id){
+                                                    @* Definimos una variable que va a iterar entre 1 y 3 *@
+                                                var indice = (genero.Id_libro) % 3 + 1; 
+                                                    string color;
+                                                if (indice == 0)
+                                                {
+                                                    color = "verde";
+                                                }
+                                                else if (indice == 1)
+                                                {
+                                                    color = "amarillo";
+                                                }
+                                                else
+                                                {
+                                                    color = "rojo";
+                                                }
+                                                
+                                                <p class="etiqueta ms-3 text-center" >@genero.Genero.NombreGenero</p>
+                                                
+                                            }
+                                        }
+                                            </div>
+                                    
                                     </div>
-                                   </div>
-                                  
-                                </div>
+                                    <div class="col-lg-3 col-7">
+                                        <img class="m-4" style="max-height: 200px;" src="data:Images;base64,@Libro.ImagenLibro" alt="fallo en la imagen" srcset="">
+                                        @{
+                                            int cantidadEjemplaresDisponibles =  Model.CatalogoViewModel.Ejemplares.Count(Ejemplar=>Ejemplar.EstadoEjemplar == "DISPONIBLE");
+                                        }
+                                
+                                    
+                                        @if (Model.CatalogoViewModel.Ejemplares.Any(ejemplar => ejemplar.Id_libro == Libro.Id && ejemplar.EstadoEjemplar == "DISPONIBLE"))
+                                        
+                                        {
+                                            <form asp-controller="Peticiones" asp-action="Registrar" method="post">
+                                                @{
+                                                var primerEjemplarDisponible = Model.CatalogoViewModel.Ejemplares.First(ejemplar => ejemplar.Id_libro == Libro.Id && ejemplar.EstadoEjemplar == "DISPONIBLE");
+                                                }
+                                                <input type="hidden" name="Id_ejemplar" value="@primerEjemplarDisponible.Id">
+                                                <input type="hidden" name="motivo" value="Prestamo Libro">
+                                                <input type="hidden" name="Id_usuario" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)">
+                                                <button type="submit" class="button  ms-4">Prestar</button>
+                                            </form>
+                                        }
+                                        
+                                        else
+                                        {
+                                            
+                                            <form asp-controller="Reservas" asp-action="Create" method="post">
+                                                @{
+                                                    var primerEjemplarReservar = Model.CatalogoViewModel.Ejemplares.First(ejemplar => ejemplar.Id_libro == Libro.Id && ejemplar.EstadoEjemplar != "DISPONIBLE" && ejemplar.EstadoEjemplar !="NO_DISPONIBLE");
+                                                }
+                                                <input type="hidden" name="IdEjemplar" value="@primerEjemplarReservar.Id">
+                                                <input type="hidden" name="IdUsuario" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)">
+                                                <button type="submit" class="button medium">Reservar</button>
+                                                    
+                                            </form>
+                                        }
+                                    
+                                    </div> 
+                                    
+                                    
+                                
+                                    <div class="col-12 mt-2 col-lg-4 text-center">
+                                        @* <div class="row">
+                                            <h4>Descripcion</h4>
+                                        </div> *@
+                                            <span class="fs-5">@Libro.Descripcion</span>
+                                        
+                                    
+                                    
+                                    </div>
+                                
+                            </div> 
+                            <div class="row mt-3">
+                                    <h2 class="fw-bold text-center">Tambien te puede gustar</h2>
+                                    <div class="relaciones-@Libro.Id">
+
+                                    
+                                    </div>
+                            </div>
+                            
                             </div>
                         </div>
-                    </div>  
-                </div>
-            </div>
+                    </div>
+            </div>  
+            }
         </div>
-    }
-</div>
     </div>
 </div>
 <div class="row">
     <div class="pagination p1">
         <ul>
-                <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
+            <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
             <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]"><li><<</li></a>
             @for (var i = 1; i <= Model.TotalItems; i++)
             {
@@ -186,14 +191,7 @@
         </ul>
     </div>
 </div>
-<div class="wrapper row5">
-  <div id="copyright" class="hoc clear"> 
-   
-    <p class="fl_left">Copyright &copy; 2015 - All Rights Reserved - <a href="#">Domain Name</a></p>
-    <p class="fl_right">Template by <a target="_blank" href="http://www.os-templates.com/" title="Free Website Templates">OS Templates</a></p>
-    <!-- ################################################################################################ -->
-  </div>
-</div>
+
 
 
 

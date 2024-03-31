@@ -1,72 +1,85 @@
-﻿@model tallerbiblioteca.Models.Usuario
+﻿@using System.Security.Claims;
+@model tallerbiblioteca.Models.Usuario
 
 @{
     ViewData["Title"] = "Crear Usuario";
 }
-
-<h1>Crear usuario</h1>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" id="formulario">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @if(User.Identity.IsAuthenticated){
-            <div class="form-group">
-                <label asp-for="Id_rol" class="control-label"></label>
-                <select asp-for="Id_rol" class ="form-control" asp-items="ViewBag.Id_rol"></select>
-            </div>
-            }else{
-                
-                <input asp-for="Id_rol" type="hidden" value="02"/>
-            }
-            <div class="form-group">
-                <label  class="control-label fw-bold">Número de documento</label>
-                <input asp-for="Numero_documento" class="form-control" />
-                <span asp-validation-for="Numero_documento" class="text-danger"></span>
-              
-            </div>
-
-            <div class="form-group">
-                <label  class="control-label fw-bold">Nombre</label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Apellido" class="control-label fw-bold"></label>
-                <input asp-for="Apellido" class="form-control" />
-                <span asp-validation-for="Apellido" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Correo " class="control-label fw-bold"></label>
-                <input asp-for="Correo" class="form-control" />
-                <span asp-validation-for="Correo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Contraseña" class="control-label fw-bold"></label>
-                <div class="input-group">
-                    <input asp-for="Contraseña" type="password" class="form-control" id="Contraseña" />
-                   
-                        <span id="togglePassword" >
-                            <i class="fas fa-eye ms-2 mt-2" ></i>
-                        </span>
-                    
+<div class="d-flex justify-content-center">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+        <div class="card-body">
+        <h1 class="card-title text-center">Crear usuario</h1>
+        <hr/>
+            <form asp-action="Create" id="formulario">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+                {
+                    <div class="form-group">
+                        <label asp-for="Id_rol" class="control-label required"></label>
+                        <select asp-for="Id_rol" class="form-control" asp-items="ViewBag.Id_rol"></select>
+                    </div>
+                }
+                else
+                {
+                    <input asp-for="Id_rol" type="hidden" value="02" />
+                }
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bold required ">Número de documento</label>
+                            <input asp-for="Numero_documento" class="form-control" oninput="validarEspacios(this)" />
+                            <span asp-validation-for="Numero_documento" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Apellido" class="control-label fw-bold required"></label>
+                            <input asp-for="Apellido" class="form-control" oninput="validarEspacios(this)" />
+                            <span asp-validation-for="Apellido" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="control-label fw-bold required">Nombre</label>
+                            <input asp-for="Name" class="form-control" oninput="validarEspacios(this)" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Contraseña" class="control-label fw-bold required"></label>
+                            <div class="input-group">
+                                <input asp-for="Contraseña" type="password" class="form-control" id="Contraseña" oninput="validarEspacios(this)" />
+                                <span class ="input-group-text" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </span>
+                            </div>
+                            <span asp-validation-for="Contraseña" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
-                <span asp-validation-for="Contraseña" class="text-danger"></span>
-               
-        
+                <div class="form-group">
+                    <label asp-for="Correo " class="control-label fw-bold required"></label>
+                    <input asp-for="Correo" class="form-control" oninput="validarEspacios(this)" />
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+                </div>
+                <input asp-for="Estado" type="hidden" value="ACTIVO" />
+                <div class="mt-3 text-center" style="display: flex; justify-content: center;">
+                    <button class="button" type="submit" style="margin-right: 10px;">Registrar</button>
+                    <a class="Eliminar" asp-action="Index" style="align-self: center;">Regresar</a>
+                </div>
+
+            </form>
+            <script>
+                window.onload = function () {
+                    var inputs = document.getElementsByTagName('input');
+                    for (var i = 0; i < inputs.length; i++) {
+                        inputs[i].oninput = function () {
+                            if (this.value.length > 1) {
+                                this.value = this.value.replace(/^ +/, '');
+                            }
+                        }
+                    }
+                }
+            </script>
             </div>
-            <input asp-for="Estado" type="hidden" value="ACTIVO"/>
-            
-             <button type="submit" class="mt-2 me-2 boton medium"> 
-                  Registrar</a>
-            </button>
-             <button class="mt-2 botonDelete Deletemedium"> 
-                <a asp-action="Index">regresar</a>
-            </button>   
-        </form>
-      
-    </div>
-</div>
+            </div>
+            </div>
 @if (ViewData["ApellidoExistente"] != null && ViewData["ApellidoExistente"].ToString() == "True")
 {
     <script>
@@ -107,7 +120,6 @@
         });
     </script>
 }
-
 @if (ViewData["Nomatriculado"] != null && ViewData["Nomatriculado"].ToString() == "True")
 {
     <script>
@@ -121,8 +133,6 @@
         });
     </script>
 }
-
-
 @if (ViewData["Encontrado"] != null && ViewData["Encontrado"].ToString() == "True")
 {
     <script>
@@ -136,7 +146,6 @@
         });
     </script>
 }
-
 @if (ViewData["Encontrados"] != null && ViewData["Encontrados"].ToString() == "True")
 {
     <script>
@@ -150,7 +159,6 @@
         });
     </script>
 }
-
 @if (ViewData["NoEncontrado"] != null && ViewData["NoEncontrado"].ToString() == "True")
 {
     <script>
@@ -171,17 +179,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             Swal.fire({
                 icon: 'error',
-                title: 'Error en la creación',
-                text: 'El dominio  que acabas de ingresar no es válido',
+                title: 'Correo incorrecto',
+                text: 'El dominio ingresado no existe, intenta con otro ',
                 showConfirmButton: true,
             });
         });
     </script>
 }
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-
     <script>
         function sendForm(e) {
             e.preventDefault();
@@ -199,3 +205,5 @@
         }
     </script>
 }
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+

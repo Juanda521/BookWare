@@ -1,58 +1,128 @@
-﻿@* @model IEnumerable<tallerbiblioteca.Models.Devolucion> *@
-    @model tallerbiblioteca.Models.Paginacion<Devolucion>
-@using System.Security.Claims;
+﻿@* @model tallerbiblioteca.Models.Paginacion<Devolucion>*@
+@using System.Security.Claims; 
+
+ @model Paginacion<Devolucion> 
 
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+ <h1 class="fw-bold fs-1 text-center ">Devoluciones</h1>
+ @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
 <div class="row">
-    <div class="col-md-4">
-        <p>
-            <a class="boton medium" asp-action="Create">  Registrar </a>
-        </p>
+    <div class="col-lg-2 col-md-4 col-12 d-flex align-items-center">
+        
+            <button type="button" class="button" data-bs-target="#modalRegistrar" data-bs-toggle="modal" >
+                Registrar
+            </button>  
+     </div>
+
+            <div class="col-lg-8 col-md-4">
+                <form asp-action="Index" class="row g-3">
+                    <div class="col-md-3 col-lg-3">
+                        <label for="busqueda" class="form-label">Búsqueda:</label>
+                        <input type="text" name="busqueda" id="busqueda" placeholder="Busqueda" class="form-control" />
+                    </div>
+                    <div class="col-md-4 col-lg-3">
+                        <label for="fechaDevolucion" class="form-label">Desde:</label>
+                        <input type="date" name="fechaDevolucion" id="fechaDevolucion" class="form-control" />
+                    </div>
+                    <div class="col-md-4 col-6 col-lg-3 ">
+                        <button type="submit" class="button mt-4">Buscar</button>
+                    </div>
+
+                </form>
+        </div>
+                    <div class="col-lg-2 col-6 col-md-4 d-flex align-items-center ">
+                        <form asp-controller="/Pdf" asp-action="GenerarPdfDevoluciones" method="post" class="mt-2">
+                            <button class="descar" type="submit">
+                                <span class="button__text">Pdf</span>
+                                <span class="button__icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35" id="bdd05811-e15d-428c-bb53-8661459f9307" data-name="Layer 2" class="svg">
+                                        <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+                                        <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+                                        <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+                                    </svg>
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+
+           
+
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registrar Devolucion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 ">
+                        <form asp-controller="Devoluciones" asp-action="CreateDevoluciones" id="formulario" method="post" onsubmit="validateCreateForm(event)">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="col-lg-12 col-md-12 col-12"> 
+                                <div class="form-group">
+                                    <label class="control-label">Prestamo</label>
+                                    <select name="Id_prestamo" class ="form-control" id="selectPrestamos" style=" width:100%"  asp-items="ViewBag.Id_prestamo"></select>
+                                    <span class="error-message" style="display: none;"></span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label name="Observaciones" class="control-label">Obsevaciones</label> 
+                                <textarea name="Observaciones" style="height:100px;" class="form-control"></textarea>
+                                <span class="error-message" style="display: none;"></span>
+                            </div>
+                            <div class="form-group mt-2">
+                                <button class="button" type="submit">Registrar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+           
+            </div>
+        </div>
     </div>
-
-    <div class="col-4">
-        <form asp-action="Index">
-            <p>
-                <input type="text" name="busqueda" placeholder="Id devolucion" class="form-control" />
-                <button type="submit" class="ms-4 mt-1 boton medium  " value="Buscar">Buscar</button>
-            </p>
-        </form>
     </div>
-
-    <div class="col-md-4 pt-2">
-        <h1 class="fw-bold text-center pt-4">Devoluciones</h1>
-    </div>
-
-</div>
-
-
-
-<table>
+    
+    }
+<table class="mt-2 table-responsive">
     <thead>
         <tr>
-            <th>
-                
-                Prestamos
+            <th>  
+             Id
+            </th>
+             <th>  
+             Ejemplar
             </th>
             <th>
-                
-                Nombre estudiante
+                Nombre libro
             </th>
             <th>
-                
+                Nombre Usuario
+            </th>
+            <th>
                 Observacion
             </th>
             <th>
-              
                 Fecha Devolucion
             </th>
-            <th></th>
+            <th>
+                Estado
+            </th>
+            @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
+            <th>
+
+                Opciones
+            </th>
+}
         </tr>
     </thead>
     <tbody>
@@ -61,8 +131,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Prestamo.Id)
             </td>
+             <td>
+                @Html.DisplayFor(modelItem => item.Prestamo.Peticion.Ejemplar.Isbn_libro)
+            </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Prestamo.Peticion.Usuario.Name)
+                @Html.DisplayFor(modelItem => item.Prestamo.Peticion.Ejemplar.Libro.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prestamo.Peticion.Usuario.Name) @Html.DisplayFor(modelItem => item.Prestamo.Peticion.Usuario.Apellido)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Observaciones)
@@ -70,46 +146,106 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Fecha_devolucion)
             </td>
-            <td>
-
-                    @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
-                    {
-                        <button class="boton medium" type="submit">
-                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                        </button>
-
-                        <button class="boton medium" type="submit">
-                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a>
-                        </button>
-
-                        <button class="boton medium" type="submit">
-                            <a asp-controller="Sanciones" asp-action="Create">Sancionar</a>
-                        </button>
+             <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td> 
+                @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+                {
+            <td>  
+                
+                <div class="row">
+                  
+                    @if(item.Estado != "REALIZADA"){
+                        <div class="col-lg-6 col-md-6 col-12"> 
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="chkCambiarDevolucion"  @(item.Estado == "REALIZADA" ? "checked" : "") data-devolucion-id="@item.Id" />
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    }else{
+                        <p> No hay acciones Para realizar </p>
                     }
-                    
+
+                     <div class="modal fade" id="modalEdit-@item.Id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Editar sancion</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p> hay una sanción ya asociada a esta devolucion ya que el estudiante no ha devuelto el libro. </p>
+                                
+                                ¿deseas modificar la sanción?
+                                @if(Model.Sanciones.Count>0){
+
+                                
+                                    @foreach(var sancion in Model.Sanciones){
+                                        if(sancion.Id_devolucion == item.Id){
+                                            <label> motivo sancion </label>
+                                            <textarea class="form-control" style="height:100px;"> @sancion.Motivo_sancion </textarea>
+                                        }else{
+                                            @*<p>no hay sanciones asociadas a este usuario </p>*@
+                                        }
+                                    }
+                                }else{
+                                    <p>no hay sanciones aun registradas </p>
+                                }
+                                
+                            </div>
+                            <div class="modal-footer">
+
+                                <button type="button" class="Eliminar" data-dismiss="modal">Cerrar</button>
+                                <button type="button" class="button">Guardar cambios</button>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </td>
+            }
         </tr>
 }
     </tbody>
 </table>
-<div class="text-center ms-5 ps-5">
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item @(Model.Numero_pagina == 1 ? "disabled" : "")">
-                <a class="page-link text-dark" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
-            </li>
+@if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
+    <form asp-action="Edit" method="post" id="formCambiarEstadoDevolucion">
+        <input type="hidden" id="devolucionId" name="Id" value=""> 
+        <textarea type="hidden" id="textoDevolucion" name="texto"></textarea>                                      
+
+    </form>
+}
+
+<div class="row">
+    <div class="pagination p1">
+        <ul>
+                <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
+            <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]"><li><<</li></a>
             @for (var i = 1; i <= Model.TotalItems; i++)
             {
-                <li class="page-item  @(Model.Numero_pagina == i ? "active" : "") ">
-                    <a class=" page-link bg-success text-dark" href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
-                </li>
+                
+                <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
+                
             }
-            <li class="page-item @(Model.Numero_pagina == Model.TotalItems ? "disabled" : "")">
-                <a class="page-link text-dark" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]">Ultima</a>
-            </li>
+                @if (Model.Numero_pagina < Model.TotalItems)
+            {
+                
+                    <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
+                
+            }
+            <a class="ms-1" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]"><li>Fin</li></a>
         </ul>
-    </nav>
+    </div>
 </div>
+
+
+
+
+
+
 @section Scripts{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -129,5 +265,111 @@
         }
 
     }
+
+      <script src="~/js/select2.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('#selectPrestamos').select2({
+                dropdownParent: $('#modalRegistrar')
+            });
+        })
+
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.chkCambiarDevolucion').change(function() {
+                var devolucionId = $(this).data('devolucion-id');
+                $('#devolucionId').val(devolucionId);
+                console.log("ID de la devolcion a desactivar: " + devolucionId);
+
+                if($(this).is(':checked')){
+                $('#modalEdit-' + devolucionId).modal('show');
+            } else {
+                $('#modalEdit-' + devolucionId).modal('hide');
+            }
+                //$('#formCambiarEstadoDevolucion').submit();
+                console.log("le dimos click al boton y enviamos el formulario de editar devolucion");
+            });
+        });
+
+       $(document).on('click', '.modal-footer .button', function() {
+            // Obtener el ID de la devolución del modal actual
+            var devolucionId = $(this).closest('.modal').attr('id').split('-')[1];
+            // Actualizar el valor del textarea con el contenido del modal
+            var textoDevolucion = $('#modalEdit-' + devolucionId + ' .modal-body textarea').val();
+            $('#textoDevolucion').val(textoDevolucion);
+            // Enviar el formulario
+            $('#formCambiarEstadoDevolucion').submit();
+        });
+
+         $('.modal').on('hidden.bs.modal', function () {
+            var devolucionId = $(this).attr('id').split('-')[1];
+            $('#chkCambiarDevolucion-' + devolucionId).prop('checked', false);
+        });
+
+
+    </script>
+
+
+    <script>
+    
+
+    function validateCreateForm(event) {
+        event.preventDefault();
+        var idPrestamoInput = document.forms["formulario"]["Id_prestamo"];
+        var observacionInput = document.forms["formulario"]["Observaciones"];
+        // var fechaInput = document.forms["formulario"]["Fecha_devolucion"];
+
+        // Función para mostrar mensaje de error
+        function showError(input, message) {
+            input.style.borderColor = 'red';
+            var errorSpan = input.parentNode.querySelector('.error-message');
+            errorSpan.textContent = message;
+            errorSpan.style.display = 'block';
+        }
+
+        // Función para ocultar mensaje de error
+        function hideError(input) {
+            input.style.borderColor = '';
+            var errorSpan = input.parentNode.querySelector('.error-message');
+            errorSpan.textContent = '';
+            errorSpan.style.display = 'none';
+        }
+
+      
+        if (!observacionInput.value) {
+            showError(observacionInput, 'Por favor, ingrese la observacion de la devolucion.');
+            return;
+        } else {
+            hideError(observacionInput);
+        }
+
+       
+
+        Swal.fire({
+                title: '¿Quieres guardar los cambios?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'SI'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formulario = document.getElementById("formulario");
+                    formulario.submit();
+                }
+            });
+    }
+
+
+
+  
+
+    
+
+   
+    
+
+    </script>
 
 }

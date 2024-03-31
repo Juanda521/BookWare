@@ -1,22 +1,173 @@
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+
+
+a {
+  text-decoration: none;
+}
+
+li {
+  list-style: none;
+}
+    /* NAVBAR STYLING STARTS */
+  .navbar {
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background-color:transparent;
+  color: #fff;
+  position: fixed;
+  z-index:999;
+  width: 100%;
+}
+
+.nav-links a {
+  color: #fff;
+}
+
+/* LOGO */
+.logo {
+  font-size: 32px;
+  color: #fff;
+}
+
+
+
+/* NAVBAR MENU */
+.menu {
+  display: flex;
+  gap: 1em;
+  font-size: 18px;
+}
+
+.menu li:hover {
+  background-color: #000f;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+.menu li {
+  padding: 5px 14px;
+}
+
+/* DROPDOWN MENU */
+.services {
+  position: relative; 
+}
+
+.dropdownMain {
+    background-color: #1e6042;
+    padding: 1em 0;
+    position: absolute; /*WITH RESPECT TO PARENT*/
+    display: none;
+    border-radius: 8px;
+    top: 35px;
+}
+
+.dropdownMain li + li {
+  margin-top: 10px;
+}
+
+.dropdownMain li {
+  padding: 0.5em 1em;
+  width: 8em;
+  text-align: center;
+}
+
+.dropdownMain li:hover {
+  background-color: #000f;
+}
+
+.services:hover .dropdownMain {
+  display: block;
+}
+
+
+/* CHECKBOX HACK */
+
+input.layout[type=checkbox] {
+  display: none;
+} 
+
+/* HAMBURGER MENU */
+.hamburger {
+  display: none;
+  font-size: 28px;
+  user-select: none;
+  color:#ffffff;
+}
+.options{
+  font-size:28px;
+  color:#fff;
+}
+.options:hover{
+color:#fff;
+}
+
+/* APPLYING MEDIA QUERIES */
+@media (max-width:1200px) {
+    .menu {
+        display: none;
+        position: absolute;
+        background-color: #1e6042;
+        right: 0;
+        left: 0;
+        text-align: center;
+        padding: 16px 0;
+    }
+
+        .menu li:hover {
+            display: inline-block;
+            background-color: #1e6042;
+            transition: 0.3sease;
+        }
+
+
+
+        .menu li + li {
+            margin-top: 12px;
+        }
+
+    input[type=checkbox]:checked ~ .menu {
+        display: block;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .dropdownMain {
+        left: 50%;
+        top: 30px;
+        transform: translateX(35%);
+    }
+
+        .dropdownMain li:hover {
+            background-color: #1e6042;
+        }
+}
+
+.required::after {
+    content: " *";
+    color: red;
+}
+#notificacionesContainer,
+#notificaiconesUsuario {
+    user-select: none;
+}
+
 .pagination{
   padding: 30px 0;
   
 }
-
-
-.mi-clase-personalizada {
-  max-width:  600px; /* Define el ancho máximo */
-  min-height:  150px; /* Define el alto mínimo */
-}
-
-
-.my-custom-select {
-  /* Estilos personalizados aquí */
-  background-color: #d9534f; /* Color de fondo rojo */
-  color: #ffffff; /* Color del texto blanco, por ejemplo */
-}
-
 
 .pagination ul{
   margin: 0;
@@ -47,7 +198,7 @@
 }
 
 .p1 a.is-active{
-  background-color: #82B440;
+  background-color: #1e6042;
   border-radius: 100%;
   color: #fff;
 }
@@ -61,76 +212,16 @@
     color:#000;
     text-decoration:none;
  }
-  /* button {
-    padding: 1.3em 3em;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 2.5px;
-    font-weight: 500;
-    color: #000;
+ 
   
-    background-color:#14A44D;
-    border: none;
-    border-radius: 45px;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease 0s;
-    cursor: pointer;
-    outline: none;
-  } */
-  .button{
-      padding: 1em 1em;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 2.5px;
-      font-weight: 400;
-      color: #000;
-      background-color:#14A44D;
-      border-radius: 45px;
-      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s ease 0s;
-      cursor: pointer;
-      outline: none;
-  }
-
-  .buttonSuspender{
-    padding: 1em 1em;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 2.5px;
-    font-weight: 400;
-    color: #000;
-    background-color:#ffffff;
-    border-radius: 45px;
-    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease 0s;
-    cursor: pointer;
-    outline: none;
-  }
 
  
-
-  
-  /* button:hover {
-    background-color: #b9cac3;
-    box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-    color: #000000;
-    transform: translateY(-7px);
-  }
-  */
-  
   button{
     border:none;
     background-color: inherit;
   } 
 
-  .etiqueta {
-    color: #000;
-    background-color: #ffffff; /* Cambia esto al color que desees */
-    padding: 4px 8px; /* Ajusta el espaciado como desees */
-    border: 1px solid #000; /* Agrega un borde si lo deseas */
-    border-radius: 5px; /* Agrega esquinas redondeadas si lo deseas */
-    width: 100px;
-  }
+
 
 
 .notification {
@@ -154,7 +245,7 @@
     justify-content: center;
     width: 17px;
     height: 17px;
-    background-color: #82B440;
+    background-color: #1e6042;
     border-radius: 50%;
     color: #a95a5a;
     font-size: 12px;
@@ -163,13 +254,7 @@
 
 
 
-#calendar{
-  width: 80%;
-  position: absolute;
-  top: 55%;
-  left:50%;
-  transform:translate(-50%,-50%) ;
-}
+
 
   html {
   font-size: 14px;
@@ -190,6 +275,4 @@ body {
     margin-bottom: 60px;
     
 }
-
-
 

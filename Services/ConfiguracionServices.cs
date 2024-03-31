@@ -44,6 +44,20 @@ namespace tallerbiblioteca.Services
             Console.WriteLine("los ha agregado a la base de datos");
         }
 
+        public async Task<bool> ValidarEstudianteMatriculado(long numero_documento)
+        {
+            var matriculado = await _context.Matriculados.FirstOrDefaultAsync(m => m.Documento == numero_documento);
+            if (matriculado != null)
+            {
+                Console.WriteLine($"el estudiante con numero de documento: {matriculado.Documento} ya existe en la base de datos del aplicativo");
+            }
+            else
+            {
+                Console.WriteLine($"el estudiante con numero de documento: {numero_documento} no existe en la base de datos del aplicativo asi que devolvemos false para registrarlo en el controlador");
+            }
+            return matriculado != null;
+        }
+
 
         public List<Permiso> PermisosNoAsociados(int Id_rol)
         {

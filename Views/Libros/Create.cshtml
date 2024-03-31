@@ -4,76 +4,105 @@
     ViewData["Title"] = "Create";
 }
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script> 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/js/bootstrap-select.min.js"></script>
 
-<h1>Registrar Libro</h1>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/css/multi-select-tag.css">
+
+<h1 class="d-flex justify-content-center">Registrar libro</h1>
 
 <hr />
-<div class="row fw-bold">
-    <div class="col-md-4">
-        <form asp-action="Create" id="formularioLibros" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="row mt-2  fw-bold">
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="GeneroIds">Géneros:</label>
-                       
-                        <select  asp-for="GeneroIds" id="GeneroIds" asp-items="ViewBag.Generos" data-live-search="true" title="Selecciona uno o mas generos"   class="selectpicker "  ></select>
+
+<div class="d-flex justify-content-center fs-4">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+        <div class="card-body">
+            <form asp-action="Create" id="formularioLibros" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group mb-2">
+                    <label asp-for="Nombre" class="control-label required"></label>
+                    <input asp-for="Nombre" id="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Descripcion" class="control-label required"></label>
+
+                    <textarea rows="4" cols="50" asp-for="Descripcion" id="Descripcion" class="form-control"></textarea>
+
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+                <div class="row mt-2  fw-bold">
+                    <div class="col-6 col-lg-6">
+
+                        <div class="form-group mb-2">
+                            <label for="GeneroIds" class="required">Géneros:</label>
+
+                            <select asp-for="GeneroIds" name="GeneroIds" id="GeneroIds" asp-items="ViewBag.Generos"></select>
+                        </div>
+
                     </div>
-              
+                    <div class="col-5 col-lg-6 ">
+                        <div class="form-group">
+                            <label for="AutorIds" class="required">Autores:</label>
+                            <select asp-for="AutorIds" name="AutorIds" id="AutorIds" asp-items="ViewBag.Autores"></select>
+                        </div>
+                    </div>
+                    <div id="errorGenero"></div>
 
                 </div>
-                <div class="col-6">
-                    <div class="form-group">
-                        <label for="AutorIds">Autores:</label>
-                        <select  asp-for="AutorIds" id="AutorIds" asp-items="ViewBag.Autores" data-live-search="true" title="Selecciona uno o mas autores" class="selectpicker"></select>
-                    </div>
+
+                @Html.Hidden("CantidadLibros",0)
+
+                <div class="form-group mt-2">
+                    <label asp-for="ImagenLibro" class="control-label required"></label>
+                    <input type="file" asp-for="ImagenLibro" name="ImagenLibro" class="form-control" />
                 </div>
 
-               
-                <div id="errorGenero"></div>
-               
-            </div>
-           
-            @Html.Hidden("CantidadLibros",0)
-       
-            <div class="form-group mt-2">
-                <label asp-for="Descripcion" class="control-label"></label>
-              
-                <textarea rows="4" cols="50" asp-for="Descripcion" class="form-control"></textarea>
-
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-
-            <div class="form-group mt-2">
-                <label asp-for="ImagenLibro" class="control-label"></label>
-                <input type="file" asp-for="ImagenLibro" name="ImagenLibro" class="form-control" />     
-            </div>
-            
-            <div class="form-group mt-2">
-                @* <button class="boton medium" type="submit">Registrar</button> *@
-                    <button id="botonRegistrar" class="boton medium" type="submit">Registrar</button>
-
-            </div>
-        </form>
+                <div class="form-group mt-2 d-flex">
+                    @* <button class="boton medium" type="submit">Registrar</button> *@
+                    <button id="botonRegistrar" class="button me-5" type="submit">Registrar</button>
+                
+                    <a class="Eliminar"  asp-action="Index">Regresar</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <button class="mt-2 botonDelete Deletemedium "> <a class="text-light" asp-action="Index">Regresar</a></button>
-</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@2.0.1/dist/js/multi-select-tag.js"></script>
+
+<script>
+    new MultiSelectTag('GeneroIds', {
+        tagColor: {
+            textColor: '#fff',
+            borderColor: '#0000',
+            bgColor: '#1e6042',
+        },
+        onChange: function (values) {
+            console.log(values);
+        }
+    });
+
+    new MultiSelectTag('AutorIds', {
+        tagColor: {
+            textColor: '#fff',
+            borderColor: '#0000',
+            bgColor: '#1e6042',
+        },
+        onChange: function (values) {
+            console.log(values);
+        }
+    });
+</script>
+
+@* <script src="~/js/Libros.js"> </script> *@
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 
     @* <script src="~/js/Libros.js"> </script> *@
-    
-  
+
+
 }

@@ -3,49 +3,58 @@
 @{
     ViewData["Title"] = "Edit";
 }
-
-<h1>Editar</h1>
-
-<h4>Publicaciones</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" onsubmit="return validarFechaInicio()">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaInicio" class="control-label"></label>
-                <input asp-for="FechaInicio" class="form-control" />
-                <span asp-validation-for="FechaInicio" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaFin" class="control-label"></label>
-                <input asp-for="FechaFin" class="form-control" />
-                <span asp-validation-for="FechaFin" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Guardar Cambios" class="boton " />
-            </div>
-        </form>
+<div class="d-flex justify-content-center">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+        <div class="card-body">
+            <h1 class="card-title text-center">Editar publicación</h1>
+            <form asp-action="Edit" onsubmit="return validarFormulario()">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group">
+                    <label asp-for="Tipo" class="control-label"></label>
+                    <input asp-for="Tipo" class="form-control" />
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Nombre" class="control-label"></label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Descripcion" class="control-label"></label>
+                    <input asp-for="Descripcion" class="form-control" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FechaInicio" class="control-label"></label>
+                    @{
+                        if (Model.FechaInicio > DateTime.Now)
+                        {
+                            <input readonly asp-for="FechaInicio" class="form-control" />
+                        }
+                        else
+                        {
+                            <input asp-for="FechaInicio" class="form-control" />
+                        }
+                    }
+                    <span asp-validation-for="FechaInicio" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="FechaFin" class="control-label"></label>
+                    <input asp-for="FechaFin" class="form-control" />
+                    <span asp-validation-for="FechaFin" class="text-danger"></span>
+                </div>
+                <div class="form-group mt-3 text-center" style="display: flex; justify-content: center;">
+
+
+                    <button type="submit" class="button">Guardar cambios</button>
+                    <a class="Eliminar ms-2" asp-action="Index">Volver</a>
+                    
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-<div>
-    <a asp-action="Index">Volver</a>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -67,62 +76,25 @@
 
             reader.readAsDataURL(input.files[0]);
         }
-        function validarFechaInicio() {
+    </script>
+    <script>
+        function validarFormulario() {
             var fechaInicio = new Date(document.getElementById('FechaInicio').value);
-            var fechaActual = new Date();
-            fechaActual.setHours(0, 0, 0, 0);
+            var fechaFin = new Date(document.getElementById('FechaFin').value);
 
-            if (fechaInicio < fechaActual) {
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Error al editar la publicación',
-                    text: 'La fecha de inicio no puede ser menor a la fecha actual',
-                    showConfirmButton: true
-                });
-                return false;
-            }
-
-            return true;
-        }
-
-        @if (ViewBag.FechaMayor != null && ViewBag.FechaMayor)
-        {
-            <text>
+            if (fechaFin < fechaInicio) {
                 Swal.fire({
                     position: 'center',
                     icon: 'error',
                     title: 'Error al editar la publicación',
                     text: 'La fecha de finalización no puede ser menor a la fecha de inicio!',
                     showConfirmButton: true
-                }); 
-            </text>
+                });
+                return false; 
+            }
+
+            return true; 
         }
     </script>
-
-    @if (ViewData["CreadaConExito"] != null && ViewData["CreadaConExito"].ToString() == "True")
-    {
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Editada con éxito',
-                text: 'La publicación se ha creado con éxito.',
-                showConfirmButton: true
-            }).then(function () {
-                window.location.href = '@Url.Action("Index", "Publicaciones")';
-            });
-        </script>
-    }
-    @if (TempData["ErrorCrear"] != null && TempData["ErrorCrear"].ToString() == "True")
-    {
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error en la creación',
-                text: 'Hubo un error al crear la publicación.',
-                showConfirmButton: true
-            });
-        </script>
-    }
 }
 

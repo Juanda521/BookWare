@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ using tallerbiblioteca.Services;
 
 namespace tallerbiblioteca.Controllers
 {
+    [Authorize(Roles = "1,3")]
     public class AutorController : Controller
     {
         private readonly BibliotecaDbContext _context;
@@ -25,22 +28,34 @@ namespace tallerbiblioteca.Controllers
 
         }
 
-        // GET: Autor
-        public async Task<IActionResult> Index(string busqueda, int pagina = 1,int itemsPagina = 5)
-        {
-           var autores = await _autoresServices.ObtenerAutores();
-            //si viene algo en el parametro busqueda procederemos a añadir a la lista de libros a mostrar los libros que coincidan con la busqueda
-            if(busqueda!=null){
-                busqueda.ToLower();
-                autores= _autoresServices.busqueda(busqueda);
-            }
-            var autoresPaginacion = await _context.Autores.ToListAsync();
-            var totalAutores = autores.Count;
 
+        public async Task<IActionResult>Index(string[] librosSeleccionados, string busqueda, int pagina =  1, int itemsPagina =  10)
+        {
+            var autores = await _autoresServices.ObtenerAutores();
+            var libros = await _autoresServices.ObtenerLibros();
+
+            // Aplica la búsqueda si es necesario
+            if (!string.IsNullOrEmpty(busqueda))
+            {
+                autores = _autoresServices.BuscarAutores(busqueda);
+            }
+
+            
+
+            int totalAutores = autores.Count;
+            int total = (totalAutores/ itemsPagina) + 1;
             var autoresPaginados = autores.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
-            Paginacion<Autor> paginacion = new(autoresPaginados, totalAutores, pagina, itemsPagina);
+
+            Paginacion<Autor> paginacion = new Paginacion<Autor>(autoresPaginados, total, pagina, itemsPagina);
             return View(paginacion);
         }
+        [HttpGet]
+        public async Task<IActionResult>GetAutores(){
+            var autores = await _context.Autores.ToListAsync();
+            return Json(autores);
+        }
+
+        
 
         public IActionResult Desactivar(int id)
         {
@@ -58,22 +73,26 @@ namespace tallerbiblioteca.Controllers
 
         }
 
+
+    
+
+         public List<Libro> LibrosRelacionadosPorAutoro(int idAutor)
+        {
+            var librosDelAutorActual = _context.AutoresLibros
+                .Where(al => al.Id_autor == idAutor)
+                .Select(al => al.Id_libro)
+                .ToList();
+
+            var librosRelacionados = _context.AutoresLibros
+                .Where(gl => librosDelAutorActual.Contains(gl.Id_libro) && gl.Id_autor != idAutor)
+                .Select(gl => gl.Libro)
+                .Distinct()
+                .ToList();
+                return librosRelacionados;
+        }
+
         
 
-        // public List<Autor> AutorRelacionadosPorLibro(int idAutor)
-        // {
-        //     var librosDelAutorActual = _context.AutorLibro
-        //         .Where(al => al.Id_autor == idAutor)
-        //         .Select(al => al.Id_libro)
-        //         .ToList();
-
-        //     var autoresRelacionados = _context.AutoresLibros
-        //         .Where(al => librosDelAutorActual.Contains(al.Id_libro) && al.Id_autor != idAutor)
-        //         .Select(gl => gl.Libro)
-        //         .Distinct()
-        //         .ToList();
-        //         return autoresRelacionados;
-        // }
 
         // GET: Autor/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -138,63 +157,64 @@ namespace tallerbiblioteca.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,NombreAutor")] Autor autor)
         {
-            int status = await _autoresServices.Registrar(autor, User);
+            if(ModelState.IsValid)
+            {
+                Console.WriteLine("Si es valido el modelo");
+                int status = await _autoresServices.Registrar(autor, User);
 
-            MensajeRespuestaValidacionPermiso(status);
+                MensajeRespuestaValidacionPermiso(status);
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Libros");
+            }else
+            {
+                Console.WriteLine("No esta validando");
+                return RedirectToAction("Index","Libros");
+            }
+            
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>CreateAutor(){
+        public async Task<IActionResult>CreateAutor(Autor autor){
             
-            Console.WriteLine("hablalo desde registrar ejempla desde la vista de index de autores");
-                //string Id= Request.Form["Id"];
-                string nombreAutor= Request.Form["NombreAutor"];
-                // Console.WriteLine("aca deberia copier el id de autor: {0} ", Id);
-
-            //if (int.TryParse(Id, out int idAutorInt)){
-            //    Console.WriteLine("id del autor a registrar: {0}", idAutorInt);
-            //}else{
-            //    Console.WriteLine("no esta parseando el autor");
-            //    return RedirectToAction("Index","Autores");
-            //}
-
-            Autor autor = new();
-            //autor.Id= idAutorInt;
-            autor.NombreAutor = nombreAutor;
-
-            Console.WriteLine($"ya va empezar a realizar los servicios");
-            MensajeRespuestaValidacionPermiso( await _autoresServices.Registrar(autor,User));
-            return RedirectToAction("Index","Autor");
+            if (ModelState.IsValid)
+            {
+                Console.WriteLine("Con el modelo validado");
+                Console.WriteLine("Ya va empezar a realizar los servicios");
+                MensajeRespuestaValidacionPermiso(await _autoresServices.Registrar(autor, User));
+                return RedirectToAction("Index", "Libros");
+            }
+            else
+            {
+                Console.WriteLine("El modelo no es válido");
+                // Devuelve la vista con el modelo para que pueda mostrar los errores de validación
+                 return RedirectToAction("Index", "Libros");
+            }
+            
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult>UpdateAutor(int IdAutor){
-            
-            Console.WriteLine("hablalo desde actualizar autores");
-                string Id= Request.Form["Id"];
-                string nombreAutor= Request.Form["NombreAutor"];
-                Console.WriteLine("aca deberia copier el id de autor: {0} ", Id);
+        public async Task<IActionResult>UpdateAutor(Autor autor)
+        {
 
-            if (int.TryParse(Id, out int idAutorInt)){
-
-                Console.WriteLine("id del autor a registrar: {0}", idAutorInt);
-                var autor = await _autoresServices.Buscar(idAutorInt);
-
-                autor.Id= idAutorInt;
-                autor.NombreAutor = nombreAutor;
-
+            if (ModelState.IsValid)
+            {
+                Console.WriteLine("Con el modelo validado de actualizar");
                 Console.WriteLine($"ya va empezar a realizar los servicios");
                 MensajeRespuestaValidacionPermiso( await _autoresServices.Editar(autor,User));
                 return RedirectToAction("Index","Autor");
-
-            }else{
-               Console.WriteLine("no esta parseando el autor");
-               return RedirectToAction("Index","Autor");
             }
+            else
+            {
+                Console.WriteLine("El modelo no es válido");
+                // Devuelve la vista con el modelo para que pueda mostrar los errores de validación
+                 return RedirectToAction("Index", "Autor");
+            }
+
         }
 
         private void MensajeRespuestaValidacionPermiso(int status)
@@ -259,38 +279,38 @@ namespace tallerbiblioteca.Controllers
         }
 
         // GET: Autor/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Autores == null)
-            {
-                return NotFound();
-            }
+        // public async Task<IActionResult> Delete(int? id)
+        // {
+        //     if (id == null || _context.Autores == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            var autor = await _context.Autores
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (autor == null)
-            {
-                return NotFound();
-            }
+        //     var autor = await _context.Autores
+        //         .FirstOrDefaultAsync(m => m.Id == id);
+        //     if (autor == null)
+        //     {
+        //         return NotFound();
+        //     }
 
-            return View(autor);
-        }
+        //     return View(autor);
+        // }
 
-        // POST: Autor/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            int status = await _autoresServices.Eliminar(id, User);
+        // // POST: Autor/Delete/5
+        // [HttpPost, ActionName("Delete")]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> DeleteConfirmed(int id)
+        // {
+        //     int status = await _autoresServices.Eliminar(id, User);
 
-            MensajeRespuestaValidacionPermiso(status);
+        //     MensajeRespuestaValidacionPermiso(status);
 
-            return RedirectToAction(nameof(Index));
-        }
+        //     return RedirectToAction(nameof(Index));
+        // }
 
-        private bool AutorExists(int id)
-        {
-          return (_context.Autores?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        // private bool AutorExists(int id)
+        // {
+        //   return (_context.Autores?.Any(e => e.Id == id)).GetValueOrDefault();
+        // }
     }
 }

@@ -9,325 +9,289 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = tallerbiblioteca
 build_property.RootNamespace = tallerbiblioteca
-build_property.ProjectDir = C:\Users\ASUS\Desktop\Proyecto\Final\tallerbiblioteca\tallerbiblioteca\
+build_property.ProjectDir = C:\Users\ASUS\Desktop\BookWare\BookWare\tallerbiblioteca\
 build_property.RazorLangVersion = 6.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\ASUS\Desktop\Proyecto\Final\tallerbiblioteca\tallerbiblioteca
+build_property.MSBuildProjectDirectory = C:\Users\ASUS\Desktop\BookWare\BookWare\tallerbiblioteca
 build_property._RazorSourceGeneratorDebug = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Autor/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0b3JcQ3JlYXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Autor/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0b3JcRGVsZXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Autor/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0b3JcRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Autor/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0b3JcRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Autor/index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXV0b3JcaW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Configuracion/AccesoDenegado.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Configuracion/AccesoDenegado.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uZmlndXJhY2lvblxBY2Nlc29EZW5lZ2Fkby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Configuracion/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Configuracion/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uZmlndXJhY2lvblxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Configuracion/UsuariosInactivos.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uZmlndXJhY2lvblxVc3Vhcmlvc0luYWN0aXZvcy5jc2h0bWw=
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Configuracion/Index2.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ29uZmlndXJhY2lvblxJbmRleDIuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Devoluciones/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Devoluciones/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2b2x1Y2lvbmVzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Devoluciones/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Devoluciones/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2b2x1Y2lvbmVzXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Devoluciones/Details.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Devoluciones/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2b2x1Y2lvbmVzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Devoluciones/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Devoluciones/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2b2x1Y2lvbmVzXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Devoluciones/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Devoluciones/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRGV2b2x1Y2lvbmVzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Ejemplar/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Ejemplar/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWplbXBsYXJcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Ejemplar/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Ejemplar/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWplbXBsYXJcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Ejemplar/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Ejemplar/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRWplbXBsYXJcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Generos/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VuZXJvc1xDcmVhdGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Generos/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VuZXJvc1xEZWxldGUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Generos/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VuZXJvc1xEZXRhaWxzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Generos/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VuZXJvc1xFZGl0LmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Generos/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcR2VuZXJvc1xJbmRleC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Home/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Home/Privacy.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Home/Prueba.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Home/Prueba.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxQcnVlYmEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Catalog.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Libros/Catalog.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXENhdGFsb2cuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Libros/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXERlbGV0ZS5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXERldGFpbHMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Libros/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Libros/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Libros/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGlicm9zXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Permisos/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Permisos/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVybWlzb3NcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Permisos/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Permisos/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVybWlzb3NcRGVsZXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Permisos/Details.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Permisos/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVybWlzb3NcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Permisos/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Permisos/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVybWlzb3NcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Permisos/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Permisos/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVybWlzb3NcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Peticiones/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Peticiones/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGV0aWNpb25lc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Peticiones/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Peticiones/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGV0aWNpb25lc1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Peticiones/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Peticiones/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGV0aWNpb25lc1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Peticiones/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Peticiones/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGV0aWNpb25lc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Peticiones/Rechazadas.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Peticiones/Rechazadas.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGV0aWNpb25lc1xSZWNoYXphZGFzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Calendario.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Prestamos/Calendario.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXENhbGVuZGFyaW8uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Prestamos/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXERlbGV0ZS5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXERldGFpbHMuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXEVkaXQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Prestamos/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Prestamos/probando.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJlc3RhbW9zXHByb2JhbmRvLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Publicaciones/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Publicaciones/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYWNpb25lc1xDcmVhdGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Publicaciones/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Publicaciones/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYWNpb25lc1xEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Publicaciones/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Publicaciones/Desactivadas.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYWNpb25lc1xEZXNhY3RpdmFkYXMuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Publicaciones/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYWNpb25lc1xFZGl0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Publicaciones/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Publicaciones/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHVibGljYWNpb25lc1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Rol/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcQ3JlYXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Delete.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcRGVsZXRlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Details.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcRGV0YWlscy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcRWRpdC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcSW5kZXguY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Reservas/Rechazadas.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXNcUmVjaGF6YWRhcy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Rol/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Rol/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Rol/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Rol/Details.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Rol/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Rol/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Rol/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Rol/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Rol/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUm9sXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Sanciones/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Sanciones/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuY2lvbmVzXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Sanciones/Delete.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Sanciones/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuY2lvbmVzXERlbGV0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Sanciones/Details.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Sanciones/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuY2lvbmVzXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Sanciones/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Sanciones/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuY2lvbmVzXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Sanciones/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Sanciones/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2FuY2lvbmVzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Shared/Error.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Shared/_ValidationScriptsPartial.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/ConfirmarCodigo.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/ConfirmarCodigo.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcQ29uZmlybWFyQ29kaWdvLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Create.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Create3.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcQ3JlYXRlMy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Delete.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRGVsZXRlLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Details.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRGV0YWlscy5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Edit.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRWRpdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Index.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/EditarContra.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRWRpdGFyQ29udHJhLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/EditarContraseña.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcRWRpdGFyQ29udHJhc2XDsWEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Index2.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcSW5kZXgyLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Informacion.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Informacion.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcSW5mb3JtYWNpb24uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/Login.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcTG9naW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/otrosUsu.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/otrosUsu.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3Ncb3Ryb3NVc3UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/RecuperarContraseña.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/Perfil.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcUGVyZmlsLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/RecuperarContraseña.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcUmVjdXBlcmFyQ29udHJhc2XDsWEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Usuarios/RestablecerContraseña.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/RestablecerContraseña.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcUmVzdGFibGVjZXJDb250cmFzZcOxYS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/_ViewImports.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Usuarios/UsuariosInactivos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXN1YXJpb3NcVXN1YXJpb3NJbmFjdGl2b3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/_ViewStart.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/ASUS/Desktop/Proyecto/Final/tallerbiblioteca/tallerbiblioteca/Views/Shared/_Layout.cshtml]
+[C:/Users/ASUS/Desktop/BookWare/BookWare/tallerbiblioteca/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-j8lvyisv7f

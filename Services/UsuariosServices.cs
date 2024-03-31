@@ -2,7 +2,7 @@
 using tallerbiblioteca.Context;
 using tallerbiblioteca.Models;
 using Microsoft.Build.Framework;
-using tallerbiblioteca.Views.Usuarios;
+//using tallerbiblioteca.Views.Usuarios;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -28,16 +28,28 @@ namespace tallerbiblioteca.Services
             _emailServices  = emailServices;
             _rolServices  =rolServices;
         }
+        public async Task<List<Usuario>> ObtenerUsuariosPdf()
+        {
+            return await _context.Usuarios.Include(u=>u.Rol).ToListAsync();
+        }
 
         public async Task<List<Usuario>> ObtenerUsuarios()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios.Include(u => u.Rol).ToListAsync();
+        }
+        public async Task<List<Usuario>> ValidarUsuario()
+        {
+            return await _context.Usuarios.Where(u=>u.Estado=="ACTIVO").ToListAsync();
         }
         public async Task<bool> Create(Usuario usuario)
-        {   
+        {
             Console.WriteLine($"vamos a registrar un usuario con este rol: {usuario.Id_rol}");
             usuario.Contraseña = Encryptar(usuario.Contraseña);
             usuario.Rol = _rolServices.ObtenerRol(usuario.Id_rol);
+            Console.WriteLine("usuario antes" + usuario.Name);
+            usuario.Name = usuario.Name.ToLower();
+            Console.WriteLine("Usuario despúes"+usuario.Name);
+            usuario.Apellido = usuario.Apellido.ToLower();
             _context.Add(usuario);
             _emailServices.SendEmail(_emailServices.EmailRegisterUser(usuario.Correo));
             return (await _context.SaveChangesAsync() > 0) ? true : false;
@@ -60,30 +72,43 @@ namespace tallerbiblioteca.Services
         }
 
         public async Task<int> Edit(Usuario usuario){
-         
+            Console.WriteLine("la contraseña que llega es " + usuario.Contraseña);
             var existingUser = await _context.Usuarios.FindAsync(usuario.Id);
 
             existingUser.Name = usuario.Name;
             existingUser.Apellido = usuario.Apellido;
             existingUser.Correo = usuario.Correo;
             existingUser.Numero_documento = usuario.Numero_documento;
-            existingUser.Contraseña = Encryptar(usuario.Contraseña);
-
-
+            existingUser.Contraseña = usuario.Contraseña;
             existingUser.Rol = _rolServices.ObtenerRol(existingUser.Id_rol);
-            // Guarda los cambios en la base de datos
+            
             _context.Update(existingUser);
             await _context.SaveChangesAsync();
             return 200;
         }
+        public async Task<int> EditPerfil(Usuario usuario)
+        {
+            Console.WriteLine("ASÍ LLEGA LA CLAVE DEL DIABLO " + usuario.Contraseña);
+            var existingUser = _context.Usuarios.FirstOrDefault(u => u.Id == usuario.Id);
+            Console.WriteLine(existingUser.Contraseña +" ASÍ SE QUEDA LA CONTRASEÑA");
+            existingUser.Name = usuario.Name;
+            existingUser.Apellido = usuario.Apellido;
+            existingUser.Correo = usuario.Correo;
+            existingUser.Numero_documento = usuario.Numero_documento;
+            existingUser.Contraseña = existingUser.Contraseña;
 
-        public Usuario? BuscarUsuario(Usuario usuario)
+            existingUser.Rol = _rolServices.ObtenerRol(existingUser.Id_rol);
+            await _context.SaveChangesAsync();
+            return 200;
+        }
+
+        public Usuario? BuscarUsuario(long numero_documento,string contraseña)
         {
             Encrypt encrypt = new();
-            Console.WriteLine(usuario.Contraseña);
-            usuario.Contraseña  = encrypt.Encryptar(usuario.Contraseña);
-            Console.WriteLine(usuario.Contraseña);
-            var UserEncontrado =  _context.Usuarios.Include(u=>u.Rol).FirstOrDefault(u => u.Contraseña == usuario.Contraseña && u.Numero_documento == usuario.Numero_documento);
+            // Console.WriteLine(usuario.Contraseña);
+            contraseña  = encrypt.Encryptar(contraseña);
+            // Console.WriteLine(usuario.Contraseña);
+            var UserEncontrado =  _context.Usuarios.Include(u=>u.Rol).FirstOrDefault(u => u.Contraseña == contraseña && u.Numero_documento == numero_documento);
             if (UserEncontrado != null)
             {
                Console.WriteLine($" hola el nombre del rol a iniciar session es: {UserEncontrado.Rol.Nombre}");
@@ -97,7 +122,6 @@ namespace tallerbiblioteca.Services
             return _context.Usuarios.Any(i => (long)i.Numero_documento == (long)documento);
 
         }
-
         public bool validarCorreo( string correo)
         {
             return _context.Usuarios.Any(c => c.Correo == correo);
@@ -112,16 +136,13 @@ namespace tallerbiblioteca.Services
 
             return matriculados != null ? true : false;
         }
-
-
-
         public int Suspender(int id, ClaimsPrincipal User)
         {
             var Id_rol_string = User.FindFirst(ClaimTypes.Role)?.Value;
 
             int Id_rol = Int32.Parse(Id_rol_string);
             //debe ser el mismo  nombre de la tabla permisos
-            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Suspender_usuario", Id_rol);
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Suspender_Usuario", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
             var usuario = _context.Usuarios.Find(id);
             if (Status == 200)
@@ -140,27 +161,25 @@ namespace tallerbiblioteca.Services
         {
             var Id_rol_string = User.FindFirst(ClaimTypes.Role)?.Value;
             int Id_rol = Int32.Parse(Id_rol_string);
-            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Inhabilitar_usuario", Id_rol);
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Inhabilitar_Usuario", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
-            var usuario = _context.Usuarios.Find(id);
+            var usuario = _context.Usuarios.FirstOrDefault(u => u.Id == id);
             if (Status == 200)
             {
                 if (usuario != null)
                 {
+                    Console.WriteLine("vamos a editarlo");
                     usuario.Estado = "INHABILITADO";
                     _context.SaveChanges();
+                }
+                else
+                {
+                    Console.WriteLine("no esta editando");
                 }
             }
             return Status;
         }
-
-        public List<Usuario> Buscar(string filtroBusqueda)
-        {
-            return _context.Usuarios
-                .Where(u => u.Name.Contains(filtroBusqueda) || u.Apellido.Contains(filtroBusqueda) || u.Correo.Contains(filtroBusqueda))
-                .ToList();
-        }
-
+        //public async Task<Usuario>info
         public async Task<Usuario> Buscar(int Id){
             var usuario  =await _context.Usuarios.FindAsync(Id);
 
@@ -235,8 +254,6 @@ namespace tallerbiblioteca.Services
                 return true;
             }
         }
-
-
         public async Task<bool> ValidarNombreExistente(BigInteger documento, string nombre)
         {
             Console.WriteLine("ENTRANDO A VALIDAR NOMBRE");
@@ -256,7 +273,6 @@ namespace tallerbiblioteca.Services
                 return true;
             }
         }
-
         public (int,string,Usuario) RecuperarContraseña(int NumeroDocumento)
         {
             int codigo = 0;
@@ -282,28 +298,38 @@ namespace tallerbiblioteca.Services
             }
             return (codigo,mensajeError,usuario);
         }
-
         public int GeneracionCodigo()
         {
             var random = new Random();
             return random.Next(10000,99999);
         }
-        
         public bool ValidarPassword(string password)
         {
             // Expresión regular para validar la contraseña
-            string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$";
+            string pattern = @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$";
+
 
             // Validar la contraseña con la expresión regular
             return Regex.IsMatch(password, pattern);
         }
+        public bool ValidarPrestamo(int id)
+        {
+            var prestamos = _context.Prestamos.FirstOrDefault(p=>p.Peticion.Id_usuario== id);
+            if(prestamos != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
 
+        }
         public bool ValidarUsuarioEnPrestamo(int id_usuario){
 
-             // Utilizamos alias para hacer más legible el código
+             
                 var prestamoQuery = _context.Prestamos.Include(p => p.Peticion);
 
-                // Verificamos si existe algún préstamo en curso para el usuario dado
                 if (prestamoQuery.Any(p => p.Peticion.Usuario.Id == id_usuario && p.Estado == "En curso"))
                 {
                     return true;
@@ -311,10 +337,14 @@ namespace tallerbiblioteca.Services
 
                 return false;
         }
-
-
-
-       
+        public async Task<List<Usuario>>Buscar(string busqueda)
+        {
+            return await _context.Usuarios.Where(u => u.Name.Contains(busqueda) || u.Apellido.Contains(busqueda) || u.Correo.Contains(busqueda) || u.Numero_documento.ToString().Contains(busqueda) || u.Estado.Contains(busqueda)).ToListAsync();
+        }
+        public async Task<List<Usuario>> UsuariosInactivos()
+        {
+            return await _context.Usuarios.Where(u => u.Estado == "INHABILITADO" || u.Estado == "SUSPENDIDO").ToListAsync();
+        }
     }
 }
 

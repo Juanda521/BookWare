@@ -14,31 +14,42 @@ namespace tallerbiblioteca.Models
 
         [Required(ErrorMessage = "este campo es obligatorio.")]
         [NotMapped]
-        public long Numero_documento { get; set; } 
+        public long Numero_documento { get; set; }
 
         [Required(ErrorMessage = "este campo es obligatorio.")]
-        [RegularExpression(@"^[^0-9]+$",ErrorMessage =  "No se permiten numeros es en este campo")]
-        public string Name{get; set; }  ="";
+        [RegularExpression(@"^[^0-9]+$", ErrorMessage = "No se permiten numeros es en este campo")]
+        public string Name { get; set; } = "";
 
-       [Required(ErrorMessage = "este campo es obligatorio.")]
-        [RegularExpression(@"^[^0-9]+$",ErrorMessage =  "No se permiten numeros es en este campo")]
-        public string Apellido { get; set; }  ="";
+        [Required(ErrorMessage = "este campo es obligatorio.")]
+        [RegularExpression(@"^[^0-9]+$", ErrorMessage = "No se permiten numeros es en este campo")]
+        public string Apellido { get; set; } = "";
 
-        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]  
-        [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "El correo electrónico no es válido.")]
+        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+
         public string Correo { get; set; } = "";
+        [Required(ErrorMessage = "La contraseña es obligatoria.")]
 
-         [Required(ErrorMessage = "La contraseña es obligatoria.")]
-        [MinLength(8, ErrorMessage = "La contraseña debe tener al menos 8 caracteres.")]
-        public string Contraseña {get; set; } = "";
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$", ErrorMessage = "Debe contener al menos una mayúscula, una minúscula y un número y 8 caracteres.")]
+        public string Contraseña { get; set; } = "";
 
-        public string Estado { get; set; }  ="";
+        public string Estado { get; set; } = "";
     }
-    public class usuarioo: Usuario{
-        public string Mensaje { get; set;}
+    public class usuarioo : Usuario {
+        public string Mensaje { get; set; }
 
-        public string NombreLibro {get; set;}
+        public string NombreLibro { get; set; }
 
-        public string fechaa {get; set;}
+        public string fechaa { get; set; }
+    }
+    public class usuarioModel
+    {
+        public Paginacion<Usuario> Paginacion { get; set; }
+        public Usuario usuario { get; set; }
+
+        public usuarioModel(Paginacion<Usuario> paginacion, Usuario usuario)
+        {
+            Paginacion = paginacion;
+            this.usuario = usuario;
+        }
     }
 }

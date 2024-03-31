@@ -11,6 +11,7 @@ using tallerbiblioteca.Migrations;
 using tallerbiblioteca.Models;
 using tallerbiblioteca.Services;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace tallerbiblioteca.Controllers
 {
@@ -37,8 +38,20 @@ namespace tallerbiblioteca.Controllers
 
         public async Task<IActionResult> Index(string busqueda, int pagina = 1, int itemsPagina = 4)
         {
-            var sancion = await _sancionesServices.ObtenerSanciones();
 
+            ViewBag.Devoluciones = new SelectList(await _sancionesServices.ObtenerDevoluciones(),"Id","Prestamo.Peticion.Usuario.Numero_documento") ;
+            var sancion = await _sancionesServices.ObtenerSanciones();
+            var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+            var idUsuarioOnline = User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            if (rolUsuario != "1" && rolUsuario != "3")
+            {
+                Console.WriteLine("hay en linea un usuario");
+                sancion = sancion.Where(p => p.Devolucion.Prestamo.Peticion.Usuario.Id.ToString() == idUsuarioOnline).ToList();
+            }
+            else
+            {
+                Console.WriteLine("hay en linea un administrador o un alfabetizador");
+            }
 
             if (busqueda!=null)
             {
@@ -160,47 +173,29 @@ namespace tallerbiblioteca.Controllers
 
 
 
-        // POST: Sanciones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Id_devolucion,Motivo_sancion,Fecha_Sancion")] Sancion sancion)
+
+        public async Task<IActionResult> Editar(int Id)
         {
+           
+            var Sancion = await _sancionesServices.Buscar(Id);
+            if (Sancion != null)
+            {
 
-            Console.WriteLine("hola desdde registrar devoluciones");
-            Console.WriteLine($"id: {sancion.Id}");
-            Console.WriteLine($"id: {sancion.Id_devolucion}");
-            Console.WriteLine($"id{sancion.Motivo_sancion}");
-            Console.WriteLine($"id{sancion.Fecha_Sancion}");
-            int Status = await _sancionesServices.Editar(sancion, User);
+                MensajeRespuestaValidacionPermiso(await _sancionesServices.Editar(Sancion, User));
 
-
-            MensajeRespuestaValidacionPermiso(Status);
-
-
-
+            }
+            else
+            {
+                Console.WriteLine("no se esta encontrando una devolucion  con el id:" + Id);
+            }
             return RedirectToAction(nameof(Index));
+
         }
+       
 
-        // GET: Sanciones/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Sanciones == null)
-            {
-                return NotFound();
-            }
-
-            var sancion = await _context.Sanciones
-                .Include(s => s.Devolucion)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (sancion == null)
-            {
-                return NotFound();
-            }
-
-            return View(sancion);
-        }
+     
 
         // POST: Sanciones/Delete/5
         [HttpPost, ActionName("Delete")]

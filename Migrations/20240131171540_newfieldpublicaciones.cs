@@ -25,22 +25,6 @@ namespace tallerbiblioteca.Migrations
                 nullable: false,
                 defaultValue: "");
 
-            migrationBuilder.AlterColumn<long>(
-                name: "Documento",
-                table: "Matriculados",
-                type: "bigint",
-                nullable: false,
-                oldClrType: typeof(int),
-                oldType: "int")
-                .Annotation("SqlServer:Identity", "1, 1")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
-
-            migrationBuilder.AddColumn<string>(
-                name: "Apellido",
-                table: "Matriculados",
-                type: "nvarchar(max)",
-                nullable: false,
-                defaultValue: "");
         }
 
         /// <inheritdoc />
@@ -50,9 +34,7 @@ namespace tallerbiblioteca.Migrations
                 name: "Estado",
                 table: "Publicaciones");
 
-            migrationBuilder.DropColumn(
-                name: "Apellido",
-                table: "Matriculados");
+           
 
             migrationBuilder.AlterColumn<int>(
                 name: "Numero_documento",
@@ -61,16 +43,6 @@ namespace tallerbiblioteca.Migrations
                 nullable: false,
                 oldClrType: typeof(long),
                 oldType: "bigint");
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Documento",
-                table: "Matriculados",
-                type: "int",
-                nullable: false,
-                oldClrType: typeof(long),
-                oldType: "bigint")
-                .Annotation("SqlServer:Identity", "1, 1")
-                .OldAnnotation("SqlServer:Identity", "1, 1");
         }
     }
 }

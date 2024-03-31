@@ -13,14 +13,14 @@ namespace tallerbiblioteca.Models
 
             return resultado;
         }
-
-        public string Desencryptar(string cadena_desencriptar){
-
+        public string Desencriptar(string cadena_encriptada)
+        {
             string resultado;
-            byte[] decryted = Convert.FromBase64String(cadena_desencriptar);
-            resultado = System.Text.Encoding.Unicode.GetString(decryted);
-            return resultado;
+            byte[] decrypt = Convert.FromBase64String(cadena_encriptada);
 
+            resultado = System.Text.Encoding.UTF8.GetString(decrypt);
+
+            return resultado;
         }
     }
 }

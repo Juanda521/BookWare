@@ -1,163 +1,242 @@
 ﻿@using System.Security.Claims;
+
 @* @model IEnumerable<tallerbiblioteca.Models.Peticiones> *@
-    @model Paginacion<Prestamo>
+@model Paginacion<Prestamo>
 
 @{
     ViewData["Title"] = "Prestamos";
 }
 
-  <h1 class="fw-bold fs-1 text-center ">Prestamos</h1>
-<div class="row">
-    <div class="col-md-2">
-        <p>
-            @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1")||(User.FindFirst(ClaimTypes.Role)?.Value == "3")){
-                 <a class="boton medium" asp-action="Create">  Registrar </a>
-            }
-           
-        </p>
-    </div>
+<h1 class="fw-bold fs-1 text-center">Préstamos</h1>
+@if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
+        <div class="row">
+            <div class="col-lg-2 col-md-4 col-12">
+                <a class="button" asp-action="Create">  Registrar </a>
+            </div>
 
-  <div class="col-8 mb-4">
-    <form asp-action="Index" class="row ">
-        <div class="col-md-4">
-            <label for="busqueda" class="form-label">Búsqueda:</label>
-            <input type="text" name="busqueda" id="busqueda" placeholder="Identificación usuario |  Id ejemplar" class="form-control" />
+            <div class="col-lg-8 col-md-6 col-12">
+                <form asp-action="Index" class="row">
+                    <div class="col-md-3 col-lg-3">
+                        <label for="busqueda" class="form-label">Búsqueda:</label>
+                        <input type="text" name="busqueda" id="busqueda" placeholder="Busqueda" class="form-control" />
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-6">
+                        <label for="fechaInicio" class="form-label">Desde:</label>
+                        <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" />
+                    </div>
+                    <div class="col-md-3 col-lg-3 col-6">
+                        <label for="fechaFin" class="form-label">Hasta:</label>
+                        <input type="date" name="fechaFin" id="fechaFin" class="form-control" />
+                    </div>
+                    <div class="col-md-3 col-6 col-lg-3 mt-4">
+                        <button class="button" type="submit">Buscar</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-2 col-md-7 col-17 d-flex ">
+                    <form asp-controller="/Pdf" asp-action="GenerarPdfPrestamos" method="post" class="mt-2">
+                        <button class="descar" type="submit">
+                            <span class="button__text">Pdf</span>
+                            <span class="button__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35" id="bdd05811-e15d-428c-bb53-8661459f9307" data-name="Layer 2" class="svg">
+                                    <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+                                    <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+                                    <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </form>
+            </div>
         </div>
-        <div class="col-md-3">
-            <label for="fechaInicio" class="form-label">Desde:</label>
-            <input type="date" name="fechaInicio" id="fechaInicio" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label for="fechaFin" class="form-label">Hasta:</label>
-            <input type="date" name="fechaFin" id="fechaFin" class="form-control" />
-        </div>
-        <div class="col-md-2 mt-3">
-            <button type="submit" class="boton medium ">Buscar</button>
-        </div>
-    </form>
-</div>
-
-   
-</div>
-<table>
+}
+<table class="mt-2">
     <thead>
         <tr>
             <th> Id </th>
-            <th> Id ejemplar</th>
+            <th> Isbn ejemplar</th>
             <th> Nombre Libro</th>
             <th> Nombre usuario </th>
             <th> Fecha Prestamo</th>
             <th> Fecha Devolución</th>
             <th> Estado </th>
-            <th></th>
+            @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+            {
+                <th>Acción</th>
+            }
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Items) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td style="width: 15px;">
-                @Html.DisplayFor(modelItem => item.Peticion.Id_ejemplar)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Peticion.Ejemplar.Libro.Nombre)
-            </td>
-         
-            <td>
-                @Html.DisplayFor(modelItem => item.Peticion.NombreUsuario) @Html.DisplayFor(modelItem => item.Peticion.Usuario.Apellido)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha_inicio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fecha_fin)
-            </td>
-          <td style="color: @GetColorForEstado(item.Estado)">
-    @Html.DisplayFor(modelItem => item.Estado)
-</td>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td style="width: 15px;">
+                    @Html.DisplayFor(modelItem => item.Peticion.Ejemplar.Isbn_libro)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Peticion.Ejemplar.Libro.Nombre)
+                </td>
 
-            <td>
-                @* <form asp-controller="Prestamos" asp-action="Create" method="post" >
-                    <input asp-for="@Model.PeticionesViewModel.Prestamo.Id_peticion" value="@item.Id"  type="hidden">
-                    <button type="submit">aceptar</button>
-                </form>  *@
-
-                @* <button class="d-inline m-1 "><a asp-action="Edit" asp-route-id="@item.Id"><i class="fa-solid fa-file-pen fa-xl" style="color: #82B440;"></i></a></button> *@
-                            
-                @* <button class="d-inline" ><a asp-controller = "Prestamos" asp-action="Created" asp-route-id="@item.Id"> <i class="fa-solid fa-arrow-rotate-left fa-xl" style="color: #000000;"></i></a></button> *@
-               
-                <button data-bs-target="#create_@item.Id" data-bs-toggle="modal" class="boton medium mb-1"> Devolver </button>
-                
-                    <div class="modal fade" id="create_@item.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="exampleModalLabel">Registrar devolución</h5>
-                                <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Peticion.NombreUsuario) @Html.DisplayFor(modelItem => item.Peticion.Usuario.Apellido)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha_inicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha_fin)
+                </td>
+                <td style="color: @GetColorForEstado(item.Estado)">
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                @if (item.Estado == "EN CURSO")
+                {
+                    @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+                    {
+                        <td>
+                            <div class="col-md-25 d-flex align-items-center">
+                                <button class="button" data-bs-target="#create_@item.Id" data-bs-toggle="modal">Devolver</button>
+                                <a class="button ms-4" data-bs-target="#renovar_@item.Id" data-bs-toggle="modal">Renovar</a>
                             </div>
-                            <div class="modal-body">
-                                 <p> <strong class="fs-5 fw-bold"> Vamos a registrar la devolución del prestamo: </strong> <span class=" fw-bold text-danger fs-5">@Html.DisplayFor(modelItem => item.Id)</span> </p>
+                            @* modal para renovar *@
+                            <div class="modal fade" id="renovar_@item.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Renovar prestamo</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
 
-                                <p > <strong class="fw-bold fs-5" >Id Ejemplar:</strong> <span class="text-success fs-5"> @Html.DisplayFor(modelItem => item.Peticion.Ejemplar.Id) </span></p>
-                                <p> <strong class="fw-bold fs-5">Libro:</strong> <span class="text-success fs-5">@Html.DisplayFor(modelItem => item.Peticion.Ejemplar.Libro.Nombre)</span></p>
-                                <p><strong class="fw-bold fs-5">Usuario:</strong> <span class="text-success fs-4"> @Html.DisplayFor(modelItem => item.Peticion.Usuario.Name) @Html.DisplayFor(modelItem => item.Peticion.Usuario.Apellido) </span></p>
+                                            <form asp-action="Renovar">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                                <form asp-controller="Devoluciones" asp-action="Registrar" method="post">
-                                    <div class="form-group">
-                                        <label for="id_prestamo" class="control-label"></label>
-                                        <input name="Id_prestamo" value="@item.Id" class="form-control" type="hidden" />
+                                                <div class="form-group">
+                                                    <input name="Id" value="@item.Id" class="form-control" type="hidden" />
+
+                                                </div>
+                                                <div class="form-group">
+                                                    <input name="Id_peticiones" value="Id_peticion" class="form-control" type="hidden" />
+
+                                                </div>
+
+
+                                                <div class="form-group">
+                                                    <label asp-for="PeticionesViewModel.Prestamo.Fecha_fin" class="control-label"></label>
+                                                    <input value="@item.Fecha_fin.ToString("yyyy-MM-dd")" placeholder="@item.Fecha_fin.ToString("yyyy-MM-dd")" name="Fecha_fin" type="date" class="form-control" />
+                                                    <span asp-validation-for="PeticionesViewModel.Prestamo.Fecha_fin" class="text-danger"></span>
+                                                </div>
+                                                <div class="form-group mt-2">
+                                                    <button type="submit" class="button">Editar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        @* <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                            </div> *@
                                     </div>
-                                    <div class="form-group">
-                                        <label for="observaciones" class="control-label">Observaciones</label>
-                                        <textarea rows="4" cols="50" name="observaciones" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            @* modal para registrar la devolucion *@
+                            <div class="modal fade" id="create_@item.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Registrar devolución</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label >Id préstamo</label>
+                                            <input readonly type="text" value="@item.Id">
+
+                                            <label for="">Id ejemplar</label>
+                                            <input readonly type="text" value="@item.Peticion.Ejemplar.Id">
+
+                                            <label for="">Nombre Libro</label>
+                                            <input readonly type="text" value="@item.Peticion.Ejemplar.Libro.Nombre">
+
+                                            <label for="">Nombre Usuario</label>
+                                            <input readonly type="text" value="@item.Peticion.Usuario.Name @item.Peticion.Usuario.Apellido">
+
+
+
+                                            <form asp-controller="Devoluciones" id="formulario_@item.Id" asp-action="Registrar" method="post" onsubmit="return validarFormulario(@item.Id)">
+                                                <div class="form-group">
+                                                    <label for="id_prestamo" class="control-label"></label>
+                                                    <input name="Id_prestamo" value="@item.Id" class="form-control" type="hidden" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="observaciones" class="control-label">Observaciones</label>
+                                                    <textarea rows="4" cols="50" id="observaciones_@item.Id" name="observaciones" class="form-control"></textarea>
+                                                    <span id="mensajeError_@item.Id" style="color: red; display: none;">Por favor, ingresa las observaciones.</span>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="button" type="submit">Registrar</button>
+                                                    <button class="Eliminar" type="button" data-bs-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </form>
+
+                                        </div>
                                     </div>
-                                    <input type="submit" value="enviar" class="boton boton-medium mt-2">
-                                </form>
+                                </div>
                             </div>
-                          
-                            </div>
-                        </div>
-                    </div>
-                
-                <a asp-action="Edit" asp-route-id="@item.Id" class="boton medium mt-1"> Renovar </a>
-                @* <button class="d-inline ms-2"><a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-xmark fa-2xl" style="color: #fa0000;"></i></a></button> *@
-            </td>
-        </tr>
-}
+
+                        </td>
+                        @* <button class="d-inline ms-2"><a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-xmark fa-2xl" style="color: #fa0000;"></i></a></button> *@
+
+                    }
+                }
+                else
+                {
+                    @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+                    {
+                        <td>
+                            No hay acciones disponibles 
+                    </td>
+                    }
+                }
+            </tr>
+        }
     </tbody>
 </table>
- <div class="row">
-               <div class="pagination p1">
-                    <ul>
-                         <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
-                        <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]"><li><<</li></a>
-                        @for (var i = 1; i <= Model.TotalItems; i++)
-                        {
-                            
-                            <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
-                            
-                        }
-                         @if (Model.Numero_pagina < Model.TotalItems)
-                        {
-                           
-                                <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
-                           
-                        }
-                        <a class="ms-1" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]"><li>Fin</li></a>
-                    </ul>
-                </div>
-            </div>
+<div class="row">
+    <div class="pagination p1">
+        <ul>
+            <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
+            <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]">
+            <li><<</li></a>
+            @for (var i = 1; i <= Model.TotalItems; i++)
+            {
+
+                <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?Numero_pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
+
+            }
+            @if (Model.Numero_pagina < Model.TotalItems)
+            {
+
+                <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
+
+            }
+            <a class="ms-1" href="?Numero_pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]">
+            <li>Fin</li></a>
+        </ul>
+    </div>
+</div>
 
 @functions {
-    string GetColorForEstado(string estado) {
-        switch (estado) {
+    string GetColorForEstado(string estado)
+    {
+        switch (estado)
+        {
             case "En curso":
                 return "blue";
             case "en espera por devolver":
                 return "red";
-            case "Devuelto":
+            case "FINALIZADO":
                 return "green";
             default:
                 return "black"; // Puedes establecer un color predeterminado o manejar otros casos según tus necesidades.
@@ -170,19 +249,34 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     @{
-        var Mensaje =  TempData["Mensaje"] as string;
- 
-        if (Mensaje!=null){
-            var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
         <script>
-             console.log("se va mostrar");
-             
-            const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
-            const icono = "@mensaje.Icono";
-            MostrarMensajeUsuarios(icono, cuerpo);
+            function validarFormulario(index) {
+                var observaciones = document.getElementById("observaciones_" + index).value;
+                var mensajeError = document.getElementById("mensajeError_" + index);
+
+                if (observaciones.trim() === "") {
+                    mensajeError.style.display = "block";
+                    return false; // Evitar el envío del formulario
+                } else {
+                    mensajeError.style.display = "none";
+                    return true; // Permitir el envío del formulario
+                }
+            }
         </script>
-          
+        var Mensaje = TempData["Mensaje"] as string;
+
+        if (Mensaje != null)
+        {
+            var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
+            <script>
+                console.log("se va mostrar");
+
+                const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
+                const icono = "@mensaje.Icono";
+                MostrarMensajeUsuarios(icono, cuerpo);
+            </script>
+
         }
-      
+
     }
 }

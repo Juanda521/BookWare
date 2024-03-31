@@ -1,5 +1,5 @@
 ﻿
-console.log("estamos en configuracion.js");
+
 function MensajeBackup(descargaFinalizada){
     if (descargaFinalizada != null && descargaFinalizada.toLowerCase() === "true") {
         Console.WriteLine("llego el viewdata");
@@ -14,10 +14,12 @@ $(document).ready(function() {
         var configId = $(this).data('config-id');
         $('#configId').val(configId);
         console.log("ID de la configuracion: " + configId);
-        // $('#formCambiarCampoPermiso').submit();
+        $('#formCambiarCampoPermiso').submit();
         console.log("le dimos click al boton y enviamos el formulario");
     });
 });
+
+
 
 function sendForm(e) {
     e.preventDefault();
@@ -33,6 +35,25 @@ function sendForm(e) {
         }
     })
 }
+
+function sendFormBackup(e) {
+    const fechaActual = new Date(); 
+    e.preventDefault();
+    Swal.fire({
+        title: 'Quieres guardar la copia de seguridad de los cambios hechos hasta:' + fechaActual +'?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'SI'
+    }).then((resultado) => {
+        if (resultado.isConfirmed) {
+            const formulario = document.getElementById("formBackup")
+            console.log("vamos a enviar el formulario de realizar backup");
+            formulario.submit();
+        }
+    })
+}
+
+
 
 function sendFormDelete(e,idConfig) {
     e.preventDefault();

@@ -1,0 +1,265 @@
+﻿@model tallerbiblioteca.Models.ConfiguracionViewModel;
+
+
+@{
+    ViewData["Title"] = "Configuracion";
+}
+ 
+
+
+
+
+<form id="formCambiarCampoPermiso" method="post"asp-controller="Configuracion" asp-action="Edit">
+    <input type="hidden" id="configId" name="Id" value="">
+</form>
+
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-md-4">
+            <button class="boton medium">
+                <a class=" text-light mb-2"  asp-action="UsuariosInactivos">Usuarios Inactivos</a>
+            </button>
+        </div>
+        <div class="col-md-4">
+            @using (Html.BeginForm("SubirArchivo", "Configuracion", FormMethod.Post, new { enctype = "multipart/form-data" }))
+            {
+                <input type="file" class="form-select" name="archivoCsv" />
+                <input type="submit" class="boton medium" value="Subir Archivo" />
+            }
+        </div>
+        <div class="col-md-4">
+            <form method="post" asp-controller="Backup" asp-action="DownloadBackup">
+                <button class="boton medium" name="descarga" value="true" type="submit">Realizar Copia de Seguridad</button>
+            </form>
+        </div>
+
+    </div>
+   
+
+    <div class="row text-center p-1">
+    
+      
+    @foreach (var rol in Model.Roles)
+    {
+    
+            <div class="col-12 border border-4 border-dark mb-4">
+             
+                <div class="container p-2"  style="max-height: 550px; overflow-y: auto;">
+                    <h3>@rol.Nombre</h3>
+
+                        <button class="boton medium" type="button"  data-bs-toggle="modal" data-bs-target="#create_@rol.Id">
+                        Registrar
+                    </button>
+                   @switch(rol.Id){
+                       case 1:
+                            @if (Model.ConfiguracionesAdmin != null)
+                            {
+                                @foreach (var config in Model.ConfiguracionesAdmin)
+                                {
+                                    <div class="row mb-2 border-bottom border-dark">
+                                        <div class="col-12 col-md-3 col-sm-3 col-xs-12 mb-2">
+                                            <p >@config.Permiso.Nombre</p>
+                                        </div>
+                                        <div class="col-12 col-md-3 col-sm-3 col-xs-12 mb-2 d-flex justify-content-center">
+                                           
+                                                <label class="toggle-switch">
+                                                    <input type="checkbox" class="chkCambiarPermiso"  @(config.Estado == "ACTIVO" ? "checked" : "") data-config-id="@config.Id" />
+                                                    <span class="slider"></span>
+                                                </label>
+                                        </div>
+                                         <div class="col-12 col-md-3 col-sm-3 col-xs-12 mb-2">
+                                                    <p style="color: @(config.Estado == "INACTIVO" ? "red" : "green")">@config.Estado</p>
+                                                </div>
+                                        <div class="col-12 col-md-3 col-sm-3 col-xs-12 mb-2 d-flex justify-content-center">
+                                            <form asp-action="Delete" asp-route-id="@config.Id" id="form_@config.Id" method="post" onsubmit="sendFormDelete(event, @config.Id)">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit">
+                                                    <i class="fa-solid fa-trash fa-2xl" style="color: #827e7e;"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                 
+                                       
+                                }
+                            }
+                            break;
+                       case 2:
+                       @if(Model.ConfiguracionesUsuario!=null){
+                        
+                            @foreach (var config in Model.ConfiguracionesUsuario)
+                            {
+                                <div class="row mb-2 border-bottom border-dark">
+
+                                    <div class="col-12 col-md-3">
+                                        <p>@config.Permiso.Nombre</p>
+                                    </div>
+
+                                   <div class="col-12 col-md-3 sm-4 mb-2"> 
+                                      
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" class="chkCambiarPermiso"  @(config.Estado == "ACTIVO" ? "checked" : "") data-config-id="@config.Id" />
+                                            <span class="slider"></span>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                        <p style="color: @(config.Estado == "INACTIVO" ? "red" : "green")">@config.Estado</p>
+                                    </div>
+                                    <div class="col-12 col-md-3">
+                                            <form asp-action="Delete" asp-route-id="@config.Id" method="post"  id="form_@config.Id" onsubmit="sendFormDelete(event, @config.Id)">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit">
+                                                  <i class="fa-solid fa-trash fa-2xl" style="color: #827e7e ;"></i>
+                                                </button>
+
+                                            </form>
+                                    </div>
+                                </div>
+                            }
+                           
+                       }
+                       break;
+                        case 3:
+                            @if (Model.ConfiguracionesAlfabetizador != null)
+                            {                             
+                                @foreach (var config in Model.ConfiguracionesAlfabetizador)
+                                {
+                                    <div class="row mb-2 border-bottom border-dark">
+
+                                        <div class="col-12 col-md-3">
+                                            <p>@config.Permiso.Nombre</p>
+                                        </div>
+
+                                        <div class="col-12 col-md-3 sm-4 mb-2"> 
+                                             <label class="toggle-switch">
+                                                    <input type="checkbox" class="chkCambiarPermiso"  @(config.Estado == "ACTIVO" ? "checked" : "") data-config-id="@config.Id" />
+                                                    <span class="slider"></span>
+                                                </label>
+                                        </div>
+                                        <div class="col-12 col-md-3 ms-n4">
+                                            <p style="color: @(config.Estado == "INACTIVO" ? "red" : "green")">@config.Estado</p>
+                                        </div>
+                                            
+                                        
+                                        <div class="col-12 col-md-3">
+                                            <form asp-action="Delete" asp-route-id="@config.Id" method="post" id="form_@config.Id" onsubmit="sendFormDelete(event, @config.Id)">
+                                                @Html.AntiForgeryToken()
+                                                <button  type="submit">
+                                                   <i class="fa-solid fa-trash fa-2xl" style="color: #827e7e;"></i>
+                                                </button>
+
+                                            </form>
+                                        </div>
+                                    </div>
+                                } 
+                            }
+                        break;
+                   }
+                 
+
+                    @* <!-- Modal --> *@
+                    <div class="modal fade" id="create_@rol.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">@rol.Nombre</h5>
+                                    <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6>Asignar permiso al rol: @rol.Nombre</h6>
+                                    <form asp-controller = "Configuracion" asp-action="Create" >
+                                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                        <div class="form-group">
+                                            <input asp-for="@Model.Configuracion.Id_rol" class="form-control" value="@rol.Id" type="hidden"/>
+                                           
+                                        </div>
+                                        <div >
+                                            <label  class="control-label">Nombre Permiso</label>
+                                            @if(rol.Id == 01)
+                                            {
+                                                <input list="prueba" asp-for="@Model.Configuracion.Id_permiso" />
+                                                <datalist id="prueba">
+                                                    @foreach(var permiso in ViewData["PermisosNoAsociadosAdmin"] as SelectList)
+                                                    {
+                                                        <option value="@permiso.Value"></option>
+                                                    }
+                                                </datalist>
+                                              @*<select asp-for="@Model.Configuracion.Id_permiso"  asp-items="ViewBag.PermisosNoAsociadosAdmin"></select>*@
+                                            }else if(rol.Id == 02)
+                                            {
+                                              <select asp-for="@Model.Configuracion.Id_permiso" class="selectpicker" data-width="75%" title="Escoja el nombre del permiso a asignar bla bla bla" data-live-search="true" asp-items="ViewBag.PermisosNoAsociadosUser"></select>
+                                            }else{
+                                                <select asp-for="@Model.Configuracion.Id_permiso" class="selectpicker" data-width="75%" title="Escoja el nombre del permiso a asignar" data-live-search="true" asp-items="ViewBag.PermisosNoAsociadosAlfa"></select>
+                                            }
+                                        </div>     
+                                        <div class="form-group">
+                                           
+                                            <input asp-for="@Model.Configuracion.Estado" class="form-control" value="ACTIVO" type="hidden" />
+                                            <span asp-validation-for="@Model.Configuracion.Estado" class="text-danger"></span>
+                                        </div>
+                                        <div class="form-group mt-2">
+                                           <button class="" type="submit">registrar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    }
+    </div>
+    </div>
+
+
+ 
+@{
+    var descargaFinalizada = TempData["descargaFinalizada"] as bool?;
+}
+
+@if (descargaFinalizada.HasValue && descargaFinalizada.Value)
+{
+    <script>
+        console.log("Va a ver el mensaje");
+    </script>
+}
+else
+{
+    <script>
+        console.log("No va a ver el mensaje");
+    </script>
+}
+
+
+    
+
+
+
+
+@section Scripts {
+
+    
+
+   
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        var Mensaje =  TempData["Mensaje"] as string;
+        if (Mensaje!=null){
+            var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
+            <script>
+                const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
+                const icono = "@mensaje.Icono";
+                MostrarMensajeUsuarios(icono, cuerpo);
+            </script>
+        }
+    }
+ 
+}
+  
+   
+       
+    
+
+  
+

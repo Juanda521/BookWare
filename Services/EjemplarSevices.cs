@@ -1,6 +1,6 @@
 using tallerbiblioteca.Models;
 using Microsoft.Build.Framework;
-using tallerbiblioteca.Views.Usuarios;
+//using tallerbiblioteca.Views.Usuarios;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
@@ -82,7 +82,20 @@ namespace tallerbiblioteca.Services
              //validacion de objeto nullo coalesce (vscode) (compuesta) (si el objeto es diferente de nulo lo envia, en caso contrario crea uno)
              return ejemplar ??= new();
         }
+        public async Task<List<Ejemplar>> ObtenerEjemplaresDisponibles()
+        {
+            try
+            {
+                var ejemplares = await _context.Ejemplares.Where(e=>e.EstadoEjemplar=="DISPONIBLE").Include(e => e.Libro).ToListAsync();
+                return ejemplares;
+            }
+            catch (System.Exception)
+            {
 
+                throw;
+            }
+
+        }
         public async Task<List<Ejemplar>>ObtenerEjemplares(){
             try
             {
@@ -108,6 +121,11 @@ namespace tallerbiblioteca.Services
             {
                 case 200:
                 Console.WriteLine($"el id del libro a relacionar es: {ejemplar.Id_libro}");
+                    var ejemplares = await ObtenerEjemplares();
+                    if (ejemplares.Any(e=>e.Isbn_libro == ejemplar.Isbn_libro)){
+                        Console.WriteLine("ya existe un ejemplar con este isbn");
+                        return 203;
+                    }
                     ejemplar.EstadoEjemplar  = "DISPONIBLE";
                     var Libro = await _context.Libros.FindAsync(ejemplar.Id_libro);
                     if (Libro!=null){
@@ -125,7 +143,7 @@ namespace tallerbiblioteca.Services
             return Status;
         }
 
-        public async Task<int> Edit(ClaimsPrincipal User,Ejemplar ejemplar){
+       public async Task<int> Edit(ClaimsPrincipal User,Ejemplar ejemplar){
 
             var Id_rol_string = User.FindFirst(ClaimTypes.Role).Value;
             int Id_rol = Int32.Parse(Id_rol_string);
@@ -133,6 +151,16 @@ namespace tallerbiblioteca.Services
             if(Status==200){
                 
                 if(ejemplar!=null){
+
+                    Console.WriteLine(ejemplar.EstadoEjemplar);
+                    if (ejemplar.EstadoEjemplar.Equals("DISPONIBLE"))
+                    {
+                        ejemplar.EstadoEjemplar = "NO_DISPONIBLE";
+                    }
+                    else
+                    {
+                        ejemplar.EstadoEjemplar = "DISPONIBLE";
+                    }
 
                     _context.Update(ejemplar);
                     await _context.SaveChangesAsync();

@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
-
-
+using System.Security.Claims;
 using tallerbiblioteca.Models;
 using tallerbiblioteca.Services;
 namespace tallerbiblioteca.Controllers
@@ -12,42 +11,56 @@ namespace tallerbiblioteca.Controllers
     [Authorize]
     public class PeticionesController : Controller
     {
-
         private PeticionesServices _peticionesServices;
         private UsuariosServices _usuariosServices;
         private EjemplarServices _ejemplaresServices;
-        
-
-        public PeticionesController(UsuariosServices usuariosServices, PeticionesServices peticionesServices, EjemplarServices ejemplarServices)
+        private ReservasServices _reservasServices;
+        public PeticionesController(UsuariosServices usuariosServices, PeticionesServices peticionesServices, EjemplarServices ejemplarServices,ReservasServices reservasServices)
         {
             _peticionesServices = peticionesServices;
             _usuariosServices = usuariosServices;
             _ejemplaresServices = ejemplarServices;
+            _reservasServices = reservasServices;
 
         }
 
         // GET: Peticiones
-        public async Task<IActionResult> Rechazadas(int itemsPagina = 5, int pagina = 1)
+        public async Task<IActionResult> Rechazadas(int itemsPagina = 5, int pagina = 1,DateTime? fechaini = null,DateTime? fechafin= null,string? busqueda=null)
         {
-            var peticionesRechazadas = await _peticionesServices.Rechazadas();
-
-            int totalPeticionesRechazadas = peticionesRechazadas.Count;
-            var total = (totalPeticionesRechazadas / 6) + 1;
-
-            var peticionesRechazadasPaginadas = peticionesRechazadas
-                .Skip((pagina - 1) * itemsPagina)
-                .Take(itemsPagina)
-                .ToList();
-
-            Paginacion<Peticiones> paginacionRechazadas = new(peticionesRechazadasPaginadas, total, pagina, itemsPagina)
+            try
             {
-                PeticionesViewModel = new PeticionesViewModel
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
                 {
-                    Peticiones = peticionesRechazadas
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
                 }
-            };
+                PeticionesViewModel peticionesViewModel = new()
+                {
+                    Peticiones = await _peticionesServices.Rechazadas()
 
-            return View("Rechazadas", paginacionRechazadas);
+                };
+                if (busqueda != null || fechaini != null || fechaini != null)
+                {
+                    peticionesViewModel.Peticiones = await _peticionesServices.Buscarechazadas(fechaini, fechafin, busqueda);
+                }
+                peticionesViewModel.Peticiones = peticionesViewModel.Peticiones.OrderBy(p => p.Estado == "EN ESPERA" ? 0 : 1).ToList();
+                int totalPeticiones = peticionesViewModel.Peticiones.Count;
+                var total = (totalPeticiones / 6) + 1;
+
+                var peticionesPaginadas = peticionesViewModel.Peticiones.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+
+                Paginacion<Peticiones> paginacion = new(peticionesPaginadas, total, pagina, itemsPagina)
+                {
+                    PeticionesViewModel = peticionesViewModel
+                };
+
+                return View("Rechazadas", paginacion);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
         public async Task<IActionResult> BuscarFiltro(int itemsPagina = 5, int pagina = 1, string busqueda = null, DateTime? fechaInicio = null, DateTime? fechaFin = null)
         {
@@ -68,27 +81,44 @@ namespace tallerbiblioteca.Controllers
 
             return View("Index", paginacion);
         }
-        public async Task<IActionResult> Index(int itemsPagina = 5, int pagina = 1)
+        public async Task<IActionResult> Index(int itemsPagina = 5, int pagina = 1, int? id = null, string busqueda = null, DateTime? fechaInicio = null, DateTime? fechaFin = null)
         {
-
-            PeticionesViewModel peticionesViewModel = new()
+            try
             {
-                Peticiones = await _peticionesServices.Obtenerpeticiones()
-            };
+               
+                PeticionesViewModel peticionesViewModel = new()
+                {
+                    Peticiones = await _peticionesServices.Obtenerpeticiones()
 
-            int totalPeticiones = peticionesViewModel.Peticiones.Count;
-            var total = (totalPeticiones / 6) + 1;
+                };
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
 
-            var peticionesPaginadas = peticionesViewModel.Peticiones.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+                if (User.IsInRole("2") && userIdClaim != null)
+                {
+                    int userId = Convert.ToInt32(userIdClaim.Value);
+                    peticionesViewModel.Peticiones = await _peticionesServices.BuscarP(userId);
+                }
+                if (busqueda != null || fechaInicio != null || fechaFin != null)
+                {
+                    peticionesViewModel.Peticiones = await _peticionesServices.BuscarFiltro(busqueda, fechaInicio, fechaFin);
+                }
+                peticionesViewModel.Peticiones = peticionesViewModel.Peticiones.OrderBy(p => p.Estado == "EN ESPERA" ? 0 : 1).ThenByDescending(p => p.FechaPeticion).ToList();
+                int totalPeticiones = peticionesViewModel.Peticiones.Count;
+                var total = (totalPeticiones / 6) + 1;
 
-            Paginacion<Peticiones> paginacion = new(peticionesPaginadas, total, pagina, itemsPagina)
+                var peticionesPaginadas = peticionesViewModel.Peticiones.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+                var ejemplares = await _ejemplaresServices.ObtenerEjemplaresDisponibles(); // Asegúrate de que tu servicio devuelva ejemplares con información de libro
+                ViewData["Id_ejemplar"] = new SelectList(ejemplares, "Id", "Libro.Nombre"); // Usa el nombre de la propiedad que contiene el nombre del libro
+                ViewData["Id_usuario"] = new SelectList(await _usuariosServices.ValidarUsuario(), "Id", "Name");
+                var model = new PeticionesModel(new Paginacion<Peticiones>(peticionesPaginadas, total, pagina, itemsPagina), new Peticiones());
+                return View(model);
+            }
+            catch (Exception)
             {
-                PeticionesViewModel = peticionesViewModel
-            };
-
-
-            return View(paginacion);
-        }
+                return RedirectToAction("Error");
+            }
+            }
+            
         //este es el metodo que nos devuelve las notificaciones que van aparecer en la campana del aplicativo
         [HttpGet]
         [Route("api/Notificaciones")]
@@ -143,6 +173,11 @@ namespace tallerbiblioteca.Controllers
                     resultado.Icono = "info";
                     TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
                     break;
+                case 501:
+                    resultado.Mensaje = "Estas Inhabilitado o Suspendido, no puedes realizar esta accion, comunicate con el administrador para que puedas acceder a este servicio";
+                    resultado.Icono = "info";
+                    TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+                break;
                 case 502:
                     resultado.Mensaje = "El libro solicitado no se encuentra Disponible, puedes reservarlo para que puedad disfrutar de el cuando esté disponible de nuevo en la biblioteca";
                     resultado.Icono = "info";
@@ -178,23 +213,35 @@ namespace tallerbiblioteca.Controllers
         // GET: Peticiones/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            if (await _peticionesServices.Obtenerpeticiones() == null)
+            try
             {
-                return NotFound();
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+
+                if (await _peticionesServices.Obtenerpeticiones() == null)
+                {
+                    return NotFound();
+                }
+                var peticion = await _peticionesServices.Buscar(id);
+                if (peticion == null)
+                {
+                    return NotFound();
+                }
+                return View(peticion);
+            }catch(Exception ) {
+                return RedirectToAction("Error");
             }
-            var peticion = await _peticionesServices.Buscar(id);
-            if (peticion == null)
-            {
-                return NotFound();
-            }
-            return View(peticion);
         }
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            var ejemplares = await _ejemplaresServices.ObtenerEjemplares(); // Asegúrate de que tu servicio devuelva ejemplares con información de libro
-            ViewData["Id_ejemplar"] = new SelectList(ejemplares, "Id", "Libro.Nombre"); // Usa el nombre de la propiedad que contiene el nombre del libro
-            ViewData["Id_usuario"] = new SelectList(await _usuariosServices.ObtenerUsuarios(), "Id", "Name");
+            var ejemplares = await _ejemplaresServices.ObtenerEjemplaresDisponibles(); 
+            ViewData["Id_ejemplar"] = new SelectList(ejemplares, "Id", "Libro.Nombre"); 
+            ViewData["Id_usuario"] = new SelectList(await _usuariosServices.ValidarUsuario(), "Id", "Name");
             return View();
         }
         // POST: Peticiones/Create
@@ -202,110 +249,192 @@ namespace tallerbiblioteca.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Peticiones peticiones)
+        public async Task<IActionResult> Create(Peticiones peticiones,int? idReserva = null)
         {
-
             Console.WriteLine("id del ejemplar a registrar. vamos a registrar una fokin petición ", peticiones.Id_ejemplar);
-
-            if(_usuariosServices.ValidarUsuarioEnPrestamo(peticiones.Id_usuario)){
-
-                Console.WriteLine("Esta usuario tiene un prestamo en curso");
-                //codigo 504 declarado para usuarios con prestamos en curso (desde la vista del administrador)
-                 MensajeRespuestaPeticion(504);
-                 return RedirectToAction("Index", "Peticiones");
-            }
-            int status = await _peticionesServices.Registrar(User, peticiones);
-
-            if (status == 401 || status == 402)
+            try
             {
-                var resultado = new ResponseModel();
-                MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
-            }
-            else
-            {
-                MensajeRespuestaPeticion(status);
-            }
-            return RedirectToAction("Catalog", "Libros");
-        }
+                if (_usuariosServices.ValidarUsuarioEnPrestamo(peticiones.Id_usuario) == true && idReserva == null)
+                {
+                    Console.WriteLine("Esta usuario tiene un prestamo en curso con id de " + peticiones.Id_usuario);
+                    MensajeRespuestaPeticion(504);
+                    return RedirectToAction("Index", "Peticiones");
+                }
+                else if (_usuariosServices.ValidarUsuarioEnPrestamo(peticiones.Id_usuario) == true && idReserva != null)
+                {
+                    MensajeRespuestaPeticion(504);
+                    return RedirectToAction("Index", "Reservas");
+                }
 
-        public async Task<IActionResult> Registrar()
-        {
+                int status;
+                if (idReserva != null)
+                {
+                    Console.WriteLine("ENTRANDO DESDE VISTA RESERVA");
+                    status = await _peticionesServices.RegistrarR(User, peticiones, idReserva);
+                }
+                else
+                {
+                    Console.WriteLine("Desde peticiones");
+                    status = await _peticionesServices.Registrar(_peticionesServices.ObtenerRolUserOnline(User), peticiones);
+                }
 
-            Console.WriteLine("hablalo desde registrar");
-            string idEjemplar = Request.Form["Id_ejemplar"];
-            string motivo = Request.Form["Motivo"];
-            string idUsuario = Request.Form["Id_usuario"];
-            Console.WriteLine("aca deberia copier el id: ", idEjemplar);
 
-
-            if (int.TryParse(idEjemplar, out int idEjemplarInt))
-            {
-                Console.WriteLine("id del ejemplar a registrar: {0}", idEjemplarInt);
-            }
-            else
-            {
-                //el codigo 502 lo hemos declarado como ejemplar no disponible
-                MensajeRespuestaPeticion(502);
-                Console.WriteLine("no esta parseando el ejemplar");
+                if (status == 401 || status == 402)
+                {
+                    var resultado = new ResponseModel();
+                    MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
+                }
+                else
+                {
+                    MensajeRespuestaPeticion(status);
+                }
                 return RedirectToAction("Catalog", "Libros");
             }
-            if (int.TryParse(idUsuario, out int idUsuarioInt))
+            catch (Exception)
             {
-
-                Console.WriteLine("id del usuario a registrar: {0}", idUsuarioInt);
+                return RedirectToAction("Error");
             }
-            if(_usuariosServices.ValidarUsuarioEnPrestamo(idUsuarioInt)){
+        }
 
-                Console.WriteLine("Esta usuario tiene un prestamo en curso");
+        
+
+        [HttpPost]
+        public async Task<IActionResult> Registrar()
+        {
+            try
+            {
+                Console.WriteLine("hablalo desde registrar");
+                string idEjemplar = Request.Form["Id_ejemplar"];
+                string motivo = Request.Form["Motivo"];
+                string idUsuario = Request.Form["Id_usuario"];
+                Console.WriteLine("aca deberia copier el id: {0} ", idEjemplar);
+
+
+                if (int.TryParse(idEjemplar, out int idEjemplarInt))
+                {
+                    Console.WriteLine("id del ejemplar a registrar: {0}", idEjemplarInt);
+                }
+                else
+                {
+                    MensajeRespuestaPeticion(502);
+                    Console.WriteLine("no esta parseando el ejemplar");
+                    return RedirectToAction("Catalog", "Libros");
+                }
+                if (int.TryParse(idUsuario, out int idUsuarioInt))
+                {
+
+                    Console.WriteLine("id del usuario a registrar: {0}", idUsuarioInt);
+                }
+                if (_usuariosServices.ValidarUsuarioEnPrestamo(idUsuarioInt))
+                {
+
+                    Console.WriteLine("Esta usuario tiene un prestamo en curso");
+                    //codigo 503 declarado para usuarios con prestamos en curso 
+                    MensajeRespuestaPeticion(503);
+                    return RedirectToAction("Catalog", "Libros");
+                }
+
+                Peticiones peticiones = new Peticiones();
+                peticiones.Id_ejemplar = idEjemplarInt;
+                peticiones.Id_usuario = idUsuarioInt;
+                peticiones.Motivo = motivo;
+
+                int Id_rol = _peticionesServices.ObtenerRolUserOnline(User);
+                Console.WriteLine(Id_rol);
+
+                int status = await _peticionesServices.Registrar(Id_rol, peticiones);
+                Console.WriteLine(status);
+
+                if (status == 401 || status == 402)
+                {
+                    var resultado = new ResponseModel();
+                    MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
+                }
+                else
+                {
+                    MensajeRespuestaPeticion(status);
+                }
+                return RedirectToAction("Catalog", "Libros");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
+        }
+
+        [HttpPost]
+        [Route("Movil/RegistrarPeticion")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegistrarMovil([FromBody]PeticionViewModel viewModel){
+
+            Console.WriteLine("hola mundo");
+            Console.WriteLine(viewModel.Id_rol);
+            if(_usuariosServices.ValidarUsuarioEnPrestamo(viewModel.Peticion.Id_usuario)){
+
+                Console.WriteLine("Este usuario tiene un prestamo en curso");
                 //codigo 503 declarado para usuarios con prestamos en curso 
-                 MensajeRespuestaPeticion(503);
-                 return RedirectToAction("Catalog", "Libros");
+                //  MensajeRespuestaPeticion(503);
+                    return StatusCode(503,"este usuario tiene un prestamo en curso");
+            }else{
+
+                if(await _peticionesServices.ValidarEjemplarEnPeticion(viewModel.Peticion.Id_ejemplar)){
+                       return StatusCode(503,"este ejemplar se encuentra en peticion");
+                }else{
+
+                
+                    int status = await _peticionesServices.Registrar(viewModel.Id_rol, viewModel.Peticion);
+                    Console.WriteLine(status);
+
+                    if (status == 401 || status == 402)
+                    {
+                        // var resultado = new ResponseModel();
+                        // MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
+                        return Unauthorized("el usuario en linea no tiene permiso de realizar la accion");
+                    }
+                    else if (status == 500)
+                    {
+                        return StatusCode(500,"ya existe una peticion en espera de este usuario");
+                        // MensajeRespuestaPeticion(status);
+                    }else{
+                        return Ok("se ha registrado la peticion exitosamente");
+                    }
+                }
             }
-
-            Peticiones peticiones = new Peticiones();
-            peticiones.Id_ejemplar = idEjemplarInt;
-            peticiones.Id_usuario = idUsuarioInt;
-            peticiones.Motivo = motivo;
-
            
-
-            int status = await _peticionesServices.Registrar(User, peticiones);
-            Console.WriteLine(status);
-
-            if (status == 401 || status == 402)
-            {
-                var resultado = new ResponseModel();
-                MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
-            }
-            else
-            {
-                MensajeRespuestaPeticion(status);
-            }
-            return RedirectToAction("Catalog", "Libros");
+            
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            Console.WriteLine("vamos a cambiar el estado de la petición");
+            try
+            {
+                Console.WriteLine("vamos a cambiar el estado de la petición");
 
-            var peticion  = await _peticionesServices.Buscar(id);
+                var peticion = await _peticionesServices.Buscar(id);
 
-            if(peticion.Estado == "ACEPTADA"){
-                Console.WriteLine($"La peticion ya ha sido aceptada");
-                MensajeRespuestaPeticion(505);
+                if (peticion.Estado == "ACEPTADA")
+                {
+                    Console.WriteLine($"La peticion ya ha sido aceptada");
+                    MensajeRespuestaPeticion(505);
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (peticion.Estado == "RECHAZADA")
+                {
+                    Console.WriteLine($"La peticion ya ha sido rechazada");
+                    MensajeRespuestaPeticion(506);
+                    return RedirectToAction(nameof(Rechazadas));
+                }
+
+
+                int status = await _peticionesServices.EliminarPeticion(User, id);
+                MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
                 return RedirectToAction(nameof(Index));
             }
-
-            if(peticion.Estado == "RECHAZADA"){
-                Console.WriteLine($"La peticion ya ha sido rechazada");
-                MensajeRespuestaPeticion(506);
-                return RedirectToAction(nameof(Rechazadas));
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
             }
-            
-
-            int status = await _peticionesServices.EliminarPeticion(User, id);
-            MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
-            return RedirectToAction(nameof(Index));
         }
 
     }

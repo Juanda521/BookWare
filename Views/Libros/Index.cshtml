@@ -1,51 +1,70 @@
 ﻿@* @model IEnumerable<tallerbiblioteca.Models.Libro> *@
-    @* @model tallerbiblioteca.Models.LibroViewModel *@
-    @model Paginacion<Libro>
+@* @model tallerbiblioteca.Models.LibroViewModel *@
+@model Paginacion<Libro>
 
 @{
     ViewData["Title"] = "Index";
 }
+
+
+<h1 class="fw-bold fs-1 text-center ">Libros</h1>
 <div class="row">
     <div class="col-md-4">
         <p>
-            <a class="boton"  asp-action="Create">  Registrar </a>
+            <a class="button" asp-action="Create">  Registrar </a>
         </p>
     </div>
 
     <div class="col-4">
-        <form asp-action="Index"> 
-            <p>
-                <input type="text" name="busqueda" placeholder="Nombre libro" class="form-control"/>
-                <button type="submit" class="ms-4 mt-1 boton  " value="Buscar">Buscar</button>
+        <form asp-action="Index">
+            <p class="d-flex align-items-center">
+                <input type="text" name="busqueda" placeholder="Busqueda" class="form-control" />
+                <button type="submit" class="ms-4 mt-1 button pe-5 " value="Buscar">Buscar</button>
             </p>
         </form>
+       @* <div class="col-lg-4 col-md-4 col-17 d-flex justify-content-end ">
+            <form asp-controller="/Pdf" asp-action="GenerarPdfLibros" method="post" class="mt-2">
+                <button class="descar" type="submit">
+                    <span class="button__text">Pdf</span>
+                    <span class="button__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35" id="bdd05811-e15d-428c-bb53-8661459f9307" data-name="Layer 2" class="svg">
+                            <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+                            <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+                            <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+                        </svg>
+                    </span>
+                </button>
+            </form>
+        </div>*@
     </div>
-    <div class="col-md-4 pt-2">
-        <h1 class="fw-bold text-center pt-4">Libros</h1>
-    </div>
+
 </div>
 <div class="row">
     <div class="col-10">
-            <table class="fs-5">
-                <thead>
-                    <tr>
-                         <th>
-                          Id
-                        </th>
-                        <th>
-                          Nombre
-                        </th>
-                        <th>
-                          Cantidad
-                        </th>
-                        <th>
-                           Acciones
-                        </th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-            @foreach (var libro in Model.Items) {
+        <table class="fs-5">
+            <thead>
+                <tr>
+                    <th>
+                        Id
+                    </th>
+                    <th>
+                        Nombre
+                    </th>
+                    <th>
+                        Cantidad
+                    </th>
+                    <th>
+                        Estado
+                    </th>
+                    <th>
+                        Acciones
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var libro in Model.Items)
+                {
                     <tr>
                         <td>
                             @libro.Id
@@ -58,79 +77,169 @@
                             @* @Html.DisplayFor(modellibro => libro.CantidadLibros) *@
                             @libro.CantidadLibros
                         </td>
-                        <td style="width: 220px;">
-                            <button class="d-inline m-1 "><a asp-action="Edit" asp-route-id="@libro.Id"><i class="fa-solid fa-file-pen fa-xl" style="color: #82B440;"></i></a></button>
+                        <td style="width:100px; color: @(libro.Estado == "ACTIVO" ? "green" : "red")">
+                        
+                            @libro.Estado
+                        </td>
+                        <td>
+                            <button class="d-inline m-1 "><a asp-action="Edit" asp-route-id="@libro.Id"><i class="fa-solid fa-file-pen fa-xl me-5" style="color: #1e6042;"></i></a></button>
+             
+                            <button data-bs-target="#info_@libro.Id" data-bs-toggle="modal" class="d-inline m-1  "><i class="fa-solid fa-circle-info fa-xl me-5 " style="color: #7b7b7c"></i></button>
+
                             
-                            @* <!-- este es el boton que abre el modal para ver información del libro -->                          *@
-                            <button data-bs-target="#info_@libro.Id" data-bs-toggle="modal" class="d-inline m-1 "><i class="fa-solid fa-circle-info fa-xl " style="color: #7b7b7c"></i></button>
-                            
-                            @* <!-- este es el modal de información del libro --> *@
                             <div class="modal fade" id="info_@libro.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable ">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title" id="exampleModalLabel">@libro.Nombre</h5>
-                                            <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                                            <h5 class="modal-title" id="exampleModalLabel">@libro.Nombre -   <span style="color: @(libro.Estado == "ACTIVO" ? "green" : "red")">@libro.Estado</span></h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <span>@libro.Descripcion</span>
-                                            </div>
-                                            <br>
-                                            <span style="color: @(libro.Estado == "ACTIVO" ? "green" : "red")">@libro.Estado</span>
-                                            <hr>
-                                           
-                                            <div class="row">
-                                               
-                                            <div class="col-4">
-                                                <img class="img-fluid w-50 h-auto" src="data:Images;base64,@libro.ImagenLibro" alt="fallo en la imagen" srcset="">
-                                            </div>
-                                            <div class="col-4">
-                                                <span> Generos</span> 
-                                                    <ul>
-                                                        @foreach(var item in libro.Generos){
-                                                             <li>@item.NombreGenero</li>
-                                                        }
-                                                       
-                                                    </ul>
+                                                <div class="col-12 col-md-12 col-lg-12">
+                                                    @if (libro.Ejemplares.Count == 0)
+                                                    {
 
-                                                <span>Autores</span>
-                                                    <ul>
-                                                        @foreach(var item in libro.Autores){
-                                                            <li>@item.NombreAutor</li>
-                                                        }
-                                                    </ul>
-                                            </div>
-                                            <div class="col-4">
-                                                Ejemplares
-                                                <br>
-                                                @{
-                                                    if(libro.Ejemplares.Count<1){
-                                                        <span class="text-danger"> No hay ejemplares asociados a este libro </span>
+                                                        <p class="text-danger fs-4">no hay ejemplaer asociados a este libro </p>
+
                                                     }
-                                                }
-                                                <ul>
-                                                    @foreach(var item in libro.Ejemplares){
-                                                        <li> Isbn_libro : @item.Isbn_libro 
-                                                            <br>
-                                                            <span>estado:</span>
-                                                            <span style="color: @(item.EstadoEjemplar == "NO_DISPONIBLE" ? "red" : (@item.EstadoEjemplar == "EN PRESTAMO" ? "red"  : "green"))"> @item.EstadoEjemplar</span> 
-                                                        </li>
-                                                      
-                                                        
+                                                    else
+                                                    {
+                                                        <table>
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>
+                                                                        Id
+                                                                    </th>
+
+                                                                    <th>
+                                                                        Nombre libro
+                                                                    </th>
+                                                                    <th>
+                                                                        Isbn
+                                                                    </th>
+                                                                    <th>
+                                                                        Estado
+                                                                    </th>
+                                                                    <th>Acciones</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+
+                                                                @foreach (var ejemplar in libro.Ejemplares)
+                                                               {
+                                                                    <tr>
+                                                                        <td>
+                                                                            @ejemplar.Id
+                                                                        </td>
+
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelejemplar => ejemplar.Libro.Nombre)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelejemplar => ejemplar.Isbn_libro)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelejemplar => ejemplar.EstadoEjemplar)
+
+                                                                        </td>
+                                                                        <td>
+                                                                            @if (ejemplar.EstadoEjemplar != "EN PRESTAMO" && ejemplar.EstadoEjemplar != "EN PETICION")
+                                                                            {
+                                                                                <label class="toggle-switch">
+                                                                                    <input type="checkbox" class="chkCambiarEjemplar" @(ejemplar.EstadoEjemplar == "DISPONIBLE" ? "checked" : "") data-ejemplar-id="@ejemplar.Id" />
+                                                                                    <span class="slider"></span>
+                                                                                </label>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+
+                                                                }
+                                                            </tbody>
+                                                        </table>
                                                     }
-                                                </ul>
+                                                </div>
+
+                                                <div class="col-12 col-md-12 col-lg-6 mt-5">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+
+                                                                <th>
+                                                                    Nombre Genero
+                                                                </th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item in libro.Generos)
+                                                            {
+                                                                <tr>
+
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.NombreGenero)
+                                                                    </td>
+
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="col-12 col-md-12 col-lg-6 mt-5">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+
+                                                                <th>
+                                                                    Nombre Autor
+                                                                </th>
+
+
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var item in libro.Autores)
+                                                            {
+                                                                <tr>
+
+                                                                    <td>
+                                                                        @Html.DisplayFor(modelItem => item.NombreAutor)
+                                                                    </td>
+
+
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+
+
                                             </div>
+
+
+                                            <hr>
+
+                                            <div class="row">
+
+                                                <div class="col-6">
+                                                    <img class="img-fluid w-50 h-auto" src="data:Images;base64,@libro.ImagenLibro" alt="fallo en la imagen" srcset="">
+                                                </div>
+                                                <div class="col-4">
+                                                    @libro.Descripcion
+                                                </div>
+
                                             </div>
-                                           
-                                            
                                         </div>
-                                   
+
                                     </div>
                                 </div>
                             </div>
-                          
-                            <button  class="d-inline"data-bs-toggle="modal" data-bs-target="#create_@libro.Id"><i class="fa-solid fa-plus fa-xl " style="color: #000000;"></i>
+
+                            <button class="d-inline" data-bs-toggle="modal" data-bs-target="#create_@libro.Id">
+                                <i class="fa-solid fa-plus fa-xl me-5 " style="color: #000000;"></i>
                             </button>
                             @* <!-- Modal --> *@
                             <div class="modal fade" id="create_@libro.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -142,89 +251,209 @@
                                         </div>
                                         <div class="modal-body">
                                             <h6>Añadir Ejemplar al libro @libro.Nombre</h6>
-                                            <form asp-controller="Ejemplar" asp-action="Create" method="post" >
+                                            <form asp-controller="Ejemplar" asp-action="Create" method="post">
                                                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                                            
+
                                                 <input name="Id_libro" value="@libro.Id" type="hidden">
                                                 <div class="form-group">
-                                                  
+
                                                     <label asp-for="@Model.LibroViewModel.Ejemplar.Isbn_libro" class="control-label"></label>
-                                                    <input type="text" class="form-control mb-2" name="Isbn_libro" data-val="true" data-val-required="Ingresa este campo por favor" >
+                                                    <input type="text" class="form-control mb-2" name="Isbn_libro" data-val="true" data-val-required="Ingresa este campo por favor">
 
                                                 </div>
                                                 <div class="form-group mb-2">
-                                                    <input asp-for="@Model.LibroViewModel.Ejemplar.EstadoEjemplar" value="DISPONIBLE" class="form-control" type="hidden"/>
+                                                    <input asp-for="@Model.LibroViewModel.Ejemplar.EstadoEjemplar" value="DISPONIBLE" class="form-control" type="hidden" />
                                                 </div>
                                                 <div class="form-group">
-                                                    <button type="submit" class="boton medium">Registrar</button>
-                                                    <button class=" botonDelete Deletemedium" data-bs-dismiss="modal">Cancelar</button>
+                                                    <button type="submit" class="button">Registrar</button>
+                                                    <button class="Eliminar" data-bs-dismiss="modal">Cancelar</button>
                                                 </div>
-                                                
+
                                             </form>
                                         </div>
-                                   
+
                                     </div>
                                 </div>
                             </div>
                             @* @{
 
-                                if(@libro.Estado == "ACTIVO"){
-                                    <button  class="d-inline"data-bs-toggle="modal" data-bs-target="#create_@libro.Id"><i class="fa-solid fa-ban fa-xl" style="color: #ff0404;"></i></button>
-                                }else{
-                                    <button  class="d-inline"data-bs-toggle="modal" data-bs-target="#create_@libro.Id"><i class="fa-solid fa-circle-check fa-xl" style="color: #ff0404;"></i> </button>
-                                }
-                            } *@
-                           <label class="d-inline toggle-switch">
-                                <input type="checkbox" class="chkCambiarCampo" @(libro.Estado == "ACTIVO" ?"checked" : "" ) data-libro-id="@libro.Id">
-                             <span class="slider"></span>
-                            </label>
-                             
+                        if(@libro.Estado == "ACTIVO"){
+                        <button  class="d-inline"data-bs-toggle="modal" data-bs-target="#create_@libro.Id"><i class="fa-solid fa-ban fa-xl" style="color: #ff0404;"></i></button>
+                        }else{
+                        <button  class="d-inline"data-bs-toggle="modal" data-bs-target="#create_@libro.Id"><i class="fa-solid fa-circle-check fa-xl" style="color: #ff0404;"></i> </button>
+                        }
+                        } *@
 
-                          
+                            <label class="toggle-switch">
+                                <input type="checkbox" class="chkCambiarCampo" @(libro.Estado == "ACTIVO" ? "checked" : "") data-libro-id="@libro.Id">
+                                <span class="slider"></span>
+                            </label>
+
+                            <form id="formCambiarCampo" method="post" asp-action="CambiarEstado">
+                                <input type="hidden" id="libroId" name="libroId" value="">
+                            </form>
+
+
                         </td>
                     </tr>
-            }
-                </tbody>
-            </table>
+                }
+            </tbody>
+        </table>
 
-            <form id="formCambiarCampo" method="post" asp-action="CambiarEstado">
-                <input type="hidden" id="libroId" name="libroId" value="">
-            </form>
+        <form asp-controller="Ejemplar" asp-action="Edit" method="post" id="formCambiarEstadoEjemplar">
+            <input type="hidden" id="ejemplarId" name="Id" value="">
+            @* <button class="mt-2 boton medium" type="submit">Editar</button> *@
+        </form>
 
-            <div class="row">
-               <div class="pagination p1">
-                    <ul>
-                         <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
-                        <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]"><li><<</li></a>
-                        @for (var i = 1; i <= Model.TotalItems; i++)
-                        {
-                            
-                            <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
-                            
-                        }
-                         @if (Model.Numero_pagina < Model.TotalItems)
-                        {
-                           
-                                <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
-                           
-                        }
-                        <a class="ms-1" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]"><li>Fin</li></a>
-                    </ul>
-                </div>
+
+
+        <div class="row">
+            <div class="pagination p1">
+                <ul>
+                    <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
+                    <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]">
+                    <li><<</li></a>
+                    @for (var i = 1; i <= Model.TotalItems; i++)
+                    {
+
+                        <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
+
+                    }
+                    @if (Model.Numero_pagina < Model.TotalItems)
+                    {
+
+                        <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
+
+                    }
+                    <a class="ms-1" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]">
+                    <li>Fin</li></a>
+                </ul>
             </div>
+        </div>
 
-             
-           
-           
+
+
+
     </div>
     <div class="col-1">
+
+        @* <a class="button mt-4 mb-2" asp-controller="Autor" asp-action="Index"> Autores</a> *@
+        <a class="button mt-4 mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal"> Autores</a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="exampleModalLabel">Registrar Autor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body text-center">
+                            <div class="mb-4">
+                               
+                                <button id="btnRegistrar" class="button mb-2">Registro</button>
+                               
+                                <button id="btnVerAutores" class="button mb-2">Ver Autores</button>
+                            </div>
+                       
+                        <div id="formularioRegistro" style="display:none;">
+                            <form asp-controller="Autor" asp-action="CreateAutor" id="formulario" method="post" onsubmit="validateCreateFormAutor(event)">
+                               
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="row g-2">
+                                        <hr>
+                                        <div class="col-md">
+                                            
+                                            <div class="form-form">
+                                                <label name="NombreAutor" class="control-label">Nombre Autor</label>  
+                                                <input name="NombreAutor" class="form-control"/>  
+                                            </div>
+                                        </div>
+                                        <div class="col-md">
+                                            <div class="form-form">
+                                                <label name="Nacionalidad" class="control-label">Nacionalidad</label>  
+                                                <input name="Nacionalidad" class="form-control"/>
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex justify-content-end mt-2">
+                                        <button id="autorbton" class="button" type="submit">
+                                            Crear
+                                        </button>
+                                    </div>
+                            </form>
+                        </div>
+                        <!-- Lista de autores -->
+                        <div id="listaAutores" style="display:none;">
+                            <hr>
+                            <h5>Lista de Autores</h5>
+                            <div id="autoresModalBody">
+                                <!-- Aquí se cargarán los autores dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
-        <a class="boton mt-4 mb-2"  asp-controller="Autor" asp-action="Index" > Autores</a>
+        <a class="button mt-4 mb-2"  data-bs-toggle="modal" data-bs-target="#generosModal"> Géneros</a>
 
-        <a class="boton mt-4 mb-2"  asp-controller="Generos" asp-action="Index"> Géneros</a>
+        <!-- Modal -->
+        <div class="modal fade" id="generosModal" tabindex="-1" aria-labelledby="generosModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-center" id="generosModalLabel">Registrar Género</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                                <div class="mb-4">
+                                    
+                                    <button id="btnRegistrarGenero" class="button mb-2">Registro</button>
+                                   
+                                    <button id="btnVerGeneros" class="button mb-2">Ver Géneros</button>
+                                </div>
+                       
+                        <div id="formularioRegistroGenero" style="display:none;">
+                            <form asp-controller="Generos" asp-action="CreateGenero" id="formularioGenero" method="post" onsubmit="validateCreateFormGeneros(event)">
+                                
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                <div class="row g-2">
+                                    <hr>
+                                    <div class="col-md">
+                                    </div>
+                                    <div class="col-md">
+                                        <div class="form-form">
+                                            <label name="NombreGenero" class="control-label">Nombre Género</label>  
+                                            <input name="NombreGenero" class="form-control"/>  
+                                        </div>
+                                    </div>
+                                    <div class="col-md">
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button id="autorbton" class="button" type="submit">
+                                        Crear
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- Lista de géneros -->
+                        <div id="listaGeneros" style="display:none;">
+                            <hr>
+                            <h5>Lista de Géneros</h5>
+                            <div id="generosModalBody">
+                                <!-- Aquí se cargarán los géneros dinámicamente -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <a class="boton mt-4 mb-2"  asp-controller="Ejemplar" asp-action="Index"> Ejemplares</a>
+        <a class="button mt-4 mb-2" asp-controller="Ejemplar" asp-action="Index"> Ejemplares</a>
 
     </div>
 </div>
@@ -233,24 +462,252 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-    <script> </script>
-     @{
-        var Mensaje =  TempData["Mensaje"] as string;
- 
-        if (Mensaje!=null){
+
+    <script>
+        $(document).ready(function() {
+                // Mostrar el formulario de registro y ocultar la lista de autores cuando se presiona el botón "Registrar"
+                $('#btnRegistrar').click(function() {
+                    $('#formularioRegistro').show();
+                    $('#listaAutores').hide();
+                });
+
+                // Mostrar la lista de autores y ocultar el formulario de registro cuando se presiona el botón "Ver Autores"
+                $('#btnVerAutores').click(function() {
+                    $('#listaAutores').show();
+                    $('#formularioRegistro').hide();
+                    // Cargar la lista de autores dinámicamente aquí
+                    // Llamada AJAX para obtener los autores
+                    $.ajax({
+                        url: '/Autor/GetAutores',
+                        method: 'GET',
+                        success: function(data) {
+                            console.log(data);
+                            // Limpiar el contenedor del modal
+                            $('#autoresModalBody').empty();
+                            // Crear una lista de autores y agregarla al modal
+                            
+                            var autoresList = $('<div></div>').addClass('autor-list');
+                            data.forEach(function(autor) {
+                                // Crear un elemento <li> para cada autor
+                                var autorItem = $('<div></div>').addClass('autor-item');
+                                // Agregar el nombre del autor y la nacionalidad dentro del <li>
+                                autorItem.append($('<span></span>').text(autor.nombreAutor + ' - '));
+                                autorItem.append($('<span></span>').text(autor.nacionalidad));
+                                // Agregar el <li> a la lista
+                                autoresList.append(autorItem);
+                            });
+                            $('#autoresModalBody').append(autoresList);
+                        }
+                    });
+                });
+
+                // Al abrir el modal, mostrar el formulario de registro por defecto
+                $('#exampleModal').on('show.bs.modal', function(e) {
+                    $('#formularioRegistro').show();
+                    $('#listaAutores').hide();
+                });
+            }); 
+
+
+            $(document).ready(function() {
+                // Mostrar el formulario de registro y ocultar la lista de géneros cuando se presiona el botón "Registrar"
+                $('#btnRegistrarGenero').click(function() {
+                    $('#formularioRegistroGenero').show();
+                    $('#listaGeneros').hide();
+                });
+
+                // Mostrar la lista de géneros y ocultar el formulario de registro cuando se presiona el botón "Ver Géneros"
+                $('#btnVerGeneros').click(function() {
+                    $('#listaGeneros').show();
+                    $('#formularioRegistroGenero').hide();
+                    // Cargar la lista de géneros dinámicamente aquí
+                    // Llamada AJAX para obtener los géneros
+                    $.ajax({
+                        url: '/Generos/GetGeneros',
+                        method: 'GET',
+                        success: function(data) {
+                            console.log(data);
+                            // Limpiar el contenedor del modal
+                            $('#generosModalBody').empty();
+                            // Crear una lista de géneros y agregarla al modal
+                            var generosList = $('<div></div>').addClass('autor-list');
+                            data.forEach(function(genero) {
+                                // Crear un elemento <div> para cada género
+                                var generoItem = $('<div></div>').addClass('autor-item');
+                                // Agregar el nombre del género dentro del <div>
+                                generoItem.append($('<span></span>').text(genero.nombreGenero));
+                                // Agregar el <div> a la lista
+                                generosList.append(generoItem);
+                            });
+                            $('#generosModalBody').append(generosList);
+                        }
+                    });
+                });
+
+                // Al abrir el modal, mostrar el formulario de registro por defecto
+                $('#generosModal').on('show.bs.modal', function(e) {
+                    $('#formularioRegistroGenero').show();
+                    $('#listaGeneros').hide();
+                });
+            });
+
+            function validateCreateFormAutores(event) {
+            event.preventDefault();
+            var nombreAutorInput = document.forms["formulario"]["NombreAutor"].value;
+            var nacionalidadAutorInput = document.forms["formulario"]["Nacionalidad"].value;
+
+            // Verifica si el campo está vacío o contiene números o caracteres especiales
+            var regex = /^[A-Za-z\s]+$/;
+            if (!nombreAutorInput || !regex.test(nombreAutorInput)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre del autor no es válido.'
+                });
+                return;
+            }
+
+            var regex = /^[A-Za-z\s]+$/;
+            if (!nacionalidadAutorInput || !regex.test(nacionalidadAutorInput)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre del autor no es válido.'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Quieres guardar los cambios?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'SI'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formulario = document.getElementById("formulario")
+                    formulario.submit();
+                }
+            });
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var nombreAutorInput = document.querySelector('input[name="NombreAutor"]');
+            var nacionalidadInput = document.querySelector('input[name="Nacionalidad"]');
+
+            // Función de validación para el nombre del autor
+            function validarNombreAutor() {
+                var valor = nombreAutorInput.value;
+                if (valor.trim().length ===  0 || /^\s+/.test(valor) || /[^a-zA-Z\s]/.test(valor)) {
+                    nombreAutorInput.setCustomValidity('El nombre del autor no puede comenzar con espacios en blanco, no debe contener números ni caracteres especiales.');
+                } else {
+                    nombreAutorInput.setCustomValidity('');
+                }
+            }
+
+            // Función de validación para la nacionalidad
+            function validarNacionalidad() {
+                var valor = nacionalidadInput.value;
+                if (valor.trim().length ===  0 || /^\s+/.test(valor) || /[^a-zA-Z\s]/.test(valor)) {
+                    nacionalidadInput.setCustomValidity('La nacionalidad no puede comenzar con espacios en blanco, no debe contener números ni caracteres especiales.');
+                } else {
+                    nacionalidadInput.setCustomValidity('');
+                }
+            }
+
+            // Agregar eventos keyup a los campos de entrada
+            nombreAutorInput.addEventListener('keyup', validarNombreAutor);
+            nacionalidadInput.addEventListener('keyup', validarNacionalidad);
+
+            // Agregar evento submit al formulario para validar antes de enviar
+            document.getElementById('formulario').addEventListener('submit', function(event) {
+                validarNombreAutor();
+                validarNacionalidad();
+                if (!this.checkValidity()) {
+                    event.preventDefault();
+                }
+            });
+        });
+        
+            function validateCreateFormGeneros(event) {
+            event.preventDefault();
+            
+            var nombreGeneroInput = document.forms["formularioGenero"]["NombreGenero"].value;
+            console.log(nombreGeneroInput);
+            
+
+            // Verifica si el campo está vacío o contiene números o caracteres especiales
+            var regex = /^[A-Za-z\s]+$/;
+            if (!nombreGeneroInput || !regex.test(nombreGeneroInput)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'El nombre del genero no es válido.'
+                });
+                return;
+            }
+
+
+            Swal.fire({
+                title: '¿Quieres guardar los cambios?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'SI'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formulario = document.getElementById("formularioGenero")
+                    formulario.submit();
+                }
+            });
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var nombreGeneroInput = document.querySelector('input[name="NombreGenero"]');
+
+            // Función de validación para el nombre del autor
+            function validarNombreGenero() {
+                var valor = nombreGeneroInput.value;
+                if (valor.trim().length ===  0 || /^\s+/.test(valor) || /[^a-zA-Z\s]/.test(valor)) {
+                    nombreGeneroInput.setCustomValidity('El nombre del genero no puede comenzar con espacios en blanco, no debe contener números ni caracteres especiales.');
+                } else {
+                    nombreGeneroInput.setCustomValidity('');
+                }
+            }
+
+
+            // Agregar eventos keyup a los campos de entrada
+            nombreGeneroInput.addEventListener('keyup', validarNombreGenero);
+
+            // Agregar evento submit al formulario para validar antes de enviar
+            document.getElementById('formularioGenero').addEventListener('submit', function(event) {
+                validarNombreGenero();
+                if (!this.checkValidity()) {
+                    event.preventDefault();
+                }
+            });
+        });
+        
+    </script>
+    @* <script src="~/js/Libros.js"> </script> *@
+    @{
+        var Mensaje = TempData["Mensaje"] as string;
+
+        if (Mensaje != null)
+        {
             var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
             <script>
                 console.log("se va mostrar");
-                
+
                 const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
                 const icono = "@mensaje.Icono";
                 MostrarMensajeUsuarios(icono, cuerpo);
             </script>
-          
+
         }
-      
+
     }
-   
+
 }
 
 

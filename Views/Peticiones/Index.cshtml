@@ -1,70 +1,120 @@
-@model Paginacion<Peticiones>
-
+@model PeticionesModel;
+@using System.Security.Claims;
 @{
     ViewData["Title"] = "Index";
 }
-<div class="row">
-    <div class="col-4 justify-content-between">    
-            <a class="boton medium me-2" asp-action="Create">Registrar</a>
-            <a class="boton medium" asp-action="Rechazadas">Peticiones rechazadas</a>
-       
-    </div>
-    <div class=" col-md-4">
-            <form asp-action="BuscarFiltro" class="ms-4">
-                <p class="mb-0">
-                    <label>Fecha de Peticion:</label>
-                    <span>DESDE: </span>
+<h1 class="fw-bold fs-1 text-center">Peticiones</h1>
+@if (User.FindFirst(ClaimTypes.Role)?.Value == "1" || User.FindFirst(ClaimTypes.Role)?.Value == "3")
+{
+    <div class="row align-items-center"  >
+        <div class="col-lg-4 col-md-4 col-12 d-flex align-items-center">
+               @* <a class="button"asp-action="Create">Registrar</a>*@
+            <button type="button" class="button ms-2" data-bs-toggle="modal" data-bs-target="#miModal">
+                Registrar
+            </button>
+            <a class="Eliminar ms-2"asp-action="Rechazadas">Rechazadas</a>
+        </div>
+        <div class="col-md-6 col-lg-6 mb-2">
+            <form asp-action="Index" class="row" >
+                <div class="col-md-3">
+                    <label class="form-label">Desde: </label>
                     <input type="date" name="fechaInicio" class="form-control" />
-
-                    <span> HASTA: </span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Hasta: </label>
                     <input type="date" name="fechaFin" class="form-control" />
-                    <button type="submit" class="mt-2 boton medium">Buscar</button>
-                </p>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Busqueda</label>
+                    <input type="text" name="busqueda" placeholder="Busqueda" class="form-control" />
+                </div>
+                <div class="col-md-2 mt-4">
+                    <button class ="button"  type="submit">Buscar</button>
+                </div>
             </form>
+        </div>
+        <div class="col-2 col-md-2 col-lg-2 d-flex align-items-center  mt-2">
+            <form asp-controller="/Pdf" asp-action="GenerarPdfPeticiones" method="post" class="mt-2">
+                <button class="descar" type="submit">
+                    <span class="button__text">Pdf</span>
+                    <span class="button__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35" id="bdd05811-e15d-428c-bb53-8661459f9307" data-name="Layer 2" class="svg">
+                            <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+                            <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+                            <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+                        </svg>
+                    </span>
+                </button>
+            </form>
+        </div>
     </div>
-    <div class="col-md-4 pt-2">
-         <form asp-action="BuscarFiltro" class="ms-4">
-            <p class="mb-0">
-                <label>Filtro Busqueda</label>
-                <input type="text" name="busqueda" placeholder="Nombre-Apellido-NombreLibro " class="form-control" />
-                <button type="submit" class="mt-2 boton medium">Buscar</button>
-            </p>
-        </form>
-        <h1 class="fw-bold text-center pt-4">Peticiones</h1>
+    }
+<div class="modal fade" id="miModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Registrar petición</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="form-group">
+                        <label class="control-label required">Ejemplar</label>
+                        <select asp-for="Peticiones.Id_ejemplar" class="form-control " style="width: 100%" id="selectEjemplares" asp-items="ViewBag.Id_ejemplar" data-dropdown-parent="#miModal"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label  class="control-label required">Usuario</label>
+                        <select asp-for="Peticiones.Id_usuario" class="form-control" style="width: 100%" id="selectUsuarios" asp-items="ViewBag.Id_usuario" data-dropdown-parent="#miModal"></select>
+                    </div>
+                    <div class="form-group">
+                        <input readonly asp-for="Peticiones.Motivo" type="hidden" class="form-control" value="Prestamo Libro" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Peticiones.FechaPeticion" class="control-label required">Fecha y Hora:</label>
+                        <input readonly asp-for="Peticiones.FechaPeticion" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="Peticiones.FechaPeticion" class="text-danger"></span>
+                    </div>
+                    <div class="mt-3 text-center" style="display: flex; justify-content: center;">
+                        <button class="button" type="submit">Crear</button>
+                        <a asp-action="Index" class="Eliminar ms-2">Volver</a>
+                    </div>
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-    </div>
-    <table class="mt-2">
+</div>
+<table class="mt-2">
         <thead>
             <tr>
-                <th> Id </th>
-                <th> Id ejemplar</th>
+                <th> Isbn</th>
                 <th> Nombre Libro</th>
-                <th> Nombre </th>
-                <th> Apellido </th>
+                <th> Nombre Usuario</th>
                 <th> FechaPeticion </th>
                 <th> Motivo </th>
                 <th> Estado </th>
-                <th></th>
+            @if(User.FindFirst(ClaimTypes.Role)?.Value == "1"){
+                <th> Acción</th>
+            }
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.Items)
+            @foreach (var item in Model.Paginacion.Items)
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Id_ejemplar)
+                        @Html.DisplayFor(modelItem => item.Ejemplar.Isbn_libro)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Ejemplar.Libro.Nombre)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.NombreUsuario)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.apellido)
+                    @Html.DisplayFor(modelItem => item.NombreUsuario) @Html.DisplayFor(modelItem => item.apellido)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.FechaPeticion)
@@ -73,17 +123,43 @@
                         @Html.DisplayFor(modelItem => item.Motivo)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Estado)
-                    </td>
-                    <td>
-                        @* <form asp-controller="Prestamos" asp-action="Create" method="post" >
-                    <input asp-for="@Model.PeticionesViewModel.Prestamo.Id_peticion" value="@item.Id"  type="hidden">
-                    <button type="submit">aceptar</button>
-                    </form>  *@
-                        <button class="d-inline"><a asp-controller="Prestamos" asp-action="Created" asp-route-id="@item.Id"><i class="fa-solid fa-circle-check fa-2xl" style="color: #83B440;"></i></a></button>
-                        <button class="d-inline ms-2"><a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-xmark fa-2xl" style="color: #fa0000;"></i></a></button>
-                    </td>
-                </tr>
+                    @{
+                        string color;
+                        if (item.Estado == "RECHAZADA")
+                        {
+                            color = "red";
+                        }
+                        else
+                        {
+                            color = "green";
+                        }
+                    }
+                    <span style="color: @color;">@item.Estado</span>
+                  
+                 
+                </td>
+                @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
+                {
+                    @if (item.Estado == "ACEPTADA" || item.Estado == "RECHAZADA")
+                    {
+                        <td>
+                            <span>No hay acciones disponibles</span>
+                        </td>
+                    }
+
+                    else
+                    {
+                        @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
+                        {
+                            <td>
+                                <a asp-controller="Prestamos" asp-action="Created" asp-route-id="@item.Id"><i class="fa-solid fa-circle-check fa-2xl" style="color: #1e6042;"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-xmark fa-2xl" style="color: #fa0000;"></i></a>
+                            </td>
+                        }
+                    }
+                }
+                
+            </tr>
             }
         </tbody>
     </table>
@@ -91,31 +167,44 @@
         <div class="pagination p1">
             <ul>
                 <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
-                <a href="?pagina=@(Model.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]">
+                <a href="?pagina=@(Model.Paginacion.Numero_pagina - 1)&busqueda=@Context.Request.Query["busqueda"]">
                 <li><<</li></a>
-                @for (var i = 1; i <= Model.TotalItems; i++)
+                @for (var i = 1; i <= Model.Paginacion.TotalItems; i++)
                 {
 
-                    <a class=" me-1 @(Model.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
+                <a class=" me-1 @(Model.Paginacion.Numero_pagina == i ? " is-active" : "") " href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
 
                 }
-                @if (Model.Numero_pagina < Model.TotalItems)
+            @if (Model.Paginacion.Numero_pagina < Model.Paginacion.TotalItems)
                 {
 
-                    <a href="?pagina=@(Model.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
+                <a href="?pagina=@(Model.Paginacion.Numero_pagina + 1)&busqueda=@Context.Request.Query["busqueda"]">>></a>
 
                 }
-                <a class="ms-1" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]">
+            <a class="ms-1" href="?pagina=@Model.Paginacion.TotalItems&busqueda=@Context.Request.Query["busqueda"]">
                 <li>Fin</li></a>
             </ul>
         </div>
     </div>
 
     @section Scripts{
+    <script src="~/js/select2.min.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function () {
+            $('#selectEjemplares').select2();
+        })
+        $(document).ready(function () {
+            $('#selectUsuarios').select2();
+        })
+        $(document).ready(function () {
+            $('#selectEjemplares').select2();
+        })
+    </script>
         @{
             await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
         @{
+
             var Mensaje = TempData["Mensaje"] as string;
 
             if (Mensaje != null)
@@ -130,6 +219,7 @@
                 </script>
 
             }
+
 
         }
     }

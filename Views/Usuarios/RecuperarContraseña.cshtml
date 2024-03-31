@@ -2,22 +2,42 @@
 @{
     ViewData["Title"] = "Recuperar contraseña";
 }
-<h2>Recuperar contraseña</h2>
-<div >
-    <form asp-action="RecuperarContraseña">
-        <div class="col-md-4">
-            <label for="correo">Numero documento</label>
-           
-            <input type="text" class="form-control" id="correo" name="Numero_documento" placeholder="Digita tu numero de documento" required>
-            @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
-            {
-                <p class="text-danger">@ViewData["ErrorMessage"]</p>
-            }
+
+<div class="d-flex justify-content-center align-items-center vh-50">
+    <div class="card shadow-lg" style="width: 30rem;">
+        <div class="card-body">
+            <h2 class="card-title text-center">Recuperar contraseña</h2>
+            <form asp-action="RecuperarContraseña">
+                <div class="mb-3">
+                    <label for="correo" class="form-label required">Numero documento</label>
+                    <input type="text" class="form-control" id="correo" name="Numero_documento" placeholder="Digita tu numero de documento" required>
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
+                    {
+                        <p class="text-danger">@ViewData["ErrorMessage"]</p>
+                    }
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="button btn-lg">Enviar</button>
+                </div>
+            </form>
+            <a class="Eliminar d-block mt-3 text-center" asp-action="login">Regresar</a>
         </div>
-        <br>
-        <div class="col-md-4 ">
-            <button type="submit" class="boton boton-">Enviar</button>
-        </div>
-    </form>
-    <button class="mt-4 boton boton-secondary "><a asp-action="login">regresar</a></button>
+    </div>
 </div>
+@if (ViewData["Encontrados"] != null && ViewData["Encontrados"].ToString() == "True")
+{
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Acabamos de enviar un correo con un código de 5 dígitos para que puedas restablecer tu contraseña.',
+            confirmButtonText: 'Ok'
+        }).then(function () {
+                window.location.href = '@Url.Action("RecuperarContraseña", "Usuarios")';
+        });
+    });
+</script>
+
+}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

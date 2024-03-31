@@ -18,5 +18,6 @@ namespace tallerbiblioteca.Models
         [DataType(DataType.Date)]
         [Required(ErrorMessage = "La fecha es obligatoria")]
         public DateTime Fecha_devolucion { get; set; }
+        public string Estado { get; set;  }
     }
 }

@@ -1,0 +1,54 @@
+﻿@model tallerbiblioteca.Models.Usuario;
+@{
+    ViewData["Title"] = "Editar contraseña";
+}
+<div class="d-flex justify-content-center align-items-center vh-50">
+    <div class="card shadow-lg" style="width: 30rem;">
+        <div class="card-body">
+            <h2 class="card-title text-center">Editar contraseña</h2>
+            <form asp-action="ValidarContras" method="post">
+                <div class="mb-3">
+                    <label for="Contraseña" class="form-label required">Contraseña</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="Contraseña" name="Contraseña" placeholder="Digita tu contraseña actual" required>
+                        <span class="input-group-text" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="button btn-lg">Enviar</button>
+                </div>
+            </form>
+            <a class="Eliminar d-block mt-3 text-center" asp-action="Perfil">Cancelar</a>
+        </div>
+    </div>
+</div>
+@if (ViewData["ContraseñaIn"] != null && ViewData["ContraseñaIn"].ToString() == "True")
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Contraseña incorrecta',
+                text: 'La contraseña ingresada no es tu contraseña actual, intenta de nuevo',
+                showConfirmButton: true,
+            });
+        });
+    </script>
+}
+@if (ViewData["ContraseñaCo"] != null && ViewData["ContraseñaCo"].ToString() == "True")
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'success',
+                title: 'Contraseña correcta',
+                text: 'Ya puedes modificar tu contraseña',
+                showConfirmButton: true,
+            }).then(function () {
+                window.location.href = '/Usuarios/EditarContraseña';
+            });
+        });
+    </script>
+}

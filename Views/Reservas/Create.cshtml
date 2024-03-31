@@ -1,0 +1,54 @@
+﻿@model tallerbiblioteca.Models.Reserva
+@using System.Security.Claims;
+<h1>Create</h1>
+<h4>Reserva</h4>
+<hr />
+        <div class="row">
+            <div class="col-md-4">
+                <form asp-action="Create" asp-controller="Reservas"method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="IdEjemplar" class="control-label required"></label>
+                        <select asp-for="IdEjemplar" class="form-control" style="width: 100%" id="selectEjemplares" asp-items="ViewBag.Ejemplares"></select>
+                        <span asp-validation-for="IdEjemplar" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="IdUsuario" class="control-label required"></label>
+                        <select asp-for="IdUsuario" class="form-control" style="width: 100%" id="selectUsuarios" asp-items="ViewBag.Usuarios"></select>
+                        <span asp-validation-for="IdUsuario" class="text-danger"></span>
+                    </div>
+            <div class="mt-3 text-center" style="display: flex; justify-content: center;">
+                <button class="button mt-2" style="margin-right: 10px;" value="Crear">Crear</button>
+                <a class="Eliminar mt-2" style="align-self: center;" asp-action="Index">Volver</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+<div>
+    
+</div>
+<script>
+    $(document).ready(function () {
+        $("form").submit(function () {
+            console.log("IdEjemplar:", $("#IdEjemplar").val());
+            console.log("IdUsuario:", $("#IdUsuario").val());
+        });
+    });
+</script>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/select2.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#selectEjemplares').select2();
+        })
+        $(document).ready(function () {
+            $('#selectUsuarios').select2();
+        })
+    </script>
+      
+    }
+

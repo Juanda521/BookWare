@@ -1,0 +1,40 @@
+#autoresModalBody {
+    display: flex;
+    flex-wrap: wrap;
+    gap:  10px; /* Espacio entre los autores */
+    justify-content: start; /* Alinea los autores al inicio del contenedor */
+}
+
+#autoresModalBody .autor-item {
+    flex:  1  1 auto; /* Permite que los elementos se expandan y contraigan */
+    min-width:  80px; /* Define un ancho mínimo para cada autor */
+    padding:  5px;
+    border:  1px solid #ccc; /* Borde opcional para visualizar el espacio de cada autor */
+    margin:  5px; /* Margen opcional para dar espacio entre los autores */
+    text-align: center;
+
+}
+
+#generosModalBody .autor-item {
+    flex:  1  1 auto; /* Permite que los elementos se expandan y contraigan */
+    min-width:  80px; /* Define un ancho mínimo para cada autor */
+    padding:  5px;
+    border:  1px solid #ccc; /* Borde opcional para visualizar el espacio de cada autor */
+    margin:  5px; /* Margen opcional para dar espacio entre los autores */
+    text-align: center; /* Centra el texto dentro de cada autor */
+}
+
+.autor-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap:  10px; /* Ajusta el espacio entre los autores */
+}
+
+#generosModalBody .autorbton{
+    float: right;
+    margin-right: 30px; /* Ajusta este valor según sea necesario */
+
+
+}
+
+

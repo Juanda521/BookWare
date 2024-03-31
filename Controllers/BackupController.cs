@@ -41,7 +41,7 @@ public class BackupController : Controller
             return File(memoryStream, "application/octet-stream", "BibliotecaFinal.bak");
         }
             else{
-        return RedirectToAction("Configuracion","Index");
+        return RedirectToAction("Index","Configuracion");
         }
     }
 

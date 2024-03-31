@@ -1,46 +1,105 @@
-﻿@* @model IEnumerable<tallerbiblioteca.Models.Sancion> *@
-    @model tallerbiblioteca.Models.Paginacion<Sancion>
-@using System.Security.Claims;
+﻿
+    @model Paginacion<Sancion> 
+    @using System.Security.Claims;
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
+<h1 class="fw-bold fs-1 text-center">Sanciones</h1>
+@if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
 <div class="row">
-    <div class="col-md-4">
-        <p>
-            <a class="boton medium" asp-action="Create">  Registrar </a>
-        </p>
-    </div>
 
-    <div class="col-4">
-        <form asp-action="Index">
-            <p>
-                <input type="text" name="busqueda" placeholder="Id sancion" class="form-control" />
-                <button type="submit" class="ms-4 mt-1 boton medium  " value="Buscar">Buscar</button>
-            </p>
-        </form>
-    </div>
+        <div class="col-lg-2 col-md-4 col-12 d-flex align-items-center">
+            <button class="button mt-2" type="button" data-bs-target="#modalRegistrar" data-bs-toggle="modal">
+                Registrar
+            </button>
 
-    <div class="col-md-4 pt-2">
-        <h1 class="fw-bold text-center pt-4">Saciones</h1>
-    </div>
+            @* <form asp-controller="/Pdf" asp-action="GenerarPdfSanciones" method="post" class="mt-2">
+                <button class="button" type="submit">Generar reporte</button>
+            </form> *@
+        </div>
 
-</div>
+        <div class="col-lg-8">
+            <form asp-action="Index" class="row" >
+                <div class="col-md-4 col-6 col-lg-4">
+                    <label class="form-label">Desde: </label>
+                    <input type="date" name="fecha" class="form-control" />
+                </div>
+                <div class="col-md-4 col-6 col-lg-4">
+                    <label class="form-label">Filtro Busqueda</label>
+                    <input type="text" name="busqueda" placeholder="Busqueda" class="form-control" />
+                </div>
+            </form>
+            </div>
+            <div class="col-lg-2 col-md-4 col-6 d-flex justify-content-end">
+                    <form asp-controller="/Pdf" asp-action="GenerarPdfSanciones" method="post" class="mt-2">
+                        <button class="descar" type="submit">
+                            <span class="button__text">Pdf</span>
+                            <span class="button__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35" id="bdd05811-e15d-428c-bb53-8661459f9307" data-name="Layer 2" class="svg">
+                                    <path d="M17.5,22.131a1.249,1.249,0,0,1-1.25-1.25V2.187a1.25,1.25,0,0,1,2.5,0V20.881A1.25,1.25,0,0,1,17.5,22.131Z"></path>
+                                    <path d="M17.5,22.693a3.189,3.189,0,0,1-2.262-.936L8.487,15.006a1.249,1.249,0,0,1,1.767-1.767l6.751,6.751a.7.7,0,0,0,.99,0l6.751-6.751a1.25,1.25,0,0,1,1.768,1.767l-6.752,6.751A3.191,3.191,0,0,1,17.5,22.693Z"></path>
+                                    <path d="M31.436,34.063H3.564A3.318,3.318,0,0,1,.25,30.749V22.011a1.25,1.25,0,0,1,2.5,0v8.738a.815.815,0,0,0,.814.814H31.436a.815.815,0,0,0,.814-.814V22.011a1.25,1.25,0,1,1,2.5,0v8.738A3.318,3.318,0,0,1,31.436,34.063Z"></path>
+                                </svg>
+                            </span>
+                        </button>
+                    </form>
+                </div>
 
+        
+        </div>
+        <div class="modal fade" id="modalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Registrar sanción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <form asp-controller="Sanciones" asp-action="CreateSanciones" id="formulario" method="post" onsubmit="validateCreateForm(event)">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label class="control-label">Devoluciones</label>
+                                        <select name="Id_devolucion" class ="form-control" asp-items="ViewBag.Devoluciones"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label name="Motivo_sancion" class="control-label">Motivos Sancion</label> 
+                                        <input name="Motivo_sancion" class="form-control" /> 
+                                    </div>
+                                    <div class="form-group">
+                                        <label name="Fecha_Sancion" class="control-label">Fecha Sancion</label>
+                                        <input name="Fecha_Sancion" type="date" class="form-control" />  
+                                        <span name="Fecha_Sancion" class="text-danger"></span>
+                                    </div> 
+                                    <div class="form-group mt-2">
+                                        <button class="button" submit">Registrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
 
+                </div>
+            </div>
+        </div>
+    }
 
 <table>
     <thead>
         <tr>
             <th>
-               
                 Devolucion
             </th>
             <th>
                 
                 Nombre estudiante
+            </th>
+            <th>
+                
+                Estado
             </th>
             <th>
                 
@@ -50,7 +109,12 @@
                 
                 Fecha Sancion
             </th>
-            <th></th>
+            @if ((User.FindFirst(ClaimTypes.Role)?.Value == "1") || (User.FindFirst(ClaimTypes.Role)?.Value == "3"))
+{
+            <th>
+                Opciones
+            </th>
+}
         </tr>
     </thead>
     <tbody>
@@ -63,51 +127,54 @@
                 @Html.DisplayFor(modelItem => item.Devolucion.Prestamo.Peticion.Usuario.Name)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Devolucion.Prestamo.Peticion.Usuario.Estado)
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.Motivo_sancion)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Fecha_Sancion)
+
             </td>
+                @if (User.FindFirst(ClaimTypes.Role)?.Value == "1" || User.FindFirst(ClaimTypes.Role)?.Value == "3")
+                {
             <td>
-
-                    @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
-                    {
-                        <button class="boton medium" type="submit">
-                            <a asp-action="Edit" asp-route-id="@item.Id">Editar</a>
-                        </button>
-
-                        <button class="boton medium" type="submit">
-                            <a asp-action="Details" asp-route-id="@item.Id">Detalles</a>
-                        </button>
-
-                        <button class="boton medium" type="submit">
-                            <a asp-action="Delete" asp-route-id="@item.Id">Quitar sancion</a>
-                        </button>
-                    }
-                    
+                    <label class="toggle-switch">
+                        <input type="checkbox" class="chkCambiarSancion mt-4" @(item.Estado == "ACTIVA" ? "checked" : "") data-sancion-id="@item.Id" />
+                        <span class="slider"></span>
+                    </label>   
             </td>
+                }
         </tr>
 }
     </tbody>
 </table>
-<div class="text-center ms-5 ps-5">
-    <nav aria-label="Page navigation">
-        <ul class="pagination">
-            <li class="page-item @(Model.Numero_pagina == 1 ? "disabled" : "")">
-                <a class="page-link text-dark" href="?pagina=1&busqueda=@Context.Request.Query["busqueda"]">Primera</a>
-            </li>
-            @for (var i = 1; i <= Model.TotalItems; i++)
-            {
-                <li class="page-item  @(Model.Numero_pagina == i ? "active" : "") ">
-                    <a class=" page-link bg-success text-dark" href="?pagina=@i&busqueda=@Context.Request.Query["busqueda"]">@i</a>
-                </li>
+
+<form asp-action="Editar" method="post" id="formCambiarEstadoSancion">
+    <input type="hidden" id="sancionId" name="Id" value="" />
+</form>
+
+<div class="row">
+    <div class="pagination p1">
+        <ul>
+            <a style="width:80px;" class="page-link text-dark me-1" href="?pagina=1">Primera</a>
+            <a href="?pagina=@(Model.Numero_pagina -   1)"><li><<</li></a>
+            @{
+                int totalPaginas = (int)Math.Ceiling((double)Model.TotalItems / Model.ItemsPagina);
+                for (var i =   1; i <= totalPaginas; i++)
+                {
+                    <a class="me-1 @(Model.Numero_pagina == i ? "is-active" : "")" href="?pagina=@i">@i</a>
+                }
             }
-            <li class="page-item @(Model.Numero_pagina == Model.TotalItems ? "disabled" : "")">
-                <a class="page-link text-dark" href="?pagina=@Model.TotalItems&busqueda=@Context.Request.Query["busqueda"]">Ultima</a>
-            </li>
+            @if (Model.Numero_pagina < totalPaginas)
+            {
+                <a href="?pagina=@(Model.Numero_pagina +   1)">>></a>
+            }
+            <a class="ms-1" href="?pagina=@totalPaginas"><li>Fin</li></a>
         </ul>
-    </nav>
+    </div>
 </div>
+
 @section Scripts{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -127,5 +194,143 @@
         }
 
     }
+
+    <script>
+
+     $(document).ready(function() {
+            $('.chkCambiarSancion').change(function() {
+                var sancionId = $(this).data('sancion-id');
+                $('#sancionId').val(sancionId);
+                console.log("ID de la sancion a desactivar: " + sancionId);
+
+            
+                $('#formCambiarEstadoSancion').submit();
+                console.log("le dimos click al boton y enviamos el formulario de editar sancion");
+            });
+        });
+        
+
+   function validateCreateForm(event) {
+        event.preventDefault();
+        var idDevolucionInput = document.forms["formulario"]["Id_devolucion"].value;
+        var motivoInput = document.forms["formulario"]["Motivo_sancion"].value;
+        var fechaInput = document.forms["formulario"]["Fecha_Sancion"].value;
+
+        // Verifica si el campo ID_prestamo está vacío o no es un número
+        if (!idDevolucionInput || isNaN(idDevolucionInput)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'El ID del préstamo no es válido o está vacío.'
+            });
+            return;
+        }
+
+        // Verifica si el campo Observaciones está vacío
+        if (!motivoInput) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Las observaciones no pueden estar vacías.'
+            });
+            return;
+        }
+
+        // Verifica si el campo Fecha_devolucion está vacío o no es una fecha válida
+        if (!fechaInput || !isValidDate(fechaInput)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'La fecha de devolución no es válida o está vacía.'
+            });
+            return;
+        }
+
+        // Función para validar si una cadena es una fecha válida
+        function isValidDate(dateString) {
+            var regEx = /^\d{4}-\d{2}-\d{2}$/;
+            if(!dateString.match(regEx)) return false; // Invalid format
+            var d = new Date(dateString);
+            var dNum = d.getTime();
+            if(!dNum && dNum !==  0) return false; // NaN value, Invalid date
+            return d.toISOString().slice(0,10) === dateString;
+        }
+
+        Swal.fire({
+            title: '¿Quieres guardar los cambios?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'SI'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formulario = document.getElementById("formulario");
+                formulario.submit();
+            }
+        });
+    }
+
+
+    function validateUpdateForm(event) {
+        event.preventDefault();
+        var idInput = document.forms["Updateformulario"]["Id"].value;
+        var idDEvolucionInput = document.forms["Updateformulario"]["Id_devolucion"].value;
+        var motivoInput = document.forms["Updateformulario"]["Motivo_sancion"].value;
+        var fechaInput = document.forms["Updateformulario"]["Fecha_Sancion"].value;
+
+        // Verifica si el campo ID_prestamo está vacío o no es un número
+        if (!idInput || isNaN(idInput)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'El ID del préstamo no es válido o está vacío.'
+            });
+            return;
+        }
+
+        // Verifica si el campo Observaciones está vacío
+        if (!motivoInput) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Los mitovos no pueden estar vacías.'
+            });
+            return;
+        }
+
+        // Verifica si el campo Fecha_devolucion está vacío o no es una fecha válida
+        if (!fechaInput || !isValidDate(fechaInput)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'La fecha de sancion no es válida o está vacía.'
+            });
+            return;
+        }
+
+        // Función para validar si una cadena es una fecha válida
+        function isValidDate(dateString) {
+            var regEx = /^\d{4}-\d{2}-\d{2}$/;
+            if(!dateString.match(regEx)) return false; // Invalid format
+            var d = new Date(dateString);
+            var dNum = d.getTime();
+            if(!dNum && dNum !==  0) return false; // NaN value, Invalid date
+            return d.toISOString().slice(0,10) === dateString;
+        }
+
+        Swal.fire({
+            title: '¿Quieres guardar los cambios?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'SI'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const formulario = document.getElementById("Updateformulario");
+                formulario.submit();
+            }
+        });
+    }
+
+
+    </script>
 
 }

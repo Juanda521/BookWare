@@ -18,6 +18,8 @@ namespace tallerbiblioteca.Models{
 
         public PeticionesViewModel? PeticionesViewModel { get; set; } = new();
 
+        public List<Sancion>? Sanciones {get; set;} = new();
+
         
         public Paginacion(List<T> items, int totalItems, int numero_pagina, int itemsPagina)
         {
@@ -25,6 +27,11 @@ namespace tallerbiblioteca.Models{
             TotalItems = totalItems;
             Numero_pagina = numero_pagina;
             ItemsPagina = itemsPagina;
+        }
+
+        public static implicit operator Paginacion<T>(Paginacion<Publicaciones> v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

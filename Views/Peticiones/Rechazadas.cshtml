@@ -4,25 +4,12 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <p>
-            <a class="boton medium" asp-action="Create">Registrar </a>
-            <a class="boton medium" asp-action="Index">Volver</a>
-        </p>
+<h1 class="fw-bold fs-1 text-center">Peticiones rechazadas</h1>
+<div class="row align-items-center" >
+    <div class="col-md-2">
+        <a class="Eliminar" asp-action="Index">Volver</a>
     </div>
-
-    <div class="col-4">
-        <form asp-action="Index">
-            <p>
-                <input type="text" name="busqueda" placeholder="identificacion usuario" class="form-control" />
-                <button type="submit" class="ms-4 mt-1 boton medium  " value="Buscar">Buscar</button>
-            </p>
-        </form>
-    </div>
-    <div class="col-md-4 pt-2">
-        <h1 class="fw-bold text-center pt-4">Peticiones</h1>
-    </div>
+   
 </div>
 <table>
     <thead>
@@ -31,11 +18,10 @@
             <th> Id ejemplar</th>
             <th> Nombre Libro</th>
             <th> Nombre </th>
-            @*<th> Apellido </th>*@
             <th> FechaPeticion </th>
             <th> Motivo </th>
             <th> Estado </th>
-            <th></th>
+            
         </tr>
     </thead>
     <tbody>
@@ -62,14 +48,6 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Estado)
-                </td>
-                <td>
-                    @* <form asp-controller="Prestamos" asp-action="Create" method="post" >
-                <input asp-for="@Model.PeticionesViewModel.Prestamo.Id_peticion" value="@item.Id"  type="hidden">
-                <button type="submit">aceptar</button>
-                </form>  *@
-                    <button class="d-inline"><a asp-controller="Prestamos" asp-action="Created" asp-route-id="@item.Id"><i class="fa-solid fa-circle-check fa-2xl" style="color: #83B440;"></i></a></button>
-                    <button class="d-inline ms-2"><a asp-action="Delete" asp-route-id="@item.Id"><i class="fa-solid fa-xmark fa-2xl" style="color: #fa0000;"></i></a></button>
                 </td>
             </tr>
         }

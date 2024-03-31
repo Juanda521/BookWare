@@ -4,15 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 using tallerbiblioteca.Context;
 using tallerbiblioteca.Models;
-using tallerbiblioteca.Services;
-// using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Win32;
-using tallerbiblioteca.Context;
-using System.Globalization;
+
 
 namespace tallerbiblioteca.Services
 {
@@ -41,33 +33,67 @@ namespace tallerbiblioteca.Services
             return new();
         }
 
-        public List<Libro> ObtenerLibrosPorAutor(int idAutor)
-        {
-            return _context.AutoresLibros
-                .Where(al => al.Id_autor == idAutor)
-                .Select(al => al.Libro)
-                .ToList();
+
+        public async Task<List<AutorLibro>>ObtenerLibros(){
+            return await _context.AutoresLibros.Include(l=>l.Libro).ToListAsync();
+        }
+
+        public async Task<List<Autor>>BusquedaporLibros(int id){
+
+            var libros =   await _context.AutoresLibros.Where(a=>a.Id_libro == id).Include(a=>a.Libro).Include(a=>a.Autor).ToListAsync();
+            List<Autor> Autores  = new List<Autor>();
+            foreach (var item in libros)
+            {
+                Autores.Add(item.Autor);
+            }
+            return Autores;
+           
         }
 
 
-        // public async Task<Devolucion> BarraBusqueda(int busqueda)
+
+        // public async Task<int> Registrar(Autor autor, ClaimsPrincipal User)
         // {
-        //     if(busqueda!=null)
-        //     {
-        //         busqueda=await _context.Devoluciones.Where(d=>d.Id.Containts(busqueda)).ToListAsync();
+        //     var Id_rol_string = User.FindFirst(ClaimTypes.Role)?.Value;
+        //     int Id_rol = Int32.Parse(Id_rol_string);
+
+            
+
+        //     int Status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_autor", _configuracionServices.ObtenerRolUserOnline(User));
+
+        //     switch(Status){
+        //         case 200:
+        //         Console.WriteLine($"el id de los libros a relacionar:{autor.Id}");
+        //         int idLibro = _autoresServices.AutorRelacionadosPorLibro(autor.Id);
+                
+        //         if(libro != null){
+        //             var nombre_autor = autor.NombreAutor;
+        //             _context.Add(autor);
+        //             await _context.SaveChangesAsync();
+                    
+        //         }else
+        //         {
+        //             Console.WriteLine("A mirar que esta fallando :(" + Status);
+
+        //         }
+        //         return Status;
         //     }
+            
+
         // }
 
         public async Task<int> Registrar(Autor autor, ClaimsPrincipal User)
         {
+            var Id_rol_string = User.FindFirst(ClaimTypes.Role)?.Value;
+            int Id_rol = Int32.Parse(Id_rol_string);
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_autor", _configuracionServices.ObtenerRolUserOnline(User));
+            int Status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_Autor", _configuracionServices.ObtenerRolUserOnline(User));
 
 
-            if (Status == 200)
+            
+            if(Status == 200)
             {
-                var nombre_autor = autor.NombreAutor;
-                
+                autor.Estado = "ACTIVO";                
                 _context.Add(autor);
                 await _context.SaveChangesAsync();
             }
@@ -80,8 +106,10 @@ namespace tallerbiblioteca.Services
 
         }
 
-        public List<Autor>busqueda(string busqueda ){
-            return  _context.Autores.Where(l=>l.NombreAutor.ToLower().Contains(busqueda)).ToList();
+        
+
+        public List<Autor>BuscarAutores(string busqueda ){
+            return  _context.Autores.Where(l=>l.NombreAutor.ToLower().Contains(busqueda) || l.Estado.ToLower().Contains(busqueda) ).ToList();
         }
 
         public async Task<List<Autor>>ObtenerAutores(){
@@ -91,15 +119,17 @@ namespace tallerbiblioteca.Services
         public async Task<int> Editar(Autor autor, ClaimsPrincipal User)
         {
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_autor", _configuracionServices.ObtenerRolUserOnline(User));
+            int Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Autor", _configuracionServices.ObtenerRolUserOnline(User));
 
 
             if (Status == 200)
             {
-                var autor_nombre=  autor.NombreAutor;
+
+                autor.Estado = "ACTIVO";
+                // var estado_autor= autor.Estado;
 
 
-
+                Console.WriteLine("Esta guardando las vueltas");
                 _context.Update(autor);
                 await _context.SaveChangesAsync();
                 // return View(devolucion);
@@ -114,27 +144,27 @@ namespace tallerbiblioteca.Services
 
         }
 
-        public async Task<int> Eliminar(int id, ClaimsPrincipal User)
-        {
+        // public async Task<int> Eliminar(int id, ClaimsPrincipal User)
+        // {
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Eliminar_autor", _configuracionServices.ObtenerRolUserOnline(User));
+        //     int Status = _configuracionServices.ValidacionConfiguracionActiva("Eliminar_autor", _configuracionServices.ObtenerRolUserOnline(User));
 
 
-            if (Status == 200)
-            {
+        //     if (Status == 200)
+        //     {
                 
-                var autor = await _context.Autores.FindAsync(id);
-                _context.Autores.Remove(autor);
-                await _context.SaveChangesAsync();
-                // return RedirectToAction(nameof(Index));
-            }
-            else
-            {
-                Console.WriteLine("A mirar que esta fallando :(" + Status);
+        //         var autor = await _context.Autores.FindAsync(id);
+        //         _context.Autores.Remove(autor);
+        //         await _context.SaveChangesAsync();
+        //         // return RedirectToAction(nameof(Index));
+        //     }
+        //     else
+        //     {
+        //         Console.WriteLine("A mirar que esta fallando :(" + Status);
 
-            }
-            return Status;
-        }
+        //     }
+        //     return Status;
+        // }
 
         public ResponseModel MensajeRespuestaValidacionPermiso(int Status)
         {
@@ -147,14 +177,14 @@ namespace tallerbiblioteca.Services
 
             int Id_rol = Int32.Parse(Id_rol_string);
             //debe ser el mismo  nombre de la tabla permisos
-            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_autor", Id_rol);
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Autor", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
             var autor = _context.Autores.Find(id);
             if (Status == 200)
             {
                 if (autor != null)
                 {
-                    autor.Estado = "Inhabilitado";
+                    autor.Estado = "INHABILITADO";
                     _context.SaveChanges();
                 }
             }
@@ -168,14 +198,14 @@ namespace tallerbiblioteca.Services
 
             int Id_rol = Int32.Parse(Id_rol_string);
             //debe ser el mismo  nombre de la tabla permisos
-            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_autor", Id_rol);
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Autor", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
             var autor = _context.Autores.Find(id);
             if (Status == 200)
             {
                 if (autor != null)
                 {
-                    autor.Estado = "Activo";
+                    autor.Estado = "ACTIVO";
                     _context.SaveChanges();
                 }
             }

@@ -2,203 +2,100 @@
 @{
     Layout = null;
 }
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script> -->
-    <link rel="stylesheet" type="text/css" href="~/css/Login.css">
+    <title>Login</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-   
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script> -->
+    <link rel="stylesheet" href="~/css/Login.css">
+    <script src="~/js/Login.js"> </script>
+      <title>Bookware Loggin</title>
 
-    <title>Bookware Loggin</title>
 </head>
 <body>
-    <h2 class="text-center text-white position-relative mt-5 elegant-heading">BOOKWARE</h2>
-                <div class="d-flex justify-content-center align-items-center">
-                    <img src="~/Images/logo.png" width="200px"  alt="Logo">
-                </div>
+      
+    <div class="container" id="container">
+        <div class="form-container sign-in">
+        @* <form  id="loginForm">
+            <h2>BookWare</h2>
+            <h1 style="align-content:center">Iniciar sesión</h1>
+            <div class="form-group">
+                <label class="control-label required">Número de documento</label>
+                <input asp-for="Numero_documento" style="background-color:white"  id="Numero_documento" class="form-control" data-val="true" data-val-required="Ingresa este campo por favor" />
+                <span id="numeroDocumentoError" class="text-light"></span>
+               
 
-    <!-- main container -->
-    <div class="container d-flex justify-content-center align-items-center mb-5">
-
-        <!-- Login container -->
-        <div class="row border rounded-5 p-3 bg-green shadow box-area mt-5 ">
-
-            <!-- left Box -->
-            <div class="col-md-6 rounded-4 d-flex justify-content-center align-items-center flex-column left-box">
-                @* <div class="featured-image mb-3">
-                    <img src="~/Images/libros-sobre-el-placer-de-leer.jpg" alt="no se encontro la imagen" class="img-fluid" style="width: 250px">
-                </div> *@
-                <p class="text-white fs-2" style="font-family: 'Courier New', Courier, monospace; font-weight: 700;">BOOKWARE</p>
-                <small class="text-white text-wrap text-center" style="width: 17rem; font-family: 'Courier New', Courier, monospace;">Tu Biblioteca favorita.</small>
-                 <div class="forgot">
-                            <small><a asp-area="" asp-controller="Usuarios" asp-action="Create" class="text-light">¿Aún no tienes una cuenta?</a></small>  
-                        </div>
             </div>
-
-            <!-- Right Box -->
-            <div class="col-md-6 ">
-                <div class="row align-items-center">
-                    <div class="header-text mb-4">
-                         <form asp-action="Login" id="loginForm">
-                            <div class="form-group">
-                                <label  class="control-label ">Número de documento</label>
-                                <input asp-for="Numero_documento" id="Numero_documento" class="form-control"  data-val="true" data-val-required="Ingresa este campo por favor" />
-                                <span id="numeroDocumentoError" class="text-light"></span>
-                                @* <span asp-validation-for="Numero_documento" class="text-danger"></span> *@
-                            
-                            </div>
-                            <div class="form-group ">
-                                <label asp-for="Contraseña" class="control-label text-dark"></label>
-                                <input asp-for="Contraseña" id="Contraseña" class="form-control" type="password" />
-                                <span asp-validation-for="Contraseña" id="ContraseñaError"  class="text-light"></span>
-                            </div>
-                            <div class="form-group mt-2">
-                                <input type="submit" value="Iniciar Session" class="btn btn-dark" onclick="validateForm(event)" />
-                            </div>
-                               <small><a asp-area="" asp-controller="Usuarios" asp-action="Recuperar" class="text-light">¿Has olvidado tu contraseña?</a></small> 
-                        </form>
-
-                        @if (!string.IsNullOrEmpty(TempData["succesfullMessage"]?.ToString()))
-                        {
-                            <p class="text-danger fs-5">@TempData["succesfullMessage"]</p>
-                            <script>
-                                Swal.fire({
-                                    position: 'center',
-                                    icon: 'success',
-                                    title: 'Contraseña Restablecida ',
-                                    text : '@TempData["succesfullMessage"]'
-                                    showConfirmButton: true,
-                                });
-                            </script>
-                        }
-                     
-                      
-                       
+            <div class="form-group ">
+                <label asp-for="Contraseña" class="control-label text-dark required"></label>
+                <input asp-for="Contraseña" style="background-color:white"id="Contraseña" class="form-control" type="password" />
                 
+            </div>
+            <span asp-validation-for="Contraseña" id="ContraseñaError" style="color:red;"></span>
+            <div class="form-group mt-2">
+                <button type="submit" style="background-color:white;" class="button">Iniciar sesión</button>
+            </div>
+            <h1><a asp-area="" style="color:black;" asp-controller="Usuarios" asp-action="Recuperar">¿Has olvidado tu contraseña?</a></h1>
+        </form> *@
+        
+         <form id="loginForm">
+
+         <h2>BookWare</h2>
+            <h1 style="align-content:center">Iniciar sesión</h1>
+            <label class="control-label text-dark required" for="numeroDocumento">Número de Documento:</label>
+            <input type="text" style="background-color:white" class="form-control"  id="numeroDocumento" name="numeroDocumento">
+            <span id="numeroDocumentoError" style="color: red;"></span>
+
+            <label class="control-label text-dark required" for="contraseña">Contraseña:</label>
+            <input type="password" style="background-color:white" class="form-control"  id="contraseña" name="contraseña">
+            <span id="contraseñaError" style="color: red;"></span>
+
+             <span id="errorSpan" style="color: red;"></span>
+            <button style="background-color:white;" class="button" type="submit" value="Iniciar sesión"> Iniciar Sesión </button>
+              <h1><a asp-area="" style="color:black;" asp-controller="Usuarios" asp-action="Recuperar">¿Has olvidado tu contraseña?</a></h1>
+        </form>
+        <div style="color:red;">
+        @if (!string.IsNullOrEmpty(TempData["succesfullMessage"]?.ToString()))
+        {
+            <p style="color:red;" class="text-danger fs-5">@TempData["succesfullMessage"]</p>
+            
+        }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["ErrorMessage"]
                     </div>
+                }
+
+        </div>
+    </div>
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-right">
+                    <img src="~/Images/Escudo.png" width="200px" height="250px"/><br />
+                    <h6>¿Aún no tienes cuenta? </h6>
+                    <p>Recuerda que para registrarte tienes que estar matriculado en la institución</p>
+                <a class="regis" asp-controller="Usuarios" asp-action="Create">Registrate</a>
+                    
                 </div>
             </div>
         </div>
     </div>
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-
-    @section Scripts {
-     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    }
-   
-
-      <script>
-        function validateForm(event) {
-    // Evitar que el formulario se envíe automáticamente
-    event.preventDefault();
-
-    console.log("entramos en login")
-    // Obtener el valor del campo Numero_documento
-    var numeroDocumentoValue = document.getElementById("Numero_documento").value;
-
-    // Obtener el elemento span para mostrar mensajes de error
-    var numeroDocumentoError = document.getElementById("numeroDocumentoError");
-
-    var ContraseñaValue = document.getElementById("Contraseña").value;
-
-    // Obtener el elemento span para mostrar mensajes de error
-    var ContraseñaError = document.getElementById("ContraseñaError");
-    var Contraseña  =false;
-    var documento  =false;
-    // Verificar si el campo Numero_documento está vacío
-    if (numeroDocumentoValue.trim() === "") {
-        numeroDocumentoError.innerText = "Este campo es obligatorio.";
-        console.log("el campo numero de documento esta vacio");
-        
-    } else{
-        documento  =true;
-    }
-
-    if (ContraseñaValue.trim() === "") {
-        ContraseñaError.innerText = "Este campo es obligatorio.";
-        console.log("el campo Contraseña esta vacio");
-       
-
-    }else{
-        Contraseña  = true;
-    }
-    
-
-    if (documento  && Contraseña){
-
-          // Limpiar el mensaje de error si el campo no está vacío
-        numeroDocumentoError.innerText = "";
-
-        console.log("los dos estan en true");
-
-        // Si el campo no está vacío, enviar el formulario
-        document.getElementById("loginForm").submit();
-    }
-  
-}
-               
-                var errorMessage = '@TempData["ErrorMessage"]';
-                if (errorMessage) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMessage,
-                        footer: '<a href="">Habla con el administrador para que te quite la sanción!</a>'
-                    });
-                }
-                var errorMessage = '@TempData["Credencial"]';
-                if (errorMessage) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: errorMessage,
-                        
-                    });
-                }
-            </script>
-        @if (ViewData["Iniciar"] != null && ViewData["Iniciar"].ToString() == "true")
-        {
-            
-                <script>
-                    console.log("todo salio bien y vamos a iniciar session");
-                    Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: 'Iniciando sesión',
-                    showConfirmButton: false,
-                    timer: 1500
-                }).then(function () {
-                    window.location.href = '@Url.Action("Catalog", "Libros")';
-                });
-        </script>
-        }
-    @if(ViewData["Incorrecto"]!= null && ViewData["Incorrecto"].ToString() == "true")
-    {
-        <script>
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Contraseña incorrecta, verifique que estén bien los campos',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        </script>
-    }
-
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 </body>
 </html>
+    @* <script src="script.js"></script> *@
+
+    @section Scripts {
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+@* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
+@* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
 
 

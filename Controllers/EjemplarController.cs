@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,86 +28,156 @@ namespace tallerbiblioteca.Controllers
             _librosServices = librosServices;
         }
 
-        public async Task<IActionResult> Index(string busqueda,int pagina = 1, int itemsPagina  = 8)
+        public async Task<IActionResult> Index(string busqueda, int pagina = 1, int itemsPagina = 6)
         {
-            var ejemplares  = await _ejemplarServices.ObtenerEjemplares();
-            if (busqueda != null){
-                busqueda = busqueda.ToLower();
-                ejemplares = ejemplares.Where (e=>e.Id.ToString().Contains(busqueda)  || e.Libro.Nombre.ToLower().Contains(busqueda)  || e.Isbn_libro.ToString().Contains(busqueda ) || e.EstadoEjemplar.ToString().Contains(busqueda )).ToList();
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var ejemplares = await _ejemplarServices.ObtenerEjemplares();
+                if (busqueda != null)
+                {
+                    busqueda = busqueda.ToLower();
+                    ejemplares = ejemplares.Where(e => e.Id.ToString().Contains(busqueda) || e.Libro.Nombre.ToLower().Contains(busqueda) || e.Isbn_libro.ToString().Contains(busqueda) || e.EstadoEjemplar.ToString().Contains(busqueda)).ToList();
+                }
+
+                int totalEjemplares = ejemplares.Count;
+                int total = (totalEjemplares / itemsPagina) + 1;
+                var ejemplaresPaginados = ejemplares.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+                Paginacion<Ejemplar> paginacion = new(ejemplaresPaginados, total, pagina, itemsPagina);
+                ViewData["libros"] = new SelectList(await _librosServices.ObtenerLibros(), "Id", "Nombre");
+                ViewData["libros"] = new SelectList(await _librosServices.ObtenerLibros(), "Id", "Nombre");
+                return View(paginacion);
+
             }
-            var totalEjemplares = ejemplares.Count;
-            var ejemplaresPaginados = ejemplares.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
-            Paginacion<Ejemplar> paginacion  = new(ejemplaresPaginados,totalEjemplares,pagina,itemsPagina);
-             ViewData["libros"] = new SelectList(await _librosServices.ObtenerLibros(),"Id","Nombre");
-            return View(paginacion);
-                            
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
 
         public async Task<IActionResult> Create()
         {
-            ViewData["libros"] = new SelectList(await _librosServices.ObtenerLibros(),"Id","Nombre");
-            return View();
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                ViewData["libros"] = new SelectList(await _librosServices.ObtenerLibros(), "Id", "Nombre");
+                return View();
+            }catch(Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Id_libro,Isbn_libro,EstadoEjemplar")] Ejemplar ejemplar)
         {
-            Console.WriteLine("aca debe escribir el ejemplar");
-            Console.WriteLine($"esta llegando esto desde el formulario estado {ejemplar.EstadoEjemplar}");
-            MensajeRespuestaValidacionPermiso( await _ejemplarServices.Registrar(ejemplar,User));
-            return RedirectToAction("Index","Libros");
+            try
+            {
+                Console.WriteLine("aca debe escribir el ejemplar");
+                Console.WriteLine($"esta llegando esto desde el formulario estado {ejemplar.EstadoEjemplar}");
+                MensajeRespuestaValidacionPermiso(await _ejemplarServices.Registrar(ejemplar, User));
+                return RedirectToAction("Index", "Libros");
+            }catch(Exception)
+            {
+                return RedirectToAction("Error");
+            }
         } 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult>CreateFromLibros(){
-            
-            Console.WriteLine("hablalo desde registrar ejempla desde la vista de libros");
+            try
+            {
+                Console.WriteLine("hablalo desde registrar ejempla desde la vista de libros");
                 string id_libro = Request.Form["Id_libro"];
                 string isbn_ejemplar = Request.Form["Isbn_ejemplar"];
                 Console.WriteLine("aca deberia copier el id del libro: {0} ", id_libro);
-                 Console.WriteLine("aca deberia copier el isbn del libro: {0} ", isbn_ejemplar);
+                Console.WriteLine("aca deberia copier el isbn del libro: {0} ", isbn_ejemplar);
 
-            if (int.TryParse(id_libro, out int idLibroInt)){
-                Console.WriteLine("id del ejemplar a registrar: {0}", idLibroInt);
-            }else{
-                Console.WriteLine("no esta parseando el ejemplar");
-                return RedirectToAction("Index","Libros");
+                if (int.TryParse(id_libro, out int idLibroInt))
+                {
+                    Console.WriteLine("id del ejemplar a registrar: {0}", idLibroInt);
+                }
+                else
+                {
+                    Console.WriteLine("no esta parseando el ejemplar");
+                    return RedirectToAction("Index", "Libros");
+                }
+
+                Ejemplar ejemplar = new();
+                ejemplar.Id_libro = idLibroInt;
+                ejemplar.Isbn_libro = isbn_ejemplar;
+                ejemplar.EstadoEjemplar = "DISPONIBLE";
+
+                Console.WriteLine($"ya va empezar a realizar los servicios");
+                MensajeRespuestaValidacionPermiso(await _ejemplarServices.Registrar(ejemplar, User));
+                return RedirectToAction("Index", "Libros");
+            }catch (Exception ex)
+            {
+                return RedirectToAction("Error");
             }
-
-           Ejemplar ejemplar = new();
-           ejemplar.Id_libro = idLibroInt;
-           ejemplar.Isbn_libro = isbn_ejemplar;
-           ejemplar.EstadoEjemplar = "DISPONIBLE";
-               
-            Console.WriteLine($"ya va empezar a realizar los servicios");
-            MensajeRespuestaValidacionPermiso( await _ejemplarServices.Registrar(ejemplar,User));
-            return RedirectToAction("Index","Libros");
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int Id,string Estado)
+        public async Task<IActionResult> Edit(int Id)
         {
-            var ejemplar = await _ejemplarServices.BuscarEjemplar(Id);
-            if(ejemplar!=null){
-                ejemplar.EstadoEjemplar  = Estado;
-                MensajeRespuestaValidacionPermiso(await _ejemplarServices.Edit(User,ejemplar));
-            }else{
-                Console.WriteLine("no se esta encontrando ejemplar con el id:"+Id);
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var ejemplar = await _ejemplarServices.BuscarEjemplar(Id);
+                if (ejemplar != null)
+                {
+
+                    MensajeRespuestaValidacionPermiso(await _ejemplarServices.Edit(User, ejemplar));
+                }
+                else
+                {
+                    Console.WriteLine("no se esta encontrando ejemplar con el id:" + Id);
+                }
+                return RedirectToAction("Index","Libros");
+            }catch(Exception) {
+                return RedirectToAction("Error");
             }
-            return RedirectToAction(nameof(Index));
        
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int Id){
-            Console.WriteLine("id:liminar",Id);
-            MensajeRespuestaValidacionPermiso(await _ejemplarServices.Delete(Id,User));
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                Console.WriteLine("id:liminar", Id);
+                MensajeRespuestaValidacionPermiso(await _ejemplarServices.Delete(Id, User));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error"); 
+            }
             
         }
          private void MensajeRespuestaValidacionPermiso(int status)         
@@ -119,6 +190,12 @@ namespace tallerbiblioteca.Controllers
                 resultado.Mensaje  =  "La accion se ha realizado con exito";
                 resultado.Icono  = "success";
                 // TempData["Mensaje"] = "La accion se ha realizado con exito";
+                TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+            } 
+             else if (status == 203)
+            {  //si el permiso no lo puede realizar el usuario debido a que su rol no le permite realizar la accion ( status 401)
+                resultado.Mensaje  =  "Ya existe un ejemplar con este Isbn";
+                resultado.Icono  = "error";
                 TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
             }
             else if (status == 401)

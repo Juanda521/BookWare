@@ -6,6 +6,7 @@
     ViewData["Title"] = "Create";
 }
 
+<div >
 <h1>Crear</h1>
 
 <h4>Peticiones</h4>
@@ -14,48 +15,29 @@
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @* <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div> *@
              <div class="form-group">
-                <label asp-for="Id_ejemplar" class="control-label"></label>
-                <select asp-for="Id_ejemplar" class ="form-control" asp-items="ViewBag.Id_ejemplar"></select>
-            </div>
-            @* <div class="form-group">
-                <label asp-for="Id_ejemplar" class="control-label"></label>
-                <select asp-for="Id_ejemplar" class="form-control" asp-items="@(ViewBag.Id_ejemplar as SelectList)"></select>
-            </div> *@
-            <div class="form-group">
-                <label asp-for="Id_usuario" class="control-label"></label>
-                <select asp-for="Id_usuario" class="form-control" asp-items="ViewBag.Id_usuario"></select>
-            </div>
-            @*<div class="form-group">
-                <label asp-for="Id_usuario" class="control-label"></label>
-                <input asp-for="Id_usuario" class="form-control" />
-                <span asp-validation-for="Id_usuario" class="text-danger"></span>
-            </div>*@
-            <div class="form-group">
-                <label asp-for="Motivo" class="control-label"></label>
-            <select class="form-select" asp-for="Motivo" aria-label="Default select example">
-                <option selected>Selecciona una opción</option>
-                <option value="Prestamo libro">Préstamo Libro</option>
-            </select>
-                @* <input asp-for="Motivo" class="form-control" /> *@
-                <span asp-validation-for="Motivo" class="text-danger"></span>
+                <label asp-for="Id_ejemplar" class="control-label required"></label>
+                <select asp-for="Id_ejemplar" class ="form-control " style="width: 100%" id="selectEjemplares" asp-items="ViewBag.Id_ejemplar"></select>
             </div>
             <div class="form-group">
-                <label asp-for="FechaPeticion" class="control-label">Fecha y Hora:</label>
-                <input asp-for="FechaPeticion" class="form-control" />
-                <span asp-validation-for="FechaPeticion" class="text-danger"></span>
+                <label asp-for="Id_usuario" class="control-label required"></label>
+                <select asp-for="Id_usuario" class="form-control"  style="width: 100%" id="selectUsuarios" asp-items="ViewBag.Id_usuario"></select>
             </div>
-
             <div class="form-group">
-                <input type="submit" value="Crear" class="boton mt-2 mb-2" />
+                <input readonly asp-for="Motivo" type="hidden" class="form-control" value="Préstamo Libro" />
+            </div>
+                <div class="form-group">
+                    <label asp-for="FechaPeticion" class="control-label required">Fecha y Hora:</label>
+                    <input readonly asp-for="FechaPeticion" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                    <span asp-validation-for="FechaPeticion" class="text-danger"></span>
+                </div>
+            <div class="mt-2">
+                    <button class="button"  type="submit">Crear</button>
             </div>
         </form>
+            <a asp-action="Index" class="button mt-2">Volver</a>
     </div>
+</div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @if (ViewData["Crear"] != null && ViewData["Crear"].ToString() == "true")
@@ -73,28 +55,6 @@
     </script>
 }
 
-@if (ViewData["SUSPENDIDO"] != null && ViewData["SUSPENDIDO"].ToString() == "true")
-{
-    <script>
-        Swal.fire({
-            title: 'Error',
-            text: 'Este Usuario Está SUSPENDIDO, no puede prestar Libros ',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-    </script>
-}
-@if (ViewData["Inactivo"]!= null && ViewData["Inactivo"].ToString() == "true")
-{
-    <script>
-        Swal.fire({
-            title: 'Error',
-            text: 'Este Usuario Está INHABILITADO, no puede prestar Libros ',
-            icon: 'error',
-            confirmButtonText: 'Aceptar'
-        });
-    </script>
-}
 @if (ViewData["Existe"] != null && ViewData["Existe"].ToString() == "true")
 {
     <script>
@@ -106,11 +66,19 @@
         });
     </script>
 }
-
-<div>
-    <a class="botonDelete"asp-action="Index">Volver</a>
-</div>
-
 @section Scripts {
+    <script src="~/js/select2.min.js" asp-append-version="true"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#selectEjemplares').select2();
+        })
+        $(document).ready(function () {
+            $('#selectUsuarios').select2();
+        })
+        $(document).ready(function () {
+            $('#selectEjemplares').select2();
+        })
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<tallerbiblioteca.Models.Usuario>
+
+@{
+    ViewData["Title"] = "Usuarios Inactivos";
+}
+<h1 class="fw-bold fs-1 text-center">Usuarios inhabilitados o suspendidos</h1>
+
+@if (ViewBag.UsuariosInactivos == 0)
+{
+    <p class="text-danger fs-3">No hay Usuarios suspendidos o Inhabilitados</p>
+
+}
+else
+{
+    <a class="Eliminar" asp-action="Index">Volver</a>
+    <div class="row p-2">
+        <div class="col-12">
+
+            <div class="container p-2">
+
+                <div class="row mb-2 border-bottom border-dark">
+                    
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Nombres
+                                    </th>
+                                    <th> Estado </th>
+                                    <th> Acción </th>
+                                </tr>
+                             </thead>
+                             <tbody>
+                            @foreach (var usuario in Model)
+                            {
+                                 <tr>
+                                    <td>@usuario.Name @usuario.Apellido</td>
+                                    <td>@usuario.Estado</td>
+                                    <td>
+                                        <div class="col-4">
+                                            <form asp-controller="Usuarios" asp-action="eliminarsan" asp-route-id="@usuario.Id" method="post" onsubmit="sendForm(event)" id="formulario">
+                                                <button class="button mt-2" type="submit">activar</button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                    </tr>
+                                    }
+                             </tbody>
+                        </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts{
+    <script>
+        function sendForm(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Seguro que deseas habilitar este usuario de nuevo?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'SI'
+            }).then((resultado) => {
+                if (resultado.isConfirmed) {
+                    const formulario = document.getElementById("formulario")
+                    formulario.submit();
+                }
+            })
+        }
+    </script>
+    }
+
+

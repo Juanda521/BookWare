@@ -25,7 +25,7 @@ namespace tallerbiblioteca.Controllers
         }
 
         // GET: Generoes
-        public async Task<IActionResult> Index(string busqueda,int itemsPagina = 5, int pagina = 1)
+        public async Task<IActionResult> Index(string busqueda,int itemsPagina = 10, int pagina = 1)
         {
             var generos = await _generosServices.ObtenerGeneros();
 
@@ -35,14 +35,19 @@ namespace tallerbiblioteca.Controllers
                 busqueda.ToLower();
                 generos = _generosServices.busqueda(busqueda);
             }
-            var generosPginacion = await _context.Genero.ToListAsync();
-            var totalGeneros = generos.Count;
+            
+            int totalGeneros = generos.Count;
+            int total = (totalGeneros/ itemsPagina) + 1;
+            var generosPaginados = generos.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
 
-            var GenerosPaginados = generos.Skip((pagina-1)*itemsPagina).Take(itemsPagina).ToList();
-
-            Paginacion<Genero> paginacion = new(GenerosPaginados, totalGeneros, pagina, itemsPagina);
-
+            Paginacion<Genero> paginacion = new Paginacion<Genero>(generosPaginados, total, pagina, itemsPagina);
             return View(paginacion);
+        }
+
+         [HttpGet]
+        public async Task<IActionResult>GetGeneros(){
+            var generos = await _context.Genero.ToListAsync();
+            return Json(generos);
         }
 
         public IActionResult Desactivar(int id)
@@ -159,61 +164,66 @@ namespace tallerbiblioteca.Controllers
 
             MensajeRespuestaValidacionPermiso(status);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index","Libros");
         }
+
+    
+            
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult>CreateGenero(Genero genero){
+
+            string nombreGenero= Request.Form["NombreGenero"];
+            Console.WriteLine(nombreGenero);
+            
+            var generoExistente = await _context.Genero
+                    .FirstOrDefaultAsync(g => g.NombreGenero.ToLower() == genero.NombreGenero.ToLower());
+
+                    var resultado = new ResponseModel();
+
+                if (generoExistente != null)
+                {
+                    Console.WriteLine("Ya existe este genero");
+                    resultado.Mensaje = "Ya existe este género.";
+                    resultado.Icono = "error";
+                    TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+                    return RedirectToAction("Index", "Libros");
+                }
+                Console.WriteLine("Con el modelo validado");
+                Console.WriteLine($"ya va empezar a realizar los servicios");
+                MensajeRespuestaValidacionPermiso(await _generosServices.Registrar(genero, User));
+                return RedirectToAction("Index", "Libros");
+            
+            
+        }
+            
+        
+
+    
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateGenero()
+        public async Task<IActionResult>UpdateGenero(Genero genero)
         {
 
-            Console.WriteLine("hablalo desde registrar ejempla desde la vista de index de generos");
-            //string Id= Request.Form["Id"];
-            string nombreGenero = Request.Form["NombreGenero"];
-            // Console.WriteLine("aca deberia copier el id de autor: {0} ", Id);
-
-            //if (int.TryParse(Id, out int idAutorInt)){
-            //    Console.WriteLine("id del autor a registrar: {0}", idAutorInt);
-            //}else{
-            //    Console.WriteLine("no esta parseando el autor");
-            //    return RedirectToAction("Index","Autores");
-            //}
-
-            Genero genero = new();
-            //autor.Id= idAutorInt;
-            genero.NombreGenero = nombreGenero;
-
-            Console.WriteLine($"ya va empezar a realizar los servicios");
-            MensajeRespuestaValidacionPermiso(await _generosServices.Registrar(genero, User));
-            return RedirectToAction("Index", "Generos");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult>UpdateGenero(int IdGenero){
-            
-            Console.WriteLine("hablalo desde actualizar generos");
-                string Id= Request.Form["Id"];
-                string nombreGenero= Request.Form["NombreGenero"];
-                Console.WriteLine("aca deberia copier el id de autor: {0} ", Id);
-
-            if (int.TryParse(Id, out int idGeneroInt)){
-
-                Console.WriteLine("id del autor a registrar: {0}", idGeneroInt);
-                var genero = await _generosServices.Buscar(idGeneroInt);
-
-                genero.Id= idGeneroInt;
-                genero.NombreGenero = nombreGenero;
-
-                Console.WriteLine($"ya va empezar a realizar los servicios");
+            if (ModelState.IsValid)
+            {
+                Console.WriteLine("Con el modelo validado");
+                 Console.WriteLine($"ya va empezar a realizar los servicios");
                 MensajeRespuestaValidacionPermiso( await _generosServices.Editar(genero,User));
-                return RedirectToAction("Index","Genero");
-
-            }else{
-               Console.WriteLine("no esta parseando el autor");
-               return RedirectToAction("Index","Genero");
+                return RedirectToAction("Index","Generos");
             }
+            else
+            {
+                Console.WriteLine("El modelo no es válido");
+                // Devuelve la vista con el modelo para que pueda mostrar los errores de validación
+                 return RedirectToAction("Index", "Generos");
+            }
+
         }
+
+
 
         // GET: Generoes/Edit/5
         public async Task<IActionResult> Edit(int? id)

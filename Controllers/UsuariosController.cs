@@ -12,6 +12,7 @@ using tallerbiblioteca.Services;
 using System.Net.Mail;
 using System.Numerics;
 
+
 namespace tallerbiblioteca.Controllers
 {
     [Authorize]
@@ -19,100 +20,124 @@ namespace tallerbiblioteca.Controllers
     {
         private readonly BibliotecaDbContext _context;
         private readonly UsuariosServices _usuariosServices;
-        private int Status; 
-        public Usuarios(BibliotecaDbContext context,UsuariosServices usuariosServices)
+        private readonly ReservasServices _reservasServices;
+        private readonly PrestamosServices _prestamosServices;
+        private ConfiguracionServices _configuracionServices;
+        private int Status;
+        public Usuarios(BibliotecaDbContext context, UsuariosServices usuariosServices, ReservasServices reservasServices, PrestamosServices prestamosServices, ConfiguracionServices configuracionServices)
         {
             _context = context;
             _usuariosServices = usuariosServices;
+            _reservasServices = reservasServices;
+            _prestamosServices = prestamosServices;
+            _configuracionServices = configuracionServices;
         }
-      
+
         [AllowAnonymous]
         public IActionResult login()
         {
             return View();
         }
-
         [AllowAnonymous]
         // GET: Usuarios/Create
         public IActionResult Create()
         {
-            ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-            return View();
+            try
+            {
+                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                return View();
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
 
         // GET: Usuarios
-        public async Task<IActionResult> Index(string busqueda ,int pagina=1, int itemsPagina=6 )
+        public async Task<IActionResult> Index(string busqueda, int pagina = 1, int itemsPagina = 6)
         {
-         
-            var usuarios = await _usuariosServices.ObtenerUsuarios();
-            if (busqueda != null){
-                 busqueda = busqueda.ToLower();
-                if(int.TryParse(busqueda,out int Numero_documento)){
-                    usuarios = usuarios.Where (u=>u.Name.ToLower().Contains(busqueda) || u.Apellido.ToLower().Contains(busqueda) || u.Numero_documento.ToString().Contains(busqueda )).ToList();
-                }else{
-                     usuarios = usuarios.Where (u=>u.Name.Contains(busqueda) || u.Apellido.Contains(busqueda)).ToList();
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
                 }
+                var usuarios = await _usuariosServices.ObtenerUsuarios();
+
+                if (busqueda != null)
+                {
+                    usuarios = await _usuariosServices.Buscar(busqueda);
+                }
+
+                usuarios = usuarios.OrderBy(p => p.Estado == "ACTIVO" ? 0 : 1).ToList();
+                var totalUsuarios = usuarios.Count();
+                var total = (totalUsuarios / 6) + 1;
+
+                var usuariosPaginados = usuarios.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+
+                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                var model = new usuarioModel(new Paginacion<Usuario>(usuariosPaginados, total, pagina, itemsPagina), new Usuario());
+                return View(model);
             }
-            
+            catch (Exception)
+            {
 
-            var totalUsuarios = usuarios.Count();
-            var total = (totalUsuarios / 6)+1; 
-       
-            var usuariosPaginados = usuarios.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
-           
-
-            var model = new Paginacion<Usuario>(usuariosPaginados, total, pagina, itemsPagina);
-
-
-
-            return View(model);
-          
+                return RedirectToAction("Error");
+            }
         }
-
-     
-
- 
-
         // GET: Usuarios/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-           int status  = _usuariosServices.VistaEdit(User);
-            if(status==200){
-                var usuario = await _context.Usuarios.FindAsync(id);
-                return View(usuario);
-            }else{
-                MensajeRespuestaValidacionPermiso(status);
-                return RedirectToAction(nameof(Index));
+            try
+            {
+
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                int status = _usuariosServices.VistaEdit(User);
+                if (status == 200)
+                {
+                    var usuario = await _context.Usuarios.FindAsync(id);
+                    return View(usuario);
+                }
+                else
+                {
+                    MensajeRespuestaValidacionPermiso(status);
+                    return RedirectToAction(nameof(Index));
+                }
             }
-            
- 
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
-
-        
-
-      //cambiar if a switch
-        private void MensajeRespuestaValidacionPermiso(int status)         
+        //cambiar if a switch
+        private void MensajeRespuestaValidacionPermiso(int status)
         {
-
             var resultado = new ResponseModel();
 
             if (status == 200)
-            {       
-                resultado.Mensaje  =  "La accion se ha realizado con exito";
-                resultado.Icono  = "success";
+            {
+                resultado.Mensaje = "La accion se ha realizado con exito";
+                resultado.Icono = "success";
                 // TempData["Mensaje"] = "La accion se ha realizado con exito";
                 TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
             }
             else if (status == 401)
             {  //si el permiso no lo puede realizar el usuario debido a que su rol no le permite realizar la accion ( status 401)
-                resultado.Mensaje  =  "No tienes permiso para realizar esta accion";
-                resultado.Icono  = "error";
+                resultado.Mensaje = "No tienes permiso para realizar esta accion";
+                resultado.Icono = "error";
                 TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
             }
             else if (status == 402)
             {
-                resultado.Mensaje  = "El permiso para realizar esta accion no se encuentra activo";
-                resultado.Icono  = "info";
+                resultado.Mensaje = "El permiso para realizar esta accion no se encuentra activo";
+                resultado.Icono = "info";
                 TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
             }
             else
@@ -121,30 +146,41 @@ namespace tallerbiblioteca.Controllers
             }
             //return (string)TempData["Mensaje"];
         }
-
         public IActionResult Logout()
         {
-            var n = true;
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            if (n == true)
-            {
-                ViewData["Cerrar"] = "true";
-            }
+
             return View("Login");
         }
-        
-        [HttpGet]
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Inhabilitar(int id)
         {
-            MensajeRespuestaValidacionPermiso(_usuariosServices.Inhabilitar(id, User));
-          
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                MensajeRespuestaValidacionPermiso(_usuariosServices.Inhabilitar(id, User));
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
+
         public IActionResult Suspender(int id)
         {
-            MensajeRespuestaValidacionPermiso(_usuariosServices.Suspender(id, User));
-          
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                MensajeRespuestaValidacionPermiso(_usuariosServices.Suspender(id, User));
+
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
 
         }
 
@@ -152,27 +188,29 @@ namespace tallerbiblioteca.Controllers
         [HttpPost]
         public IActionResult Login([Bind("Numero_documento,Contraseña")] Usuario usuario)
         {
-            Console.WriteLine("estamos en login");
-            Console.WriteLine("hola");
-            if (_context.Usuarios.FirstOrDefault(u => u.Numero_documento == usuario.Numero_documento) != null)
+            try
             {
-                Console.WriteLine(usuario.Contraseña);
-                var UserEncontrado = _usuariosServices.BuscarUsuario(usuario);
-                if (UserEncontrado != null)
+               
+                if (_context.Usuarios.FirstOrDefault(u => u.Numero_documento == usuario.Numero_documento) != null)
                 {
-                    if (UserEncontrado.Estado == "Inhabilitado")
+                    Console.WriteLine(usuario.Contraseña);
+                    Console.WriteLine(usuario.Numero_documento);
+                    var UserEncontrado = _usuariosServices.BuscarUsuario(usuario.Numero_documento, usuario.Contraseña);
+                    if (UserEncontrado != null)
                     {
-                        TempData["ErrorMessage"] = "No puedes ingresar al aplicativo, te encuentras Inhabilitado";
-                        return View();
-                    }
-                    else if (UserEncontrado.Estado == "Suspendido")
-                    {
-                        TempData["ErrorMessage"] = "No puedes ingresar al aplicativo, te encuentras Suspendido";
-                        return View();
-                    }
-                    Console.WriteLine($"el nombre dle usuario a iniciar session es: {UserEncontrado.Name}");
-                     Console.WriteLine($"el nombre del rol a iniciar session es: {UserEncontrado.Rol.Nombre}");
-                    var claims = new List<Claim>
+                        Console.WriteLine("encontro al usuario");
+                        if (UserEncontrado.Estado == "INHABILITADO")
+                        {
+                            
+                            return StatusCode(403, new { message = "No puedes ingresar al aplicativo, te encuentras Inhabilitado" });
+                        }
+                        else if (UserEncontrado.Estado == "SUSPENDIDO")
+                        {
+                            
+                            return StatusCode(403, new { message = "No puedes ingresar al aplicativo, te encuentras Suspendido" });
+
+                        }
+                        var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name,UserEncontrado.Name),
                            new Claim(ClaimTypes.Email,UserEncontrado.Correo),
@@ -180,320 +218,676 @@ namespace tallerbiblioteca.Controllers
                                 new Claim(ClaimTypes.NameIdentifier,UserEncontrado.Id.ToString()),
                                    new(ClaimTypes.Role, UserEncontrado.Rol.Nombre),
                     };
-                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
-                    {
-                        // Puedes configurar propiedades de autenticación como la expiración de la cookie, etc.
-                    };
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            
+                        };
 
-                    HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
-                    ViewData["Iniciar"] = "true";
+                        HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+                        // ViewData["Iniciar"] = "true";
+                        return Ok(new { success = true }); 
+                    }
+                    else
+                    {
+                        return BadRequest(new { error = "Credenciales incorrectas." }); 
+                    }
                 }
                 else
                 {
-                    TempData["Credencial"] = "Contrasena incorrecta, verifica el campo";
+                    
+                    return NotFound(new { error = "Usuario no encontrado." });
                 }
+                return NotFound(new { error = "Usuario no encontrado." });
+            }catch(Exception) {
+                return RedirectToAction("Error");
             }
-            else
-            {
-                TempData["Credencial"] = "documento incorrecto, verifique su campo";
-                return View();
-            }
-            return View();
         }
+
+        [HttpPost]
+        [Route("Movil/Login/")]
+        [AllowAnonymous]
+        public async Task<IActionResult>LoginMovil([FromBody] Login loginData)
+        {
+          
+            Console.WriteLine($"Numero de documento: {loginData.Numero_documento}");
+            Console.WriteLine($"Contraseña: {loginData.Contraseña}");
+
+            var UserEncontrado = _usuariosServices.BuscarUsuario(loginData.Numero_documento,loginData.Contraseña);
+
+            if(UserEncontrado!=null){
+                
+                return Ok("las credenciales son validas y se procede a realizar el login");
+            }else{
+                return StatusCode(503,"las credenciales no coiniciden");
+            }
+
+
+        
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(int id, [Bind("Id,Name,Apellido,Correo,Numero_documento,Contraseña")] Usuario usuario)
         {
-           
-            MensajeRespuestaValidacionPermiso(await _usuariosServices.Edit(usuario));
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                MensajeRespuestaValidacionPermiso(await _usuariosServices.Edit(usuario));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
+
         private bool IsValidEmail(string email)
         {
             try
             {
                 var addr = new MailAddress(email);
-
-                // Verificar el dominio usando un servicio DNS
                 var host = addr.Host;
                 var mxRecords = System.Net.Dns.GetHostAddresses(host)
                     .Where(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
 
-                return mxRecords.Any(); // Devolver true si hay registros MX para el dominio
+                return mxRecords.Any();
             }
             catch
             {
                 return false;
             }
         }
-
+        
         [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Id_rol,Numero_documento,Name,Apellido,Correo,Contraseña,Estado")] Usuario usuario)
         {
-            var nopasar = false;
-            if (_usuariosServices.validarCorreo(usuario.Correo))
+            try
             {
-                nopasar = true;
-                Console.WriteLine("Encontrado, no dejar entrar");
-                ViewData["Encontrado"] = "True";
-                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-                return View("Create", usuario);
-            }
-            var nombreExistente = await _usuariosServices.ValidarNombreExistente(usuario.Numero_documento, usuario.Name);
-            if (nombreExistente==true)
-            {
-                Console.WriteLine("ABRIR SWEET ALERT");
-                ViewData["NombreExistente"] = "True";
-                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-                return View("Create", usuario);
-            }
-            var validarApellido = await _usuariosServices.ValidarApellidoExistente(usuario.Numero_documento, usuario.Apellido);
-            if (validarApellido==true)
-            {
-                Console.WriteLine("ABIRR SWEET ALERT APELLIDO");
-                ViewData["ApellidoExistente"] = "True";
-                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-                return View("Create", usuario);
-            }
-           
-            if (!IsValidEmail(usuario.Correo))
-            {
-                nopasar = true;
-                Console.WriteLine("Correo electrónico no válido, no dejar entrar");
-                ViewData["CorreoInvalido"] = "True";
-                ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-                return View("Create", usuario);
-            }
-
-          
-            BigInteger bigintV = BigInteger.Parse(usuario.Numero_documento.ToString());
-            bool esMatriculadoe = _usuariosServices.validarDocumento(bigintV);
-            if (esMatriculadoe)
-            {
-                nopasar = true;
-                Console.WriteLine("Encontrado, no dejar entrar");
-                ViewData["Encontrados"] = "True";
-                 ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
-                return View("Create", usuario);
-            }
-            Console.WriteLine("ESTAMOS VALIDANDO TODO");
-            BigInteger bigint = BigInteger.Parse(usuario.Numero_documento.ToString());
-            bool esMatriculado = await _usuariosServices.ValidacionMatriculado(bigint);
-            if (esMatriculado)
-            {
-                if (nopasar == false)
+                string userId = User.FindFirstValue(ClaimTypes.Role);
+                var nopasar = false;
+                Console.WriteLine("ESTAMOS VALIDANDO TODO");
+                bool esMatriculado = false;
+                if (userId != "1" && userId!="3")
                 {
-                    Console.WriteLine("Se encontró el documento dejar entrar");
-
-                    if (_context.Rol.Any(r => r.Id == usuario.Id_rol))
+                    Console.WriteLine("VALIDANDO DOCUMENTO EN MATRICULADOS");
+                    BigInteger bigint = BigInteger.Parse(usuario.Numero_documento.ToString());
+                    esMatriculado = await _usuariosServices.ValidacionMatriculado(bigint);
+                    if (esMatriculado == false)
                     {
 
-                        await this._usuariosServices.Create(usuario);
-                        return RedirectToAction(nameof(Index));
+                        ViewData["Nomatriculado"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+
                     }
-                    else
+                    var nombreExistente = await _usuariosServices.ValidarNombreExistente(usuario.Numero_documento, usuario.Name);
+                    if (nombreExistente == true)
                     {
-                        ModelState.AddModelError("Id_rol", "El rol seleccionado no es válido.");
+                        Console.WriteLine("ABRIR SWEET ALERT");
+                        ViewData["NombreExistente"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
                     }
-                    ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                    var validarApellido = await _usuariosServices.ValidarApellidoExistente(usuario.Numero_documento, usuario.Apellido);
+                    if (validarApellido == true)
+                    {
+                        Console.WriteLine("ABIRR SWEET ALERT APELLIDO");
+                        ViewData["ApellidoExistente"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+                    }
+                    BigInteger bigintV = BigInteger.Parse(usuario.Numero_documento.ToString());
+                    bool Encontrar = _usuariosServices.validarDocumento(bigintV);
+                    if (Encontrar)
+                    {
+                        nopasar = true;
+                        Console.WriteLine("Encontrado, no dejar entrar");
+                        ViewData["Encontrados"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+                    }
+                    if (_usuariosServices.validarCorreo(usuario.Correo))
+                    {
+                        nopasar = true;
+                        Console.WriteLine("Encontrado, no dejar entrar");
+                        ViewData["Encontrado"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+                    }
+                    if (!IsValidEmail(usuario.Correo))
+                    {
+                        nopasar = true;
+                        Console.WriteLine("Correo electrónico no válido, no dejar entrar");
+                        ViewData["CorreoInvalido"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+                    }
                 }
-                return View();
+                if (esMatriculado == true || userId == "1" || userId == "3")
+                {
+                    BigInteger bigintV = BigInteger.Parse(usuario.Numero_documento.ToString());
+                    bool Encontrar = _usuariosServices.validarDocumento(bigintV);
+                    if (Encontrar)
+                    {
+                        Console.WriteLine("Encontrado Documento existente, no dejar entrar");
+                        ViewData["Encontrados"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+
+                    }
+
+                    if (_usuariosServices.validarCorreo(usuario.Correo))
+                    {
+                        nopasar = true;
+                        Console.WriteLine("NO DEBERÍA REDIRIGIR correo encontrado ");
+                        ViewData["Encontrado"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+
+                    }
+                    if (!IsValidEmail(usuario.Correo))
+                    {
+                        Console.WriteLine("NO DEBERÍA REDIRIGIR CORREO NO VÁLIDO ");
+
+                        nopasar = true;
+                        Console.WriteLine("Correo electrónico no válido, no dejar entrar");
+                        ViewData["CorreoInvalido"] = "True";
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+                        return View("Create", usuario);
+
+
+                    }
+                    if (nopasar == false)
+                    {
+                        Console.WriteLine("Se encontró el documento dejar entrar");
+
+                        if (_context.Rol.Any(r => r.Id == usuario.Id_rol))
+                        {
+
+                            await this._usuariosServices.Create(usuario);
+                            MensajeRespuestaValidacionPermiso(200);
+                            
+                            return RedirectToAction(nameof(Index));
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("Id_rol", "El rol seleccionado no es válido.");
+                        }
+                        ViewData["Id_rol"] = new SelectList(_context.Rol, "Id", "Nombre");
+
+                    }
+                    return View("Create");
+                }
+                else
+                {
+                    nopasar = true;
+                    Console.WriteLine("No se encontró el documento en matriculado, no dejar entrar");
+                    ViewData["Nomatriculado"] = "True";
+                    return View("Create", usuario);
+                }
             }
-            else
+            catch (Exception)
             {
-                nopasar = true;
-                Console.WriteLine("No se encontró el documento en matriculado, no dejar entrar");
-                ViewData["Nomatriculado"] = "True";
-                return View("Create", usuario);
+                return RedirectToAction("Error");
             }
         }
         public IActionResult eliminarsan(int id)
         {
-            var usuarios = _context.Usuarios.Find(id);
-
-            if (usuarios != null)
+            try
             {
-                usuarios.Estado = "ACTIVO";
-                _context.SaveChanges();
+                var usuarios = _context.Usuarios.Find(id);
+
+                if (usuarios != null)
+                {
+                    usuarios.Estado = "ACTIVO";
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Index");
+            }catch(Exception)
+            {
+                return RedirectToAction("Error");
             }
-            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> buscar(string filtro)
         {
-            var buscar = await _context.Usuarios
-                .Where(u => u.Name.Contains(filtro) || u.Apellido.Contains(filtro) || u.Correo.Contains(filtro))
-                .ToListAsync();
+            try
+            {
+                var buscar = await _context.Usuarios
+                    .Where(u => u.Name.Contains(filtro) || u.Apellido.Contains(filtro) || u.Correo.Contains(filtro))
+                    .ToListAsync();
 
-            return View("Index", buscar);
+                return View("Index", buscar);
+            } catch (Exception) 
+            {
+                return RedirectToAction("Error");
+            }
 
         }
+      
         public async Task<IActionResult> Informacion(int id)
         {
-            var buscar = _context.Peticiones.FirstOrDefault(k => k.Id_usuario == id);
-            var buscusu = _context.Usuarios.FirstOrDefault(t => t.Id == id);
-            if (buscar != null)
+            try
             {
-                if (buscar.Estado == "ACEPTADA")
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
                 {
-                    var libro = buscar.Id_ejemplar;
-                    var idejemplar = _context.Ejemplares.FirstOrDefault(r => r.Id == libro);
-                    var idfin = idejemplar.Id_libro;
-                    var idlibro = _context.Libros.FirstOrDefault(l => l.Id == idfin);
-                    if (idlibro != null)
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var prestamosEnCurso = _context.Prestamos
+                    .Include(p => p.Peticion)
+                        .ThenInclude(p => p.Usuario)
+                    .Include(p => p.Peticion)
+                        .ThenInclude(p => p.Ejemplar)
+                            .ThenInclude(p => p.Libro)
+                    .Where(k => k.Peticion.Usuario.Id == id && k.Estado == "En curso")
+                    .ToList();
+
+                var buscusu = _context.Usuarios.FirstOrDefault(t => t.Id == id);
+
+                if (prestamosEnCurso.Any())
+                {
+                    foreach (var presta in prestamosEnCurso)
                     {
-                        var nombre = idlibro.Nombre;
-                        var fecha = _context.Prestamos.FirstOrDefault(k => k.Id_peticion == buscar.Id);
                         var usuario = new usuarioo
                         {
-                            Mensaje = "Tienes un prestamo pendiente ",
-                            NombreLibro = $"Nombre del libo en prestamo: {nombre}",
-                            fechaa = $"Tiene una fecha de entrega para el {fecha.Fecha_fin}"
-                        };                    
+                            Mensaje = "Tienes un préstamo en curso ",
+                            NombreLibro = $"Nombre del libro en préstamo: {presta.Peticion.Ejemplar.Libro.Nombre}",
+                            fechaa = $"Tiene una fecha de entrega para el día: {presta.Fecha_fin}",
+                        };
                         usuario.Name = buscusu.Name;
                         usuario.Apellido = buscusu.Apellido;
-                        usuario.Correo = buscusu.Correo;                    
+                        usuario.Correo = buscusu.Correo;
+                        usuario.Numero_documento = buscusu.Numero_documento;
                         return View("Informacion", usuario);
                     }
                 }
-                else if (buscar.Estado == "EN ESPERA")
+                var peticionesEnEspera = _context.Peticiones
+                    .Include(p => p.Usuario)
+                    .Include(p => p.Ejemplar)
+                        .ThenInclude(e => e.Libro)
+                    .Where(p => p.Estado == "EN ESPERA" && p.Id_usuario == id)
+                    .ToList();
+
+                if (peticionesEnEspera.Any())
                 {
-                    var usuarioa = new usuarioo { Mensaje = $"tienes una petición en espera" };
+                    foreach (var peticion in peticionesEnEspera)
+                    {
+                        var usuarioE = new usuarioo
+                        {
+                            Mensaje = "Tienes una petición pendiente ",
+                            NombreLibro = $"Nombre del libro en petición: {peticion.Ejemplar.Libro.Nombre}",
+                            fechaa = $"Está en espera desde el día :  {peticion.FechaPeticion}",
+                        };
+                        usuarioE.Name = peticion.Usuario.Name;
+                        usuarioE.Apellido = peticion.Usuario.Apellido;
+                        usuarioE.Correo = peticion.Usuario.Correo;
+                        usuarioE.Numero_documento = peticion.Usuario.Numero_documento;
+                        return View("Informacion", usuarioE);
+                    }
+                }
+
+                var reserva = _context.Reserva
+                    .Include(r => r.Ejemplar)
+                        .ThenInclude(l => l.Libro)
+                    .Include(r => r.Usuario)
+                    .FirstOrDefault(u => u.IdUsuario == id && u.Estado == "ACTIVO");
+
+                if (reserva != null)
+                {
+                    var usuarioaR = new usuarioo
+                    {
+                        Mensaje = "Tienes una reserva pendiente",
+                        NombreLibro = $"Nombre del libro en reserva: {reserva.Ejemplar.Libro.Nombre}",
+                        fechaa = $"Fecha de la reserva: {reserva.FechaReserva}"
+                    };
+                    usuarioaR.Name = buscusu.Name;
+                    usuarioaR.Apellido = buscusu.Apellido;
+                    usuarioaR.Correo = buscusu.Correo;
+                    usuarioaR.Numero_documento = buscusu.Numero_documento;
+                    return View("Informacion", usuarioaR);
+                }
+                else
+                {
+
+                    var usuarioa = new usuarioo
+                    {
+                        Mensaje = "No tienes nada pendiente"
+                    };
                     usuarioa.Name = buscusu.Name;
                     usuarioa.Apellido = buscusu.Apellido;
                     usuarioa.Correo = buscusu.Correo;
+                    usuarioa.Numero_documento = buscusu.Numero_documento;
                     return View("Informacion", usuarioa);
                 }
+            }catch(Exception) {
+                return RedirectToAction("Error");
             }
-            else
-            {
-                var usuarioa = new usuarioo { Mensaje = "No tienes ninguna petición  pendiente" };
-                usuarioa.Name = buscusu.Name;
-                usuarioa.Apellido = buscusu.Apellido;
-                usuarioa.Correo = buscusu.Correo;
-                return View("Informacion", usuarioa);
-            }
-            return RedirectToAction("Index");
+            // Si no se cumple ninguna condición anterior, regresar a la vista por defecto
+            
         }
 
         [AllowAnonymous]
         public IActionResult Recuperar()
         {
-            Console.WriteLine("Está entrando");
-            return View("RecuperarContraseña");
+            try
+            {
+                return View("RecuperarContraseña");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> RecuperarContraseña()
         {
-            int codigo =0;
-           
-            ResponseModel resultado = new();
-            string numero_documento = Request.Form["Numero_documento"];
-            Console.WriteLine(numero_documento);
-            if (Int32.TryParse(numero_documento, out Int32 numero_documento_int))
+            try
             {
-                Console.WriteLine("vamos a parsear el numero de documento");
-                var (codigoServicio,mensajeError,UsuarioServicios) =  _usuariosServices.RecuperarContraseña(numero_documento_int);
-                codigo = codigoServicio;
-                Usuario usuario = UsuarioServicios;
-                if (!string.IsNullOrEmpty(mensajeError))
+                int codigo = 0;
+
+                ResponseModel resultado = new();
+                string numero_documento = Request.Form["Numero_documento"];
+                Console.WriteLine(numero_documento);
+                if (Int32.TryParse(numero_documento, out Int32 numero_documento_int))
                 {
-                    ViewData["ErrorMessage"] = mensajeError;
-                    return View();
+                    Console.WriteLine("vamos a parsear el numero de documento");
+                    var (codigoServicio, mensajeError, UsuarioServicios) = _usuariosServices.RecuperarContraseña(numero_documento_int);
+                    codigo = codigoServicio;
+                    Usuario usuario = UsuarioServicios;
+                    if (!string.IsNullOrEmpty(mensajeError))
+                    {
+                        ViewData["ErrorMessage"] = mensajeError;
+                        return View();
+                    }
+                    else
+                    {
+                        HttpContext.Session.SetString("CodigoFinal", codigo.ToString());
+                        var usuarioJson = JsonConvert.SerializeObject(usuario);
+                        HttpContext.Session.SetString("Usuario", usuarioJson);
+                        ViewData["Encontrados"] = "True";
+                    }
                 }
                 else
                 {
-                    HttpContext.Session.SetString("CodigoFinal", codigo.ToString());
-                    // Serializar el objeto a JSON
-                    var usuarioJson = JsonConvert.SerializeObject(usuario);
-
-                    // Almacenar el JSON en la sesión
-                    HttpContext.Session.SetString("Usuario", usuarioJson);
-
+                    Console.WriteLine("no esta parseando el numero de documento");
+                    ViewData["ErrorMessage"] = "El número de documento no es válido.";
+                    return View();
                 }
-            }  
-            else
-            {
-                Console.WriteLine("no esta parseando el numero de documento");
-                ViewData["ErrorMessage"] = "El número de documento no es válido.";
-                return View();
+
+                Console.WriteLine($"Este es el codigo que genera{codigo}");
+
+                return View("ConfirmarCodigo");
             }
-           
-            Console.WriteLine($"Este es el codigo que genera{codigo}");
-           
-            return View("ConfirmarCodigo");
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
+
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> ConfirmarCodigo()
         {
-           
-            ResponseModel resultado = new();
-            string codigo = Request.Form["codigo"];
-            Console.WriteLine(codigo);
-            if (Int32.TryParse(codigo, out Int32 codigo_int))
+            try
             {
-                int codigoGenerado = Convert.ToInt32(HttpContext.Session.GetString("CodigoFinal"));
-                Console.WriteLine($"Este es el codigo que ingrese en el formulario{codigo_int}");
-                Console.WriteLine($"Este es el codigo que genera los servicios{codigoGenerado}");
-                if (codigo_int == codigoGenerado)
+                ResponseModel resultado = new();
+                string codigo = Request.Form["codigo"];
+                Console.WriteLine(codigo);
+                if (Int32.TryParse(codigo, out Int32 codigo_int))
                 {
-                    Console.WriteLine("LISTO, NOS VAMOS A RESTABLECER");
-                    return View("RestablecerContraseña");
-                }
+                    int codigoGenerado = Convert.ToInt32(HttpContext.Session.GetString("CodigoFinal"));
+                    Console.WriteLine($"Este es el codigo que ingrese en el formulario{codigo_int}");
+                    Console.WriteLine($"Este es el codigo que genera los servicios{codigoGenerado}");
+                    if (codigo_int == codigoGenerado)
+                    {
+                        Console.WriteLine("LISTO, NOS VAMOS A RESTABLECER");
+                        return View("RestablecerContraseña");
+                    }
 
+                }
+                ViewData["ErrorMessage"] = "No coinciden los Numeros, Revisa de nuevo por favor";
+                return View();
             }
-            ViewData["ErrorMessage"] = "No coinciden los Numeros, Revisa de nuevo por favor";
-            return View();
+            catch
+            {
+                return RedirectToAction("Error");
+            }
         }
 
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> restablecer(string contraseña)
         {
-            //para que pruebe de una JAJAJAJA
-            Console.WriteLine(contraseña);
+            try
+            {
+                Console.WriteLine(contraseña);
 
-            if(!_usuariosServices.ValidarPassword(contraseña)){
-                ViewData["ErrorMessage"] = "La contraseña debe contener mayuscula, minuscula, numeros y caracteres especiales";
-                return View("restablecerContraseña");
+                if (!_usuariosServices.ValidarPassword(contraseña))
+                {
+                    ViewData["ErrorMessage"] = "La contraseña debe contener almenos una mayúscula,una minúscula y 8 o más caracteres";
+                    return View("restablecerContraseña");
+                }
+
+                var usuarioJson = HttpContext.Session.GetString("Usuario");
+
+                var usuario = JsonConvert.DeserializeObject<Usuario>(usuarioJson);
+                var encryp = _usuariosServices.Encryptar(contraseña);
+                var usuariomod = _context.Usuarios.Find(usuario.Id);
+                usuariomod.Contraseña = encryp;
+                _context.SaveChanges();
+                if (usuariomod != null)
+                {
+                    TempData["ErrorMessage"] = "Usuario no encontrado.";
+                    return View("Login");
+
+                }
+                return View("Login");
             }
-
-            var usuarioJson = HttpContext.Session.GetString("Usuario");
-            // Deserializar el JSON a tu objeto de usuario
-            var usuario = JsonConvert.DeserializeObject<Usuario>(usuarioJson);
-            usuario.Contraseña = contraseña;
-
-            Console.WriteLine(usuario.Contraseña);
-
-           
-            TempData["succesfullMessage"] = "Tu contraseña se ha restablecido exitosamente, puedes iniciar session con la nueva contraseña";
-            //aca´se acaba todo juan, acá ya mandamos para login, que inicie sesión de nuevo
-            return RedirectToAction("login");
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
 
-       
+        public async Task<IActionResult> UsuariosInactivos()
+        {
+            try
+            {
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var usuarios = await _usuariosServices.UsuariosInactivos();
+                ViewBag.UsuariosInactivos = usuarios.Count;
+                return View(usuarios);
+            }
+            catch (Exception )
+            {
+                return RedirectToAction("Error");
+            }
+        }
+
+        public async Task<IActionResult> Perfil()
+        {
+            Console.WriteLine("Esat entrando a el perfil");
+      
+            var idUsuarioActual = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var usuarios = await _usuariosServices.ObtenerUsuarios();
+            var user = usuarios.FirstOrDefault(u => u.Id.ToString() == idUsuarioActual);
+            Console.WriteLine("Contraseña antes " + user.Contraseña);
+
+            user.Contraseña = _usuariosServices.Encryptar(user.Contraseña);
+            Console.WriteLine("Contraseña después " + user.Contraseña);
+            if (user != null)
+            {
+ 
+                Console.WriteLine("Esta entrnado a la vista");
+                return View(user);
+                // return RedirectToAction("Perfil", "Usuario");
+            }
+            else
+            {
+                // Manejo de errores, por ejemplo, redireccionar a una página de error o al inicio de sesión
+                return RedirectToAction("Index", "Usuario");
+            }
+        }
+        
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> CambiarRol(int id, int Rol)
+        {
+            try
+            {
+                int status = _configuracionServices.ValidacionConfiguracionActiva("Editar_Usuario", _configuracionServices.ObtenerRolUserOnline(User));
+                if (status == 200)
+                {
+                    MensajeRespuestaValidacionPermiso(status);
+                    var buscusu = _context.Usuarios.FirstOrDefault(t => t.Id == id);
+                    Console.WriteLine("El rol del usuario es " + buscusu.Id_rol);
+                    Console.WriteLine("El rol que llega es " + Rol);
+                    buscusu.Id_rol = Rol;
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
+                return View("Index");
+            }catch(Exception ) 
+            {
+                return RedirectToAction("Error");
+            }
+     
+        }
+        public async Task<IActionResult> EditarContra()
+        {
+            return View();
+
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> ValidarContras(string Contraseña)
+        {
+            var idUsuarioActual = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Console.WriteLine("ID USUARIO ACTUAL "+idUsuarioActual);
+            Console.WriteLine("Así llega la clave "+Contraseña);
+            var encryp = _usuariosServices.Encryptar(Contraseña);
+            Console.WriteLine("Y así es después de encriptarla : " + encryp);
+
+            var user = _context.Usuarios.FirstOrDefault(u => u.Id.ToString() == idUsuarioActual);
+            if (user != null)
+            {
+                Console.WriteLine("SE ENCONTRÓ EL USUARIO");
+                Console.WriteLine("CONTRASEÑA DEL USUARIO " + user.Contraseña);
+                Console.WriteLine("CONTRASEÑA ENCRIPTADA QUE LLEGÓ " + encryp);
+                if (user.Contraseña != encryp)
+                {
+                    Console.WriteLine("NO COINCIDE UNA VERGA, ABRIR SWEET ALERT ");
+                    ViewData["ContraseñaIn"] = "True";
+                    return View("EditarContra");
+                }
+                else
+                {
+                    ViewData["ContraseñaCo"] = "True";
+                }
+            }
+            
+            return View("EditarContra");
+        }
+        public async Task<IActionResult> EditarContraseña()
+        {
+            return View();
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        public async Task<IActionResult> EditarContraseña(string Contraseña)
+        {
+            Console.WriteLine("LLEGÓ "+Contraseña);
+            var idUsuarioActual = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var encryp = _usuariosServices.Encryptar(Contraseña);
+            var user = _context.Usuarios.FirstOrDefault(u => u.Id.ToString() == idUsuarioActual);
+            
+            if (user != null)
+            {
+                if (user.Contraseña == encryp)
+                {
+                    ViewData["Igual"] = "True";
+                    return View();
+                }
+                else if(user.Contraseña != encryp)
+                {
+                    Console.WriteLine("ACTUALIZADO");
+                    user.Correo = user.Correo;
+                    user.Name = user.Name;
+                    user.Numero_documento = user.Numero_documento;
+                    user.Apellido = user.Apellido;
+                    user.Id_rol = user.Id_rol;
+                    user.Id = user.Id;
+                    user.Contraseña = encryp;
+                    ViewData["Editado"] = "True";
+                    await _context.SaveChangesAsync();
+                    return View("Perfil", user);
+                   
+                }
+            }   
+            return View("Perfil");
+        }
+        public async Task<ActionResult> EditPerfil(int id, [Bind("Id,Name,Apellido,Correo,Numero_documento,Contraseña")] Usuario usuario)
+        {
+            Console.WriteLine("Contraseña " + usuario.Contraseña);
+
+            // Validar el formato del correo electrónico
+            if (!IsValidEmail(usuario.Correo))
+            {
+                Console.WriteLine("Correo electrónico no válido");
+                ViewData["CorreoInvalido"] = "True";
+                return View("Perfil");
+            }
+
+            // Obtener el usuario actual
+            var usuarioActual = await _context.Usuarios.FindAsync(id);
+
+            // Comparar correos electrónicos sin importar mayúsculas/minúsculas
+            if (string.Equals(usuario.Correo, usuarioActual.Correo, StringComparison.OrdinalIgnoreCase))
+            {
+                // El correo es igual al del usuario actual, proceder con la actualización
+                Console.WriteLine("EL CORREO ES EL MISMO");
+                MensajeRespuestaValidacionPermiso(await _usuariosServices.EditPerfil(usuario));
+                return RedirectToAction("Catalog", "Libros");
+
+            }
+            else
+            {
+                bool correoExiste = _context.Usuarios.Any(u => u.Correo.ToLower() == usuario.Correo.ToLower());
 
 
+                if (correoExiste)
+                {
+                    Console.WriteLine("El correo ya existe");
+                    ViewData["CorreoExistente"] = "True";
+                    return View("Perfil");
+                }
+                else
+                {
+                    MensajeRespuestaValidacionPermiso(await _usuariosServices.EditPerfil(usuario));
+                    return RedirectToAction("Catalog", "Libros");
+
+                }
+            }
+        }
     }
 }
-public class Paginacionnn<Usuario>{
-    public List<Usuario> Usuarios { get; }
-    public int TotalItems { get; }
-    public int PageNumber { get; }
-    public int PageSize { get; }
 
-    public Paginacionnn(List<Usuario> usuarios, int totalItems, int pageNumber, int pageSize)
-    {
-        Usuarios  = usuarios;
-        TotalItems = totalItems;
-        PageNumber = pageNumber;
-        PageSize = pageSize;
-    }
-}
 

@@ -23,18 +23,32 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.length > 0) {
                 data.forEach(item => {
                     const notificacion = document.createElement("li");
+                    const enlace = document.createElement("a");
+                    const hr = document.createElement("hr"); // Crear línea horizontal
                     if(item.estado != "ACEPTADA" && item.estado != "RECHAZADA"){
                         if (item.usuario && item.usuario.name) {
-                            notificacion.textContent = `${item.usuario.name} ha solicitado. ${item.motivo}`;
+                            enlace.textContent = `${item.usuario.name} ha solicitado. ${item.motivo}`;
                         } else {
-                            notificacion.textContent = `Alguien ha solicitado. ${item.motivo}`;
+                            enlace.textContent = `Alguien ha solicitado. ${item.motivo}`;
                         }
+                        // Agregar evento de clic al enlace
+                            enlace.addEventListener("click", () => {
+                                // Aquí colocas la lógica de redirección
+                                // Por ejemplo:
+                                window.location.href = "https://localhost:7067/Peticiones/Index";
+                            });
+
+                            // Agregar el enlace al elemento li
+                            notificacion.appendChild(enlace);
+                            notificacion.appendChild(hr);
+                  
                     }else{
                         console.log("la peticion ya se ha aceptado");
                         notificacionesContainer.innerHTML = "<li>No hay notificaciones nuevas.</li>";
                     }
                    
                     notificacionesContainer.appendChild(notificacion);
+                   
                 });
                 // Cambiar el color del ícono
                 document.querySelector("#valorCampana").style.color = "white";

@@ -43,8 +43,8 @@ namespace tallerbiblioteca.Services
         public SendEmailDTO EmailRegisterUser(string destinatario){
             return new(){
                 Para  = destinatario,
-                Asunto = "Registro a Aplicativo Bookware",
-                Contenido = "Te has registrado a nuestro aplicativo con el fin de hacer uso de nuestros servicios como lo pueden ser prestamos y reservas del material biliografico de la institucion. Te agradezemos el utilizar nuestro servicio y esperamos que disfrutes todo lo que te podemos brindar"
+                Asunto = "Registro a Aplicatívo Bookware",
+                Contenido = "Te has registrado a nuestro aplicatívo con el fin de hacer uso de nuestros servicios como lo pueden ser prestamos y reservas del material biliográfico de la institución. \n Te agradezemos el utilizar nuestro servicio y esperamos que disfrutes todo lo que te podemos brindar"
             };
         }
 
@@ -52,17 +52,18 @@ namespace tallerbiblioteca.Services
             Console.WriteLine("este es el id del prestamo:" +prestamo.Id);
             return new(){
                 Para  = prestamo.Peticion.Usuario.Correo,
-                Asunto = "Peticion Confirmada",
-                Contenido = $"Tu Peticion por prestamo del libro: {prestamo.Peticion.Ejemplar.Libro.Nombre}  ha sido aceptada, puedes acercarte a la institucion por el libro solicitado. \n Recuerda devolver el ejemplar en la fecha siguiente:  {prestamo.Fecha_fin} para evitar ser sancionado "
+                Asunto = "Petición Confirmada",
+                Contenido = $"Tu Petición por préstamo del libro: {prestamo.Peticion.Ejemplar.Libro.Nombre}  ha sido aceptada, puedes acercarte a la institución por el libro solicitado. \n Recuerda devolver el libro en la fecha siguiente:  {prestamo.Fecha_fin} para evitar ser sancionado. \n Atentamente: BookWare :)! \n Disfrutalo "
     
             };
         }
 
         public SendEmailDTO EmailPeticion(Peticiones peticion){
+            Console.WriteLine("VAMOS A ENVIAR UN CORREO A "+peticion.Usuario.Correo);
             return new(){
                 Para  = "Bookware2024@gmail.com",
-                Asunto = "Peticion de Prestamo de Libro",
-                Contenido = "La persona "+ peticion.Usuario.Name + " ha solicitado el prestamo del libro "+peticion.Ejemplar.Libro.Nombre +" ingresa al aplicativo para obtener mas informacion y aceptar o rechazar la peticion"
+                Asunto = "Petición de Préstamo de Libro",
+                Contenido = "La persona "+ peticion.Usuario.Name + " ha solicitado el prestamo del libro "+peticion.Ejemplar.Libro.Nombre +" ingresa al aplicatívo para obtener más información y poder aceptar o rechazar la petición"
             };
         }
 
@@ -71,7 +72,7 @@ namespace tallerbiblioteca.Services
             return new()
             {
                 Para = usuario.Correo,
-                Asunto = "Recuperacion de contraseña",
+                Asunto = "Recuperación de contraseña",
                 Contenido = $@"Has solicitado el cambio de tu contraseña. el siguiente codigo te permitira
                 restablecer tu contraseña
                 <span style=""font-size: 24px; display: block; text-align: center; margin-top: 10px"">

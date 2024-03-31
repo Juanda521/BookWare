@@ -1,58 +1,45 @@
-﻿@model tallerbiblioteca.Models.Publicaciones
-
+﻿@using System.Security.Claims;
+@using tallerbiblioteca.Controllers
+@model Paginacion<Publicaciones>
 @{
     ViewData["Title"] = "Desactivar";
 }
-<h1>Desactivar</h1>
-<link rel="stylesheet" href="~/css/Publicaciones.css" />")';
-<h3>¿Seguro deseas desactivar  esta publicación?</h3>
+<link rel="stylesheet" href="~/css/Publicaciones.css" />;
+<div style="color: black ">
+    <h3 class="fw-bold fs-1 text-center">¿Seguro deseas desactivar esta publicación? </h3>
 <div>
-    <h4>Publicaciones</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Tipo)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Tipo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Descripcion)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Descripcion)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaInicio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaInicio)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FechaFin)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FechaFin)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Imagen)
-        </dt>
-        <dd class="col-sm-10">
-            <img src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.Imagen))" width="30px" height="40px" class="card-img" alt="Imagen">
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Confirmar" class="boton boton-danger" /> |
-        <a class="boton" asp-action="Index">Volver</a>
-    </form>
+        <div class="container">
+            @foreach (var item in Model.Items)
+            {
+                <div class="card">
+
+                    <img src="data:image/jpeg;base64,@(Convert.ToBase64String(item.Imagen))" class="card-img" alt="Imagen">
+
+                    <div class="card-content">
+                        <h3>TIPO:</h3>
+                        <p class="card-description">@item.Tipo</p>
+                        <h4>NOMBRE:</h4>
+                        <p class="card-description">@item.Nombre</p>
+                        <h3>DESCRIPCIÓN:</h3>
+                        <p class="card-description">@item.Descripcion</p>
+                        <div class="card-dates">
+                            <p>Fecha de inicio: @item.FechaInicio</p>
+                            <p>Fecha de fin: @item.FechaFin</p>
+                        </div>
+                        @if (User.FindFirst(ClaimTypes.Role)?.Value == "1" || User.FindFirst(ClaimTypes.Role)?.Value == "3")
+                        {
+                            <div class="card-buttons">
+                                <form asp-action="Delete">
+                                    <button class="Eliminar" type="submit">Aceptar</button>
+                                </form>
+                                <a class="button ms-2" asp-action="Index">Volver</a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 @if (ViewData["Desactivado"] != null && ViewData["Desactivado"].ToString() == "true")
 {

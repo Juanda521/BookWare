@@ -10,84 +10,138 @@ using tallerbiblioteca.Context;
 using tallerbiblioteca.Migrations;
 using tallerbiblioteca.Models;
 using tallerbiblioteca.Services;
+using System.Text;
+using System.IO;
+using QuestPDF.Drawing;
+using QuestPDF.Elements;
+using QuestPDF.Fluent;
+using System.Security.Claims;
+
+
 
 namespace tallerbiblioteca.Controllers
 {
     public class DevolucionesController : Controller
     {
         private readonly BibliotecaDbContext _context;
+        private readonly PrestamosServices _prestamosServices;
         private readonly DevolucionesServices _devolucionesServices;
 
-        public DevolucionesController(BibliotecaDbContext context, DevolucionesServices devolucionesServices)
+        public DevolucionesController(BibliotecaDbContext context, DevolucionesServices devolucionesServices, PrestamosServices prestamosServices)
         {
             _context = context;
             _devolucionesServices = devolucionesServices;
+            _prestamosServices = prestamosServices;
         }
 
-        // GET: Devoluciones
-        // public async Task<IActionResult> Index(int busqueda)
-        // {
-        //     // return View(await _devolucionesServices.BarraBusqueda(busqueda));
-        //     return View(await _devolucionesServices.ObtenerDevoluciones());
-        // }
 
-        public async Task<IActionResult> Index(string busqueda,int pagina = 1, int itemsPagina = 10)
+        public async Task<IActionResult> Index(int? id, DateTime? fechaDevolucion, string busqueda, int pagina = 1, int itemsPagina = 10)
         {
 
 
+            ViewBag.Id_prestamo = new SelectList(await _prestamosServices.ObtenerPrestamosEnCurso(), "Id", "Peticion.Usuario.Numero_documento");
             var devolucion = await _devolucionesServices.ObtenerDevoluciones();
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier);
 
+            var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+            var idUsuario = User.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            if (busqueda!=null)
+            if (rol != "1" && rol != "3")
             {
-                busqueda = busqueda.ToLower();
-                if (int.TryParse(busqueda, out int Id))
-                {
-                    // devolucion = devolucion.Where(u => u.Observaciones.ToLower().Contains(busqueda) || u => u.Name.ToLower().Contains(busqueda)  || u.Id.ToString().Contains(busqueda)).ToList();
-                    devolucion = devolucion.Where(u => u.Observaciones.ToLower().Contains(busqueda) || u.Prestamo.Peticion.Usuario.Name.ToLower().Contains(busqueda) || u.Id.ToString().Contains(busqueda)).ToList();
-
-                }
-                else
-                {
-                    devolucion = devolucion.Where(u => u.Observaciones.Contains(busqueda)).ToList();
-
-                }
+                devolucion = devolucion.Where(d => d.Prestamo.Peticion.Usuario.Id.ToString() == idUsuario).ToList();
             }
-            // Realiza la paginación
-            int totalDevoluciones = devolucion.Count;
-            var devolucionesPaginadas = devolucion.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
-            // Crea el objeto de paginación
-            Paginacion<Devolucion> paginacion = new Paginacion<Devolucion>(devolucionesPaginadas, totalDevoluciones, pagina, itemsPagina);
+            else
+            {
+                Console.WriteLine("Esta en administrado");
+                devolucion = await _devolucionesServices.ObtenerDevoluciones();
+            }
 
+
+
+            if (busqueda != null || fechaDevolucion != null)
+            {
+                Console.WriteLine("vamos a buscar");
+                devolucion = _devolucionesServices.BuscarDevolucion(busqueda, fechaDevolucion);
+            }
+
+            var sanciones = await _context.Sanciones.Include(s=>s.Devolucion).ThenInclude(d=>d.Prestamo).ThenInclude(p=>p.Peticion).ThenInclude(pt=>pt.Usuario).ToListAsync();
+
+            int totalDevoluciones = devolucion.Count;
+            int total = (totalDevoluciones / itemsPagina) + 1;
+            var devolucionesPaginados = devolucion.Skip((pagina - 1) * itemsPagina).Take(itemsPagina).ToList();
+
+            Paginacion<Devolucion> paginacion = new Paginacion<Devolucion>(devolucionesPaginados, total, pagina, itemsPagina);
+            paginacion.Sanciones = sanciones;
             return View(paginacion);
         }
 
-
-        // GET: Devoluciones/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateDevoluciones()
         {
-            if (id == null || _context.Devoluciones == null)
+            // string Id = Request.Form["Id"];
+            string Id_prestamo = Request.Form["Id_prestamo"];
+            string Observaciones = Request.Form["Observaciones"];
+
+            if (int.TryParse(Id_prestamo, out int idPrestamoInt))
             {
-                return NotFound();
+                Console.WriteLine("id del ejemplar a registrar: {0}", idPrestamoInt);
+            }
+            else
+            {
+                Console.WriteLine("no esta parseando el ejemplar");
+                return RedirectToAction("Index", "Devoluciones");
             }
 
-            var devolucion = await _context.Devoluciones
-                .Include(d => d.Prestamo)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (devolucion == null)
+
+            //Verifica si ya existe una devolución con el mismo ID de préstamo
+            var devolucionExistente = await _context.Devoluciones
+                .AnyAsync(p => p.Id_prestamo == idPrestamoInt);
+
+            var resultado = new ResponseModel();
+
+            //Si la devolución ya existe, retorna un error
+            if (devolucionExistente)
             {
-                return NotFound();
+                Console.WriteLine("Ya existe una devolución con el ID de préstamo proporcionado.");
+                resultado.Mensaje = "Ya existe una devolución con el ID de préstamo proporcionado.";
+                resultado.Icono = "error";
+                TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+                return RedirectToAction("Index", "Devoluciones");
             }
 
-            return View(devolucion);
+            Devolucion devolucion = new();
+            devolucion.Id_prestamo = idPrestamoInt;
+            devolucion.Observaciones = Observaciones;
+            devolucion.Fecha_devolucion = DateTime.Now;
+
+            // Continúa con la validación del modelo y la creación de la devolución
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Intenta registrar la devolución
+                    MensajeRespuestaValidacionPermiso(await _devolucionesServices.Registrar(devolucion, User));
+                    return RedirectToAction("Index", "Devoluciones");
+                }
+                catch (Exception ex)
+                {
+                    resultado.Mensaje = "Hubo un error al intentar registrar la devolución: ";
+                    resultado.Icono = "error";
+                    TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+                    return RedirectToAction("Index", "Devoluciones");
+                }
+            }
+            else
+            {
+                resultado.Mensaje = "Hubo un error al intentar registrar la devolución desde el modelo actualizar: ";
+                resultado.Icono = "error";
+                TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
+                return RedirectToAction("Index", "Devoluciones");
+            }
         }
 
-        // GET: Devoluciones/Create
-        public IActionResult Create()
-        {
-            ViewData["Id_prestamo"] = new SelectList(_context.Prestamos, "Id", "Id");
-            return View();
-        }
+
 
         private void MensajeRespuestaDevolucion(int status)
         {
@@ -110,8 +164,8 @@ namespace tallerbiblioteca.Controllers
                     resultado.Icono = "info";
                     TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
                     break;
-                    case 500:
-                     resultado.Mensaje = "ya se ha registrado la devolucion de este prestamo";
+                case 500:
+                    resultado.Mensaje = "ya se ha registrado la devolucion de este prestamo";
                     resultado.Icono = "error";
                     TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
                     break;
@@ -120,62 +174,6 @@ namespace tallerbiblioteca.Controllers
                     break;
             }
 
-        }
-
-        // POST: Devoluciones/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Create([Bind("Id,Id_prestamo,Observaciones,Fecha_devolucion")] Devolucion devolucion)
-        // {
-
-        //     Console.WriteLine("hola desdde registrar devoluciones");
-        //     Console.WriteLine($"id: {devolucion.Id}");
-        //     Console.WriteLine($"id: {devolucion.Id_prestamo}");
-        //     Console.WriteLine($"id{devolucion.Observaciones}");
-        //     Console.WriteLine($"id{devolucion.Fecha_devolucion}");
-
-        //     int status = await _devolucionesServices.Registrar(devolucion, User);
-
-        //     MensajeRespuestaValidacionPermiso(status);
-
-        //     return RedirectToAction(nameof(Index));
-        // }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Registrar(){
-                string id_prestamo = Request.Form["id_prestamo"];
-                string observacion = Request.Form["observaciones"];
-                Console.WriteLine("aca deberia copier el id del prestamo: {0} ", id_prestamo);
-                Console.WriteLine("aca deberia copiar la observacion que se le ha hecho al libro: {0} ", observacion);
-
-            Devolucion devolucion = new()
-            {
-                Observaciones = observacion,
-                Fecha_devolucion = _devolucionesServices.obtenerFechaActual()
-            };
-            Console.WriteLine(devolucion.Fecha_devolucion);
-                
-
-                if (int.TryParse(id_prestamo, out int idPrestamoInt)){
-                      devolucion.Id_prestamo = idPrestamoInt;
-                    Console.WriteLine("id del prestamo a registrar: {0}", idPrestamoInt);
-                    Console.WriteLine("vamos a validar la devolcion existente con el prestamo");
-                    var devolucionExistente = await _devolucionesServices.BuscarDevolucionExistente(idPrestamoInt);
-
-                    if(devolucionExistente){
-                        Console.WriteLine("ya el prestamo se ha devuelto");
-                        MensajeRespuestaDevolucion(500);
-                        return RedirectToAction("Index","Prestamos");
-                    }else{
-                        Console.WriteLine("no se encontraron devoluciones con ese prestamo");
-                    }
-                }
-
-                MensajeRespuestaValidacionPermiso(await _devolucionesServices.Registrar(devolucion,User));
-                return RedirectToAction(nameof(Index));
         }
 
         private void MensajeRespuestaValidacionPermiso(int status)
@@ -209,43 +207,70 @@ namespace tallerbiblioteca.Controllers
             //return (string)TempData["Mensaje"];
         }
 
-        // GET: Devoluciones/Edit/5
-        [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Devoluciones == null)
-            {
-                return NotFound();
-            }
-
-            var devolucion = await _context.Devoluciones.FindAsync(id);
-            if (devolucion == null)
-            {
-                return NotFound();
-            }
-            ViewData["Id_prestamo"] = new SelectList(_context.Prestamos, "Id", "Id", devolucion.Id_prestamo);
-            return View(devolucion);
-        }
-
-        // POST: Devoluciones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Id_prestamo,Observaciones,Fecha_devolucion")] Devolucion devolucion)
+
+        public async Task<IActionResult> Edit(int Id,string texto)
         {
-            Console.WriteLine("hola desdde registrar devoluciones");
-            Console.WriteLine($"id: {devolucion.Id}");
-            Console.WriteLine($"id: {devolucion.Id_prestamo}");
-            Console.WriteLine($"id{devolucion.Observaciones}");
-            Console.WriteLine($"id{devolucion.Fecha_devolucion}");
+            Console.WriteLine(texto);
+            var Devolucion = await _devolucionesServices.Buscar(Id);
+            if (Devolucion != null)
+            {
 
-            int status = await _devolucionesServices.Editar(devolucion, User);
+                MensajeRespuestaValidacionPermiso(await _devolucionesServices.Editar(Devolucion, User,texto));
 
-            MensajeRespuestaValidacionPermiso(status);
+            }
+            else
+            {
+                Console.WriteLine("no se esta encontrando una devolucion  con el id:" + Id);
+            }
+            return RedirectToAction(nameof(Index));
 
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Registrar()
+        {
+            string id_prestamo = Request.Form["id_prestamo"];
+            string observacion = Request.Form["observaciones"];
+            Console.WriteLine("aca deberia copier el id del prestamo: {0} ", id_prestamo);
+            Console.WriteLine("aca deberia copiar la observacion que se le ha hecho al libro: {0} ", observacion);
+
+            Devolucion devolucion = new()
+            {
+                Observaciones = observacion,
+                Fecha_devolucion = _devolucionesServices.obtenerFechaActual()
+            };
+            Console.WriteLine(devolucion.Fecha_devolucion);
+
+
+            if (int.TryParse(id_prestamo, out int idPrestamoInt))
+            {
+                devolucion.Id_prestamo = idPrestamoInt;
+                Console.WriteLine("id del prestamo a registrar: {0}", idPrestamoInt);
+                Console.WriteLine("vamos a validar la devolcion existente con el prestamo");
+                var devolucionExistente = await _devolucionesServices.BuscarDevolucionExistente(idPrestamoInt);
+
+                if (devolucionExistente)
+                {
+                    Console.WriteLine("ya el prestamo se ha devuelto");
+                    MensajeRespuestaDevolucion(500);
+                    return RedirectToAction("Index", "Prestamos");
+                }
+                else
+                {
+                    Console.WriteLine("no se encontraron devoluciones con ese prestamo");
+                }
+            }
+
+            MensajeRespuestaValidacionPermiso(await _devolucionesServices.Registrar(devolucion, User));
             return RedirectToAction(nameof(Index));
         }
+
+
+
 
         // GET: Devoluciones/Delete/5
         [HttpGet]
@@ -273,7 +298,7 @@ namespace tallerbiblioteca.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 
-            int status = await _devolucionesServices.Eliminar(id,User);
+            int status = await _devolucionesServices.Eliminar(id, User);
 
             MensajeRespuestaValidacionPermiso(status);
 
@@ -282,7 +307,43 @@ namespace tallerbiblioteca.Controllers
 
         private bool DevolucionExists(int id)
         {
-          return (_context.Devoluciones?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Devoluciones?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+
+
+        // [HttpGet]
+        // public IActionResult GenerarReporteDevolucionesPDF()
+        // {
+        //     // Obtiene los datos de las devoluciones
+        //     var devoluciones = _context.Devoluciones.ToList(); // Asegúrate de que _context esté configurado correctamente
+
+        //     // Crear un nuevo documento PDF con QuestPDF
+        //     var document = new DocumentTemplate();
+
+        //     // Agrega contenido al documento
+        //     foreach (var devolucion in devoluciones)
+        //     {
+        //         document.AddSection(section =>
+        //         {
+        //             section.Header().Text($"Devolución ID: {devolucion.Id}", TextStyle.Default.Size(14).Bold());
+        //             section.Content().Row().Cell().Text($"ID Préstamo: {devolucion.IdPrestamo}");
+        //             section.Content().Row().Cell().Text($"Observaciones: {devolucion.Observaciones}");
+        //             section.Content().Row().Cell().Text($"Fecha de Devolución: {devolucion.FechaDevolucion.ToString("dd/MM/yyyy")}");
+        //         });
+        //     }
+
+        //     // Genera el PDF
+        //     var pdfBytes = document.GeneratePdf();
+
+        //     // Devuelve el PDF como un archivo
+        //     return File(pdfBytes, "application/pdf", $"devoluciones_{DateTime.Now.Ticks}.pdf");
+        // }
+
+
+
+
+
+
     }
 }

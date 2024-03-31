@@ -19,17 +19,18 @@ public class BibliotecaDbContext : DbContext
     public DbSet<Configuracion> Configuracion {get; set;}
     public DbSet<Ejemplar>Ejemplares {get; set;}
 
-    public DbSet<Genero> Genero {get; set;}
-    public DbSet<Autor>Autores {get; set;}
+    public DbSet<Genero> Genero { get; set; }
+    public DbSet<Autor> Autores { get; set; }
 
-     public DbSet<Prestamo>Prestamos {get; set;}
+    public DbSet<Prestamo>Prestamos {get; set;}
     public DbSet<GeneroLibro> GenerosLibros {get; set;}
     public DbSet<AutorLibro> AutoresLibros {get; set;}
 
     public DbSet<Publicaciones> Publicaciones {get; set;}
-    public DbSet<Devolucion> Devoluciones {get; set;}
+    public DbSet<Devolucion> Devoluciones { get; set; }
     public DbSet<Sancion> Sanciones {get; set;}
     public DbSet<Matriculados>Matriculados {get; set;}
+    public DbSet<Reserva> Reserva { get; set;}
 
 
 

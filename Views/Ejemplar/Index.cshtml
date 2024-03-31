@@ -4,65 +4,59 @@
 @{
     ViewData["Title"] = "Index";
 }
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.bundle.min.js"></script> 
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/js/bootstrap-select.min.js"></script>
+
+ <h1 class="fw-bold fs-1 text-center ">Ejemplares</h1>
 <div class="row">
     <div class="col-md-4 m-2">
        
-        <button type="button" class="boton" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <button type="button" class="button" data-bs-toggle="modal" data-bs-target="#modalRegistrar">
             Registrar
         </button>
 
     </div>
-
-
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal fade" id="modalRegistrar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Registrar ejemplar</h5>
-                <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                
-                
-
-                <div class="row">
-                    <div class="col-md-8">
-                        <form asp-controller="Ejemplar" asp-action="CreateFromLibros" method="post" >
+                        <form asp-controller="Ejemplar" id="formCrearEjemplar" asp-action="CreateFromLibros" method="post" >
                             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                             <div class="form-group">
-                                <label class="control-label">Libro</label>
-                                <select name="Id_libro" class ="form-control" asp-items="ViewBag.libros"></select>
-                                @* <span asp-validation-for="LibroViewModel.Ejemplar.Id_libro" class="text-danger"></span> *@
+                                <label class="control-label required">Libro</label>
+                                <select name="Id_libro" class ="form-control" style="width: 50%" id="selectLibros" asp-items="ViewBag.libros"></select>
+                         
                             </div>
                             <div class="form-group mt-2">
-                                <label asp-for="LibroViewModel.Ejemplar.Isbn_libro" class="control-label"></label> @*
-                                <input asp-for="LibroViewModel.Ejemplar.Isbn_libro" class="form-control" /> *@
-                                @* <label asp-for="@Model.LibroViewModel.Ejemplar.Isbn_libro" class="control-label"></label> *@
-                                <input type="text" class="form-control mb-2" name="Isbn_ejemplar" data-val="true" data-val-required="Ingresa este campo por favor" >
-                                @* <span asp-validation-for="LibroViewModel.Ejemplar.Isbn_libro" class="text-danger"></span> *@
+                                <label asp-for="LibroViewModel.Ejemplar.Isbn_libro" class="control-label required"></label> 
+                              
+                                <input type="number" class="form-control mb-2" style=" width:50%"  name="Isbn_ejemplar" id="Isbn_ejemplar" >
+                               
+                                 <span id="isbnError" class="text-danger" style="display: none;">No puedes registrar un Ejemplar sin el isbn</span>
                             </div>
-                            @* <div class="form-group">
-                                <input asp-for="LibroViewModel.Ejemplar.EstadoEjemplar" value="ACTIVO" class="form-control" type="hidden"/>
-                            </div> *@
+                            
                             <div class="form-group">
-                                <button class="boton mt-2 mb-2" type="submit">Registrar</button>
+                                <button class="button mt-2 mb-2" style="display:none;" id="botonEnviar" type="submit">Registrar</button>
                             </div>
                         </form>
-                    </div>
-                </div>
             </div>
            
             </div>
         </div>
     </div>
 
-    <div class="col-4">
+    <div class="col-lg-4 col-md-4 col-12">
         <form asp-action="Index"> 
-            <p>
-                <input type="text" name="busqueda" placeholder="Nombre libro, Isbn o Id" class="form-control"/>
-                <button type="submit" class="ms-4 mt-1 boton medium" value="Buscar">Buscar</button>
+            <p class="d-flex">
+               <input type="text" name="busqueda" placeholder="Busqueda" class="form-control"/>
+                <button type="submit" class="ms-3 mt-1 button pe-5" value="Buscar">Buscar</button>
             </p>
         </form>
     </div>
@@ -107,64 +101,17 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelejemplar => ejemplar.EstadoEjemplar) 
-                    @if(ejemplar.EstadoEjemplar == "EN PRESTAMO"){
-                        <span id="detallesEjemplar" data-bs-target="#detallesEjemplar_@ejemplar.Id" data-bs-toggle="modal">
-                            <i class="fas fa-eye ms-2 mt-2" ></i>
-                        </span>
-
-                        <div class="modal" tabindex="-1" role="dialog" id="detallesEjemplar_@ejemplar.Id">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">@ejemplar.Libro.Nombre</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Contenido del modal aquí -->
-                                        <p>Contenido del modal...</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="boton boton-secondary" data-dismiss="modal">Cerrar</button>
-                                        <!-- Otros botones si es necesario -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    }
+                    
                 </td>
                 <td>
-                    <!-- Button trigger modal -->
-                    <button class="d-inline" ><a data-bs-toggle="modal" data-bs-target="#editar_@ejemplar.Id"><i class="fa-solid fa-file-pen fa-2xl " style="color: #82B440;"></i></a></button>
-                    <!-- Modal -->
-                    <div class="modal fade" id="editar_@ejemplar.Id" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Editar @ejemplar.Id</h5>
-                                    <button type="button" class="boton-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <form asp-action="Edit" method="post">
-                                        @Html.Hidden("Id", ejemplar.Id)
-                                        <select asp-for="@ejemplar.EstadoEjemplar" name="Estado" class="form-select">
-                                        <option value="DISPONIBLE">Disponible</option>
-                                        <option value="NO_DISPONIBLE">No Disponible</option>
-                                        </select>
-                                        <button class="mt-2 boton medium" type="submit">Editar</button>
-                                    </form>
-                                
-                                </div>
+                    @if(ejemplar.EstadoEjemplar!="EN PRESTAMO" && ejemplar.EstadoEjemplar!="EN PETICION" ){
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="chkCambiarEjemplar"  @(ejemplar.EstadoEjemplar == "DISPONIBLE" ? "checked" : "") data-ejemplar-id="@ejemplar.Id" />
+                            <span class="slider"></span>
+                        </label>
+                    }
+
                         
-                            </div>
-                        </div>
-                    </div>
-                    <!-- debido a que el ejemplar no se elimina no se utiliza el siguiente fragmento de codigo -->
-                    @* <form class="d-inline"  asp-action="Delete" id="form-@ejemplar.Id.ToString()" onsubmit="sendForm(event)">
-                            @Html.Hidden("Id", ejemplar.Id)
-                        <button class="d-inline" type="submit"><i class="fa-solid fa-trash fa-2xl " style="color: #e83a3a;"></i> </button>
-                    </form> *@
                 </td>
             </tr>
     }
@@ -172,6 +119,11 @@
     </table>
   
 </div>
+
+<form asp-action="Edit" method="post" id="formCambiarEstadoEjemplar">
+    <input type="hidden" id="ejemplarId" name="Id" value="">                                       
+        @* <button class="mt-2 boton medium" type="submit">Editar</button> *@
+</form>
 
    <div class="row">
                <div class="pagination p1">
@@ -219,13 +171,46 @@
         </script>
 
         <script>
-    $(document).ready(function () {
-        $("#detallesEjemplar").click(function () {
-            // Muestra el modal al hacer clic en el ícono del ojo
-            $("#modalDetallesEjemplar").modal("show");
+        $(document).ready(function () {
+            $("#detallesEjemplar").click(function () {
+                // Muestra el modal al hacer clic en el ícono del ojo
+                $("#modalDetallesEjemplar").modal("show");
+            });
         });
-    });
-</script>
+        </script>
+
+        <script src="~/js/select2.min.js" asp-append-version="true"></script>
+
+        <script>
+            $(document).ready(function(){
+                $('#selectLibros').select2({
+                    dropdownParent: $('#modalRegistrar')
+                });
+            })
+
+        </script>
+
+        <script>
+        document.getElementById('Isbn_ejemplar').addEventListener('input', function() {
+            var isbnInput = document.getElementById('Isbn_ejemplar');
+            var isbnError = document.getElementById('isbnError');
+            var submitButton = document.getElementById('botonEnviar');
+
+            if (isbnInput.value.trim() === "") {
+                // Si el input está vacío, oculta el botón y muestra el mensaje de error
+                submitButton.style.display = 'none';
+                isbnError.style.display = 'block';
+            } else if (isbnInput.value.trim().length <10) {
+               // Si el input no está vacío, pero no contiene mas de 10 caracteres oculta el botón y muestra el mensaje de error
+               isbnError.textContent = "Debe contener mas de 10 caracteres";
+               isbnError.style.display = 'block';
+            } else{
+                  // Si el input no está vacío, muestra el botón y oculta el mensaje de error
+                submitButton.style.display = 'block';
+                isbnError.style.display = 'none';
+            }
+        });
+        </script>
         @{
             var Mensaje =  TempData["Mensaje"] as string;
             if (Mensaje!=null){

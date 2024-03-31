@@ -18,6 +18,6 @@ namespace tallerbiblioteca.Models
 
         public DateTime Fecha_fin { get; set; }
 
-        public string Estado {get; set;} = "En curso";
+        public string Estado {get; set;} = "EN CURSO";
     }
 }

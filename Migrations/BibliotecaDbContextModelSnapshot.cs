@@ -34,6 +34,10 @@ namespace tallerbiblioteca.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Nacionalidad")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NombreAutor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -100,6 +104,10 @@ namespace tallerbiblioteca.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Fecha_devolucion")
                         .HasColumnType("datetime2");
@@ -366,6 +374,36 @@ namespace tallerbiblioteca.Migrations
                     b.ToTable("Publicaciones");
                 });
 
+            modelBuilder.Entity("tallerbiblioteca.Models.Reserva", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("FechaReserva")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("IdEjemplar")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdUsuario")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdEjemplar");
+
+                    b.HasIndex("IdUsuario");
+
+                    b.ToTable("Reserva");
+                });
+
             modelBuilder.Entity("tallerbiblioteca.Models.Rol", b =>
                 {
                     b.Property<int>("Id")
@@ -394,6 +432,10 @@ namespace tallerbiblioteca.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Fecha_Sancion")
                         .HasColumnType("datetime2");
@@ -462,7 +504,7 @@ namespace tallerbiblioteca.Migrations
                         .IsRequired();
 
                     b.HasOne("tallerbiblioteca.Models.Libro", "Libro")
-                        .WithMany()
+                        .WithMany("AutorLibros")
                         .HasForeignKey("Id_libro")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -522,7 +564,7 @@ namespace tallerbiblioteca.Migrations
                         .IsRequired();
 
                     b.HasOne("tallerbiblioteca.Models.Libro", "Libro")
-                        .WithMany()
+                        .WithMany("GeneroLibros")
                         .HasForeignKey("Id_libro")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -562,6 +604,25 @@ namespace tallerbiblioteca.Migrations
                     b.Navigation("Peticion");
                 });
 
+            modelBuilder.Entity("tallerbiblioteca.Models.Reserva", b =>
+                {
+                    b.HasOne("tallerbiblioteca.Models.Ejemplar", "Ejemplar")
+                        .WithMany()
+                        .HasForeignKey("IdEjemplar")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("tallerbiblioteca.Models.Usuario", "Usuario")
+                        .WithMany()
+                        .HasForeignKey("IdUsuario")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ejemplar");
+
+                    b.Navigation("Usuario");
+                });
+
             modelBuilder.Entity("tallerbiblioteca.Models.Sancion", b =>
                 {
                     b.HasOne("tallerbiblioteca.Models.Devolucion", "Devolucion")
@@ -582,6 +643,13 @@ namespace tallerbiblioteca.Migrations
                         .IsRequired();
 
                     b.Navigation("Rol");
+                });
+
+            modelBuilder.Entity("tallerbiblioteca.Models.Libro", b =>
+                {
+                    b.Navigation("AutorLibros");
+
+                    b.Navigation("GeneroLibros");
                 });
 #pragma warning restore 612, 618
         }

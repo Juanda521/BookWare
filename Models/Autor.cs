@@ -14,6 +14,8 @@ namespace tallerbiblioteca.Models
 
         public string Estado {get; set;}  ="";
 
+        public string Nacionalidad {get; set;} = "";
+
     
 
         [NotMapped]

@@ -55,13 +55,13 @@ namespace tallerbiblioteca.Services
         public async Task<int> Registrar(Genero genero, ClaimsPrincipal User)
         {
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_genero", _configuracionServices.ObtenerRolUserOnline(User));
+            int Status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_Genero", _configuracionServices.ObtenerRolUserOnline(User));
 
 
             if (Status == 200)
             {
                 Console.WriteLine("Hola desde los services");
-                var nombre_genero = genero.NombreGenero;
+                genero.Estado="ACTIVO";
                 
                 _context.Add(genero);
                 await _context.SaveChangesAsync();
@@ -77,7 +77,7 @@ namespace tallerbiblioteca.Services
         }
 
         public List<Genero>busqueda(string busqueda ){
-            return  _context.Genero.Where(l=>l.NombreGenero.ToLower().Contains(busqueda)).ToList();
+            return  _context.Genero.Where(l=>l.NombreGenero.ToLower().Contains(busqueda) || l.Estado.ToLower().Contains(busqueda)  ).ToList();
         }
 
         public async Task<List<Genero>>ObtenerGeneros(){
@@ -87,13 +87,12 @@ namespace tallerbiblioteca.Services
         public async Task<int> Editar(Genero genero, ClaimsPrincipal User)
         {
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_genero", _configuracionServices.ObtenerRolUserOnline(User));
+            int Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Genero", _configuracionServices.ObtenerRolUserOnline(User));
 
 
             if (Status == 200)
             {
-                var nombre_genero=  genero.NombreGenero;
-
+                genero.Estado = "ACTIVO";
                 _context.Update(genero);
                 await _context.SaveChangesAsync();
                 // return View(devolucion);
@@ -111,7 +110,7 @@ namespace tallerbiblioteca.Services
         public async Task<int> Eliminar(int id, ClaimsPrincipal User)
         {
 
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Eliminar_genero", _configuracionServices.ObtenerRolUserOnline(User));
+            int Status = _configuracionServices.ValidacionConfiguracionActiva("Eliminar_Genero", _configuracionServices.ObtenerRolUserOnline(User));
 
 
             if (Status == 200)
@@ -141,15 +140,15 @@ namespace tallerbiblioteca.Services
 
             int Id_rol = Int32.Parse(Id_rol_string);
             //debe ser el mismo  nombre de la tabla permisos
-            int Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_genero", _configuracionServices.ObtenerRolUserOnline(User));
-          
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Genero", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
             var genero = _context.Genero.Find(id);
             if (Status == 200)
             {
                 if (genero != null)
                 {
-                    genero.Estado = "Inhabilitado";
+                   
+                    genero.Estado = "INHABILITADO";
                     _context.SaveChanges();
                 }
             }
@@ -163,14 +162,14 @@ namespace tallerbiblioteca.Services
 
             int Id_rol = Int32.Parse(Id_rol_string);
             //debe ser el mismo  nombre de la tabla permisos
-            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_genero", Id_rol);
+            this.Status = _configuracionServices.ValidacionConfiguracionActiva("Actualizar_Genero", Id_rol);
             //si el estado que nos devolvio la validacion de la accion a realizar es correcta (status 200) podremos realizar la accion
             var genero = _context.Genero.Find(id);
             if (Status == 200)
             {
                 if (genero != null)
                 {
-                    genero.Estado = "Activo";
+                    genero.Estado = "ACTIVO";
                     _context.SaveChanges();
                 }
             }

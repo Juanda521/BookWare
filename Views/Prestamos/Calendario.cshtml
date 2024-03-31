@@ -1,23 +1,225 @@
-
-
- @model IEnumerable<tallerbiblioteca.Models.Prestamo>
+@model IEnumerable<tallerbiblioteca.Models.Prestamo>
 @{
     ViewData["Title"] = "Index";
-   
+}
+
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> *@
+@* <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> *@
+
+<style>
+    .card:hover {
+        transform: scale(1.02);
+        transition: transform 0.2s;
+    }
+</style>
+
+<h1 class="fs-1 text-dark text-center"> DASHBOARD</h1>
+
+<div class="row ">
+    <div class="col-6 col-lg-4 col-md-6 mt-2">
+        <div class="card bg-success">
+            <div class="row">
+               <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center ">
+                    <h2 class="fs-1 text-light">@ViewBag.CantidadPrestamos</h2>
+                </div>
+                <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center">
+                    <h2 class="text-light">Prestamos</h2>
+                </div>
+                 
+                 <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center">
+         
+                    <i class="fa-solid fa-clipboard-list fa-2xl" style="color: #ffffff;"></i>
+                </div>
+
+            </div>
+            <div class="card-footer text-center">
+                <a class="text-light fs-5"> Mas Información</a>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div class="col-6 col-lg-4 col-md-6 mt-2">
+        <div class="card">
+            <div class="row">
+               <div class="col-4 col-lg-4 col-md-4  d-flex justify-content-center align-items-center ">
+                    <h2 class="fs-1">@ViewBag.CantidadSanciones</h2>
+                </div>
+                <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center">
+                    <h2>Sanciones</h2>
+                </div>
+                 <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center">
+                    <i class="fa-solid fa-ban fa-2xl" style="color: #00000;"></i>
+                </div>
+                
+            </div>
+             <div class="card-footer text-center">
+                <a class="text-dark fs-5"> Mas Información</a>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <div class="col-12 col-lg-4 col-md-12 mt-2">
+        <div class="card bg-dark">
+            <div class="row">
+               <div class="col-3 col-lg-3 col-md-4 d-flex justify-content-center align-items-center  ">
+                    <h2 class="fs-1 text-light">@ViewBag.CantidadDevoluciones</h2>
+                </div>
+                <div class="col-5 col-lg-5 col-md-5 d-flex justify-content-center align-items-center">
+                    <h2 class="text-light">Devoluciónes</h2>
+                </div>
+                 <div class="col-4 col-lg-4 col-md-4 d-flex justify-content-center align-items-center">
+                    @* <img src="~/Images/devolucion.png" style="height:120px;"> *@
+                    <i class="fa-solid fa-right-left fa-2xl" style="color: #ffffff;"></i>
+                    @* <i class="fa-solid fa-arrow-rotate-left fa-2xl ms-3" style="color: #f4f5f5; margin-top:70px; font-size:80px; height:50px;" ></i> *@
+                </div>
+                
+            </div>
+            <div class="card-footer text-center">
+                <a class="text-light text-center fs-5">Mas Información</a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-12 col-lg-12 col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- Aquí va el gráfico -->
+                    <canvas id="graficaLibros"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-6 col-md-12">
+            
+        </div>
+    </div>
+    <h1 class="fs-1 text-center text-dark mt-4"> Calendario</h1>
+    <div class="col-lg-12">
+        <div class="card">
+
+            <div class="card-body">
+                <div class="form-group">
+                    <input type="text" class="d-flex justify-content-center form-control" id="searchInput" placeholder="Buscar por número de documento o nombre de usuario...">
+                </div>
+                @* <div class="form-group mt-2">
+                    <input type="text" id="datePicker" placeholder="Selecciona una fecha por favor">
+                </div> *@
+                <!-- Aquí va el calendario -->
+                <div id='calendar' class=" pt-4"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- este va ser el modal que se va abrir cuando le demos click a una fecha, esto por medio de js -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Información de la Fecha</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <div class="modal-body  text-dark">
+              
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <label for="modal-event">Evento</label>
+                        <input readonly type="text" id="modal-event">
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <label for="modal-estado">Estado</label>
+                        <input readonly type="text" id="modal-estado">
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <label for="modal-id-usuario">Identificación Usuario</label>
+                        <input readonly type="text" id="modal-id-usuario">
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-6">
+                        <label for="modal-fecha-fin">Fecha fin</label>
+                        <input readonly type="text" id="modal-fecha-fin">
+                    </div>
+
+
+                </div>
+              
+
+               
+                
+                
+
+                <label for="modal-user"> Nombre usuario</label>
+                <input readonly type="text" id="modal-user">
+
+                <label for="modal-libro"> Nombre libro</label>
+                <input readonly type="text" id="modal-libro">
+
+               
+
+
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="Eliminar" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+
+
+@section Scripts{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="~/js/EventManager.js"></script>
+    @{
+        var Mensaje = TempData["Mensaje"] as string;
+
+        if (Mensaje != null)
+        {
+            var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
+            <script>
+                const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
+                const icono = "@mensaje.Icono";
+                MostrarMensajeUsuarios(icono, cuerpo);
+            </script>
+        }
+    }
+}
+
+
+@*@model IEnumerable<tallerbiblioteca.Models.Prestamo>
+@{
+    ViewData["Title"] = "Index";
+
 }
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <div class="row mb-2">
-    
-<input type="text" id="searchInput" placeholder="Buscar por número de documento o nombre de usuario...">
+
+<div class="col-lg-6">
+    <canvas id="graficaLibros"></canvas>
 </div>
 
 
+</div>
 
-
+<input type="text" id="searchInput" placeholder="Buscar por número de documento o nombre de usuario...">
 <input type="text" id="datePicker" placeholder="Selecciona una fecha por favor">
+
+
 
 
     <!-- con solo este div permitiremos a js insertar el calendario gracias a la libreria fullcalendar-->
@@ -39,18 +241,18 @@
             </div>
             <div class="modal-body  text-dark">
                 @* <span id="modal-date"></span><p class="fw-bold">Fecha seleccionada </p> *@
-                
-                <span class="text-success" id="modal-event"></span> <p class="fw-bold">Evento</p>
-                
-                <span class="text-success" id="modal-id-usuario"> </span>  <p class="fw-bold">Identificacíon Usuario</p>
-               
-                <span class="text-success" id="modal-user"></span> <p class="fw-bold"> Nombre usuario</p>
-               
-                <span class="text-success" id="modal-libro"></span>  <p class="fw-bold"> Nombre Libro</p>
-                
-                <span class="text-danger" id="modal-fecha-fin"></span> <p class="fw-bold">Fecha Devolución </p>
 
-                @* <div id="carouselExample" class="carousel carousel-dark slide" data-ride="carousel">
+@* <span class="text-success" id="modal-event"></span> <p class="fw-bold">Evento</p>
+
+                <span class="text-success" id="modal-id-usuario"> </span>  <p class="fw-bold">Identificacíon Usuario</p>
+
+                <span class="text-success" id="modal-user"></span> <p class="fw-bold"> Nombre usuario</p>
+
+                <span class="text-success" id="modal-libro"></span>  <p class="fw-bold"> Nombre Libro</p>
+
+                <span class="text-danger" id="modal-fecha-fin"></span> <p class="fw-bold">Fecha Devolución </p>
+*@
+@* <div id="carouselExample" class="carousel carousel-dark slide" data-ride="carousel">
                     <div class="carousel-inner">
                         <!-- Los items del carrusel se agregarán dinámicamente aquí -->
                     </div>
@@ -63,33 +265,33 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div> *@
-                
-            </div>
+
+@*     </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
-</div>
+</div>*@
 
 
 
-@section Scripts{
+@*@section Scripts{
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script src="~/js/EventManager.js"></script>
     @{
         var Mensaje =  TempData["Mensaje"] as string;
- 
+
         if (Mensaje!=null){
             var mensaje = Newtonsoft.Json.JsonConvert.DeserializeObject<ResponseModel>(Mensaje);
         <script>
             const cuerpo = `@Html.Raw(Newtonsoft.Json.JsonConvert.ToString(mensaje.Mensaje))`;
             const icono = "@mensaje.Icono";
             MostrarMensajeUsuarios(icono, cuerpo);
-        </script> 
+        </script>
         }
     }
-} 
- 
+}
+*@ 

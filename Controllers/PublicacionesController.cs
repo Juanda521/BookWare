@@ -1,182 +1,253 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Data;
 using tallerbiblioteca.Context;
+using System.Data;
 using tallerbiblioteca.Models;
 using tallerbiblioteca.Services;
+using Microsoft.AspNetCore.Mvc;
+using tallerbiblioteca.Migrations;
+using Newtonsoft.Json;
+using static QuestPDF.Helpers.Colors;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 
 namespace tallerbiblioteca.Controllers
 {
-    [Authorize]
+
     public class PublicacionesController : Controller
     {
 
         private readonly BibliotecaDbContext _context;
 
         private readonly PublicacionesServices _PublicacionesServices;
-
-        public PublicacionesController(BibliotecaDbContext context, PublicacionesServices publicacionesservices)
+        private ConfiguracionServices _configuracionServices;
+        public PublicacionesController(BibliotecaDbContext context, PublicacionesServices publicacionesservices, ConfiguracionServices configuracionServices)
         {
             _context = context;
             _PublicacionesServices = publicacionesservices;
-
+            _configuracionServices = configuracionServices;
         }
-
         // GET: Publicaciones
-
-
-        public async Task<IActionResult> Index(int pagina = 1, int itemsPagina = 3)
+        private void MensajeRespuestaValidacionPermiso(ResponseModel resultado)
         {
-            var publicaciones = await _PublicacionesServices.ObtenerPublicaciones();
-            publicaciones = publicaciones.OrderBy(p => p.FechaFin).ToList();
-            
-            int indiceInicio = (pagina - 1) * itemsPagina;
-            int totalItems = publicaciones.Count;
-            if (totalItems % 3 != 0)
-            {
-                totalItems = (totalItems / 3) + 1;
-            }
-            else
-            {
-                totalItems = (totalItems / 3);
-            }
 
-            var publicacionesPaginadas = publicaciones.Skip(indiceInicio).Take(itemsPagina).ToList();
-
-
-            var paginacion = new PaginacionPubli<Publicaciones>(publicacionesPaginadas, totalItems, pagina, itemsPagina);
-
-            return View(paginacion);
+            TempData["Mensaje"] = JsonConvert.SerializeObject(resultado);
         }
+        public async Task<IActionResult> Index(string? busqueda, DateTime? fechaini, DateTime? fechafin, int pagina = 1, int itemsPagina = 3)
+        {
+            try
+            {
+                var publicaciones = await _PublicacionesServices.ObtenerPublicaciones();
+                if (busqueda != null)
+                {
+                    publicaciones = await _PublicacionesServices.Buscar(busqueda);
+                }
+                else if (fechafin != null || fechafin != null)
+                {
+                    publicaciones = await _PublicacionesServices.buscarfecha(fechaini, fechafin);
+                }
+                publicaciones = publicaciones.OrderBy(p => p.FechaFin).ToList();
 
+                int indiceInicio = (pagina - 1) * itemsPagina;
+                int totalItems = publicaciones.Count;
+                if (totalItems % 3 != 0)
+                {
+                    totalItems = (totalItems / 3) + 1;
+                }
+                else
+                {
+                    totalItems = (totalItems / 3);
+                }
 
+                var publicacionesPaginadas = publicaciones.Skip(indiceInicio).Take(itemsPagina).ToList();
+
+                var model = new PublicacionesModel(new Paginacion<Models.Publicaciones>(publicacionesPaginadas, totalItems, pagina, itemsPagina), new Models.Publicaciones());
+                return View(model);
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
+        }
         // GET: Publicaciones/Create
         public IActionResult Create()
         {
-            return View();
-        }
-
-        // POST: Publicaciones/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Tipo,Nombre,Descripcion,FechaInicio,FechaFin,Imagen,Estado")] IFormFile? Imagen, Publicaciones publicaciones)
-        {
-            var fechaini = publicaciones.FechaInicio;
-            var fechafin = publicaciones.FechaFin;
-
-            if (fechaini > fechafin)
+            var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (rolUsuario=="2")
             {
-                ViewBag.FechaMayor = true;
-                return View(publicaciones);
+                Console.WriteLine("El rol del usuario es " + rolUsuario);
+                return View("Error");
+            }
+            if (!User.Identity.IsAuthenticated)
+            {
+                Console.WriteLine("El usuario no está autenticado.");
+                return RedirectToAction("Login","Usuarios");
             }
             else
             {
-                ViewData["Iniciar"] = "true";
+                return View();
+            }
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Tipo,Nombre,Descripcion,FechaInicio,FechaFin,Imagen,Estado")] IFormFile? Imagen, Models.Publicaciones publicaciones)
+        {
+            try
+            {
+                Console.WriteLine("Llegando a crear");
+                //var fechaini = publicaciones.FechaInicio;
+                //var fechafin = publicaciones.FechaFin;
+
+                //if (fechaini > fechafin)
+                //{
+                //    ViewBag.FechaMayor = true;
+                //    return View(publicaciones);
+                //}
                 if (Imagen != null && Imagen.Length > 0)
                 {
+                    Console.WriteLine("LLEGANDO LA IMAGEN BIEN ");
                     using (var ms = new MemoryStream())
                     {
                         Imagen.CopyTo(ms);
                         publicaciones.Imagen = ms.ToArray();
                     }
                 }
-                await _PublicacionesServices.Crear(publicaciones);
-                   
+                MensajeRespuestaValidacionPermiso(await _PublicacionesServices.Crear(publicaciones, User));
                 return RedirectToAction(nameof(Index));
             }
-        }
-
-
-
-        // GET: Publicaciones/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            var publicaciones = await _context.Publicaciones.FindAsync(id);
-            if (publicaciones == null)
+            catch(Exception)
             {
-                return NotFound();
+                Console.WriteLine("LLEGANDO A CATCH");
+                return RedirectToAction("Error");
             }
-            return View(publicaciones);
         }
-
-        // POST: Publicaciones/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Tipo,Nombre,Descripcion,FechaInicio,FechaFin")] Publicaciones publicaciones)
+    // GET: Publicaciones/Edit/5
+        public async Task<IActionResult> Edit(int id)
         {
             try
             {
-                var result = await _PublicacionesServices.Editar(publicaciones);
-
-                if (result)
+                if (!User.Identity.IsAuthenticated)
                 {
-                    ViewData["CreadaConExito"] = "True";
+                    Console.WriteLine("El usuario no está autenticado.");
+                    return RedirectToAction("Login", "Usuarios");
                 }
-                else
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario=="2")
                 {
-                    TempData["ErrorCrear"] = "True";
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var publicacionesTask = _PublicacionesServices.ObtenerEditar(id);
+                var publicaciones = await publicacionesTask;
+
+                if (publicaciones == null)
+                {
+
+                    return NotFound();
                 }
 
-                return RedirectToAction(nameof(Index));
+                return View(publicaciones);
             }
-            catch (Exception ex)
+            catch (Exception) 
             {
-                
-                TempData["ErrorCrear"] = "True";
-                TempData.Keep();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Error");
             }
         }
-
-        // GET: Publicaciones/Delete/5
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Tipo,Nombre,Descripcion,FechaInicio,FechaFin")] Models.Publicaciones publicaciones)
         {
-            var resultado = await _PublicacionesServices.enviarcambiar(id);
-            return View(resultado);
+            try
+            {
+                MensajeRespuestaValidacionPermiso(await _PublicacionesServices.Editar(publicaciones, User));
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
         }
+        // GET: Publicaciones/Delete/5
+        public async Task<IActionResult> Delete(int id, int pagina = 1, int itemsPagina = 3)
+        {
+            try
+            {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    Console.WriteLine("El usuario no está autenticado.");
+                    return RedirectToAction("Login", "Usuarios");
+                }
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var resultado = await _PublicacionesServices.enviarcambiar(id);
+                int indiceInicio = (pagina - 1) * itemsPagina;
+                int totalItems = resultado.Count;
 
+
+                var publicacionesPaginadas = resultado.Skip(indiceInicio).Take(itemsPagina).ToList();
+
+
+                var paginacion = new Paginacion<Models.Publicaciones>(publicacionesPaginadas, totalItems, pagina, itemsPagina);
+
+                return View(paginacion);
+            }
+            catch
+            {
+                return RedirectToAction("Error");
+            }
+        }
         // POST: Publicaciones/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cambiar = await _PublicacionesServices.CambiarEstado(id);
-            if (cambiar == 200)
-            {
-                ViewData["Desactivado"] = "True";
-
-            }else if(cambiar == 202)
-            {
-
-            }
+            MensajeRespuestaValidacionPermiso(await _PublicacionesServices.CambiarEstado(id, User));
             return RedirectToAction(nameof(Index));
         }
-
-        private bool PublicacionesExists(int id)
+        public async Task<IActionResult> Desactivadas(int pagina = 1, int itemsPagina = 3)
         {
-            return (_context.Publicaciones?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-    }
-    public class PaginacionPubli<Publicacion>
-    {
-        public List<Publicacion> Publicaciones { get; }
-        public int TotalItems { get; }
-        public int PageNumber { get; }
-        public int PageSize { get; }
+            try {
+                if (!User.Identity.IsAuthenticated)
+                {
+                    Console.WriteLine("El usuario no está autenticado.");
+                    return RedirectToAction("Login", "Usuarios");
+                }
+                var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
+                if (rolUsuario == "2")
+                {
+                    Console.WriteLine("El rol del usuario es " + rolUsuario);
+                    return View("Error");
+                }
+                var publicaciones = await _PublicacionesServices.Desactivadas();
+                publicaciones = publicaciones.OrderBy(p => p.FechaFin).ToList();
 
-        public PaginacionPubli(List<Publicacion> publicaciones, int totalItems, int pageNumber, int pageSize)
-        {
-            Publicaciones = publicaciones;
-            TotalItems = totalItems;
-            PageNumber = pageNumber;
-            PageSize = pageSize;
-        }
+                int indiceInicio = (pagina - 1) * itemsPagina;
+                int totalItems = publicaciones.Count;
+                if (totalItems % 3 != 0)
+                {
+                    totalItems = (totalItems / 3) + 1;
+                }
+                else
+                {
+                    totalItems = (totalItems / 3);
+                }
+
+                var publicacionesPaginadas = publicaciones.Skip(indiceInicio).Take(itemsPagina).ToList();
+
+
+                var paginacion = new Paginacion<Models.Publicaciones>(publicacionesPaginadas, totalItems, pagina, itemsPagina);
+
+                return View(paginacion);
+            }catch (Exception ) {
+                return RedirectToAction("Error");
+             }
+            }
+
     }
+
+
 }
 

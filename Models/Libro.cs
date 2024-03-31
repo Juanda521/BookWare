@@ -21,7 +21,6 @@ namespace tallerbiblioteca.Models
 
         public string Estado {get; set;}  = "ACTIVO";
 
-          // Nuevas propiedades para los géneros y autores seleccionados
         [NotMapped]
         public List<int> GeneroIds { get; set; }
         [NotMapped]
@@ -35,6 +34,16 @@ namespace tallerbiblioteca.Models
 
         [NotMapped]
         public List <Ejemplar> Ejemplares {get; set;}
+
+        [NotMapped]
+        public List<AutorLibro> AutoresRelacionados  {get; set;} = new();
+
+        [NotMapped]
+        public List<GeneroLibro> GenerosRelacionados  {get; set;}  = new();
+
+        public ICollection<GeneroLibro> GeneroLibros { get; set; }
+
+        public ICollection<AutorLibro> AutorLibros { get; set; }
 
        
     }

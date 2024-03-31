@@ -2,30 +2,80 @@
 @{
     ViewData["Title"] = "Reestablecer contraseña";
 }
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="~/js/Usuarios.js"></script>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<div class="d-flex justify-content-center align-items-center vh-50">
+    <div class="card shadow-lg" style="width: 50%; margin-top: 50px; ">
+        <div class="card-body">
+            <h2 class="card-title text-center">Reestablece tu contraseña</h2>
+            <form asp-action="restablecer" onsubmit="return validarContraseñas()">
+                <div class="row ">
+                    <div class="mb-3">
+                        <label for="contraseña" class="form-label required">Digita nueva contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Digita nueva contraseña" required>
+                            <span id="togglePassword1" class="input-group-text">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label for="confirmar" class="form-label required">Confirma contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="confirmar" name="confirmar" placeholder="Confirma tu nueva contraseña" required>
+                            <span id="togglePassword2" class="input-group-text">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <br>
+                    @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
+                    {
+                        <p class="text-danger fs-5">@ViewData["ErrorMessage"]</p>
+                    }
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="button">Enviar</button>
+                </div>
+            </form>
+            <a class="Eliminar d-block mt-3 text-center mt-3" asp-action="Recuperar">regresar</a>
+        </div>
+    </div>
 
-<h2>Reestablece tu contraseña</h2>
-<div>
-    <form asp-action="restablecer" onsubmit="return validarContraseñas()">
-        <div class="col-md-4">
-            <label for="contraseña">Digita nueva contraseña</label>
-            <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Digita nueva contraseña" required>
-        </div>
-        <div class="col-md-4">
-            <label for="confirmar">Confirma contraseña</label>
-            <input type="password" class="form-control" id="confirmar" name="confirmar" placeholder="Confirma tu nueva contraseña" required>
-        </div>
-        <br>
-         @if (!string.IsNullOrEmpty(ViewData["ErrorMessage"]?.ToString()))
-            {
-                <p class="text-danger fs-5">@ViewData["ErrorMessage"]</p>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput1 = document.getElementById('contraseña');
+            const togglePasswordButton1 = document.getElementById('togglePassword1');
+            const passwordInput2 = document.getElementById('confirmar');
+            const togglePasswordButton2 = document.getElementById('togglePassword2');
+
+            if (passwordInput1 && togglePasswordButton1 && passwordInput2 && togglePasswordButton2) {
+                togglePasswordButton1.addEventListener('click', function () {
+                    togglePasswordVisibility(passwordInput1, togglePasswordButton1);
+                });
+
+                togglePasswordButton2.addEventListener('click', function () {
+                    togglePasswordVisibility(passwordInput2, togglePasswordButton2);
+                });
             }
-        <div class="col-md-10">
-            <button type="submit" class="boton boton-primary">Enviar</button>
-        </div>
-    </form>
-    <button class="mt-4 boton boton-secondary "><a asp-action="Recuperar">regresar</a></button>
 
+            function togglePasswordVisibility(input, toggleButton) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    toggleButton.querySelector('i').classList.remove('fa-eye');
+                    toggleButton.querySelector('i').classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    toggleButton.querySelector('i').classList.remove('fa-eye-slash');
+                    toggleButton.querySelector('i').classList.add('fa-eye');
+                }
+            }
+        });
+    </script>
     <script>
         function validarContraseñas() {
             var contraseña = document.getElementById('contraseña').value;
@@ -43,5 +93,6 @@
             return true;
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <link rel="stylesheet" href="~/js/Usuarios.js" />
 </div>

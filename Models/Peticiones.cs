@@ -1,5 +1,6 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tallerbiblioteca.Models
@@ -19,6 +20,7 @@ namespace tallerbiblioteca.Models
         public Usuario Usuario {get;set;} = new();
 
         public DateTime FechaPeticion { get; set; }
+        [Required(ErrorMessage = "este campo es obligatorio.")]
         public string Motivo { get; set; }  = "Breve descripcion de la peticion";
 
         public string Estado  {get; set;} = "EN ESPERA";
@@ -39,5 +41,16 @@ namespace tallerbiblioteca.Models
     
 
       
+    }
+    public class PeticionesModel
+    {
+        public Paginacion<Peticiones> Paginacion { get; set; }
+        public Peticiones Peticiones { get; set; }
+
+        public PeticionesModel(Paginacion<Peticiones> paginacion, Peticiones peticiones)
+        {
+            Paginacion = paginacion;
+            this.Peticiones = peticiones;
+        }
     }
 }

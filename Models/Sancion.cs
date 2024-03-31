@@ -20,5 +20,9 @@ namespace tallerbiblioteca.Models
 
         public DateTime Fecha_Sancion { get; set; }
 
+        public string Estado {get;set;}
+        // public virtual List<Sancion> sanciones;
+        
+
     }
 }

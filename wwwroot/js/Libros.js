@@ -3,8 +3,12 @@
 
 function validarYEnviarFormulario() {
     // Obtén los valores seleccionados en los selectores de género y autor
-    var generoIds = document.getElementById('GeneroIds').selectedOptions;
-    var autorIds = document.getElementById('AutorIds').selectedOptions;
+    var generoIds = document.getElementById('GeneroIds').value;
+    var autorIds = document.getElementById('AutorIds').value;
+
+    var Nombre = document.getElementById('Nombre').value;
+    var Descripcion = document.getElementById('Descripcion').value;
+
 
     console.log("hablalo desde la validacion");
 
@@ -23,46 +27,57 @@ function validarYEnviarFormulario() {
         }
         // Evita que el formulario se envíe si no se cumplen los requisitos
         return false;
+    }else if(Nombre.length === 0  ){
+
+        console.log("el campo nombre esta vacio, no se puede enviar el formulario");
+        var errorSpan = document.getElementById('errorMensaje');
+        if (errorSpan) {
+            errorSpan.parentNode.removeChild(errorSpan);
+        }
+        return false;
+    }else if(Descripcion.length ===0){
+        console.log("el campo Descripcion esta vacio, no se puede enviar el formulario");
+        var errorSpan = document.getElementById('errorMensaje');
+        if (errorSpan) {
+            errorSpan.parentNode.removeChild(errorSpan);
+        }
+        return false;
+    }else{
+        console.log("todos los campos estan llenos y procedemos a enviar el formulario");
+        // Si se cumplen los requisitos, obténemos el formulario y lo enviamos
+        var formulario = document.getElementById('formularioLibros');
+        formulario.submit();
+
+        // Si llegamos a este punto, eliminamos el mensaje de error si existe
+        var errorSpan = document.getElementById('errorMensaje');
+        if (errorSpan) {
+            errorSpan.parentNode.removeChild(errorSpan);
+        }
     }
 
-    // Si se cumplen los requisitos, obténemos el formulario y lo enviamos
-    var formulario = document.getElementById('formularioLibros');
-    formulario.submit();
-
-    // Si llegamos a este punto, eliminamos el mensaje de error si existe
-    var errorSpan = document.getElementById('errorMensaje');
-    if (errorSpan) {
-        errorSpan.parentNode.removeChild(errorSpan);
-    }
+    
 }
 
-
-    $(document).ready(function() {
-        $('.chkCambiarCampo').change(function() {
-            var libroId = $(this).data('libro-id');
-            $('#libroId').val(libroId);
-            console.log("ID del libro: " + libroId);
-            $('#formCambiarCampo').submit();
-            console.log("le dimos click al boton y enviamos el formulario");
-        });
+$(document).ready(function() {
+    $('.chkCambiarCampo').change(function() {
+        var libroId = $(this).data('libro-id');
+        $('#libroId').val(libroId);
+        console.log("ID del libro: " + libroId);
+        $('#formCambiarCampo').submit();
+        console.log("le dimos click al boton y enviamos el formulario de editar libro");
     });
+});
 
-
-
-// $(document).ready(function() {
-//   $(".selectpicker").selectpicker({
-    
-//     size: 2, // Establecer el número de opciones visibles
-//     width: '50%' // Establecer el ancho del select
-//     // Puedes agregar más opciones según la documentación de Bootstrap-Select
-//   });
-// });
-
-
-
-    
-
-// Agrega un event listener al botón del formulario
+$(document).ready(function() {
+    $('.chkCambiarEjemplar').change(function() {
+        var ejemplarId = $(this).data('ejemplar-id');
+        $('#ejemplarId').val(ejemplarId);
+        console.log("ID del ejemplar: " + ejemplarId);
+        $('#formCambiarEstadoEjemplar').submit();
+        console.log("le dimos click al boton y enviamos el formulario de editar ejemplar");
+    });
+});
 document.getElementById('botonRegistrar').addEventListener('click', function () {
+    console.log("le dimos click a registrar libro");
     validarYEnviarFormulario();
 });
