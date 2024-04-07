@@ -120,6 +120,7 @@ namespace tallerbiblioteca.Controllers
         private void MensajeRespuestaValidacionPermiso(int status)
         {
             var resultado = new ResponseModel();
+            Console.WriteLine("vamos a crear el mensaje");
 
             if (status == 200)
             {
@@ -256,15 +257,74 @@ namespace tallerbiblioteca.Controllers
             var UserEncontrado = _usuariosServices.BuscarUsuario(loginData.Numero_documento,loginData.Contraseña);
 
             if(UserEncontrado!=null){
+
+                if(UserEncontrado.Estado!="ACTIVO"){
+                    return StatusCode(500,"No puedes ingresar al aplicativo, Te encuentras suspendido");
+                }
                 
-                return Ok("las credenciales son validas y se procede a realizar el login");
+                return Ok(UserEncontrado);
             }else{
                 return StatusCode(503,"las credenciales no coiniciden");
             }
-
-
-        
         }
+
+        [HttpPost]
+        [Route("Movil/RecuperarContraseña/{numero_documento}")]
+        [AllowAnonymous]
+        public async Task<IActionResult>RecuperarContraseñaMovil(int numero_documento)
+        {
+            Console.WriteLine($"esta llegando esto de postman {numero_documento}");
+
+                 var resultado = await _usuariosServices.RecuperarContraseña(numero_documento);
+
+                if(resultado.Item1 == 0){
+                    return NotFound(resultado.Item2);
+                }else{
+                    var response = new
+                    {
+                        Mensaje = "Se ha enviado un código a tu correo para que puedas reestablecer tu contraseña",
+                        Codigo = resultado.Item1,
+                        Usuario = resultado.Item3
+                    };
+                    return Ok(response);
+                }
+            
+        }
+
+        [HttpPost]
+        [Route("Movil/ReestablecerContraseña/{numero_documento}/{Contraseña}")]
+        [AllowAnonymous]
+        public async Task<IActionResult>ReestablecerContraseñaMovil(int numero_documento,string Contraseña)
+        {
+            Console.WriteLine($"llegamos a restablecer contraseña {numero_documento}");
+            var usuario = await _context.Usuarios.Where(u=>u.Numero_documento == numero_documento).FirstOrDefaultAsync();
+            if(usuario!=null){
+                Console.WriteLine($"Esta es la contraseña actual del usuario{usuario.Contraseña}");
+                
+                var ContraseñaEncryptada = _usuariosServices.Encryptar(Contraseña);
+                Console.WriteLine($"esta es la nueva contraseña que va tener el usuario{ContraseñaEncryptada}");
+
+                usuario.Contraseña = ContraseñaEncryptada;
+                // _context.Update(usuario);
+                // await _context.SaveChangesAsync();
+
+                Console.WriteLine("La contraseña se ha actualizado exitosamente");
+
+                return Ok();
+
+
+            }else{
+                return NotFound();
+            }
+            
+        }
+
+
+
+      
+
+
+
 
 
         [HttpPost]
@@ -415,7 +475,7 @@ namespace tallerbiblioteca.Controllers
 
                             await this._usuariosServices.Create(usuario);
                             MensajeRespuestaValidacionPermiso(200);
-                            
+                            Console.WriteLine("ya va redireccionar");
                             return RedirectToAction(nameof(Index));
                         }
                         else
@@ -437,6 +497,7 @@ namespace tallerbiblioteca.Controllers
             }
             catch (Exception)
             {
+                Console.WriteLine("nos redirecciono al catch");
                 return RedirectToAction("Error");
             }
         }
@@ -604,7 +665,7 @@ namespace tallerbiblioteca.Controllers
                 if (Int32.TryParse(numero_documento, out Int32 numero_documento_int))
                 {
                     Console.WriteLine("vamos a parsear el numero de documento");
-                    var (codigoServicio, mensajeError, UsuarioServicios) = _usuariosServices.RecuperarContraseña(numero_documento_int);
+                    var (codigoServicio, mensajeError, UsuarioServicios) = await _usuariosServices.RecuperarContraseña(numero_documento_int);
                     codigo = codigoServicio;
                     Usuario usuario = UsuarioServicios;
                     if (!string.IsNullOrEmpty(mensajeError))
@@ -666,6 +727,8 @@ namespace tallerbiblioteca.Controllers
                 return RedirectToAction("Error");
             }
         }
+
+
 
         [AllowAnonymous]
         [HttpPost]

@@ -4,7 +4,7 @@ using tallerbiblioteca.Context;
 using tallerbiblioteca.Services;
 using PdfSharp.Drawing;
 using PdfSharp.Fonts;
-
+// "Data Source=SQL5113.site4now.net;Initial Catalog=db_aa7214_bookwaresena;User Id=db_aa7214_bookwaresena_admin;Password=bookware2024"
 var builder = WebApplication.CreateBuilder(args);
 //IMPORTANTE lo utilizamos para no estar creando objetos de tipo service en los controladores
 builder.Services.AddScoped<ConfiguracionServices>();
@@ -35,16 +35,19 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
   
 });
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowLocalhostAndDevTools",
-//        builder => builder.WithOrigins("http://localhost:55878") // Ajusta el puerto según sea necesario
-//                          .AllowAnyMethod()
-//                          .AllowAnyHeader());
-//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsApi",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 
 builder.Services.AddSession();
 var app = builder.Build();
+app.UseCors();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

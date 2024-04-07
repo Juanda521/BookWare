@@ -68,6 +68,23 @@ namespace tallerbiblioteca.Controllers
                 return RedirectToAction("Error");
             }
         }
+
+        [HttpGet]
+        [AllowAnonymous]
+        [Route("Movil/Publicaciones")]
+         public async Task<IActionResult> IndexMovil()
+        {
+            try
+            {
+                var publicaciones = await _PublicacionesServices.ObtenerPublicaciones();
+                return Json(publicaciones);
+            } catch (Exception)
+            {
+                return RedirectToAction("Error");
+            }
+        }
+
+
         // GET: Publicaciones/Create
         public IActionResult Create()
         {
@@ -79,7 +96,7 @@ namespace tallerbiblioteca.Controllers
             }
             if (!User.Identity.IsAuthenticated)
             {
-                Console.WriteLine("El usuario no está autenticado.");
+                Console.WriteLine("El usuario no estï¿½ autenticado.");
                 return RedirectToAction("Login","Usuarios");
             }
             else
@@ -127,7 +144,7 @@ namespace tallerbiblioteca.Controllers
             {
                 if (!User.Identity.IsAuthenticated)
                 {
-                    Console.WriteLine("El usuario no está autenticado.");
+                    Console.WriteLine("El usuario no estï¿½ autenticado.");
                     return RedirectToAction("Login", "Usuarios");
                 }
                 var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -173,7 +190,7 @@ namespace tallerbiblioteca.Controllers
             {
                 if (!User.Identity.IsAuthenticated)
                 {
-                    Console.WriteLine("El usuario no está autenticado.");
+                    Console.WriteLine("El usuario no estï¿½ autenticado.");
                     return RedirectToAction("Login", "Usuarios");
                 }
                 var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;
@@ -212,7 +229,7 @@ namespace tallerbiblioteca.Controllers
             try {
                 if (!User.Identity.IsAuthenticated)
                 {
-                    Console.WriteLine("El usuario no está autenticado.");
+                    Console.WriteLine("El usuario no estï¿½ autenticado.");
                     return RedirectToAction("Login", "Usuarios");
                 }
                 var rolUsuario = User.FindFirst(ClaimTypes.Role)?.Value;

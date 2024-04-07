@@ -3,10 +3,10 @@
 @{
     ViewData["Title"] = "Edit";
 }
-<h4>@Model.Nombre</h4>
+<h4 class="d-flex justify-content-center">@Model.Nombre</h4>
 <hr />
 <div class="d-flex justify-content-center">
-    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 75%; font-size: 0.9em;">
         <div class="card-body">
             <h1 class="card-title text-center">Editar Libro</h1>
         <form asp-controller="Libros" id="formularioEditar" asp-action="Edit" method="post" enctype="multipart/form-data">

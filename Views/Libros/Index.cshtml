@@ -9,13 +9,13 @@
 
 <h1 class="fw-bold fs-1 text-center ">Libros</h1>
 <div class="row">
-    <div class="col-md-4">
-        <p>
+    <div class="col-lg-4 col-md-4">
+       
             <a class="button" asp-action="Create">  Registrar </a>
-        </p>
+      
     </div>
 
-    <div class="col-4">
+    <div class="col-lg-4">
         <form asp-action="Index">
             <p class="d-flex align-items-center">
                 <input type="text" name="busqueda" placeholder="Busqueda" class="form-control" />
@@ -40,7 +40,7 @@
 
 </div>
 <div class="row">
-    <div class="col-10">
+    <div class="col-lg-10">
         <table class="fs-5">
             <thead>
                 <tr>
@@ -97,7 +97,7 @@
                                         </div>
                                         <div class="modal-body">
                                             <div class="row">
-                                                <div class="col-12 col-md-12 col-lg-12">
+                                                <div class="col-12 col-md-12 col-lg-12 m-2">
                                                     @if (libro.Ejemplares.Count == 0)
                                                     {
 
@@ -224,10 +224,10 @@
 
                                             <div class="row">
 
-                                                <div class="col-6">
+                                                <div class="col-lg-6 col-12">
                                                     <img class="img-fluid w-50 h-auto" src="data:Images;base64,@libro.ImagenLibro" alt="fallo en la imagen" srcset="">
                                                 </div>
-                                                <div class="col-4">
+                                                <div class="col-lg-4 col-12">
                                                     @libro.Descripcion
                                                 </div>
 
@@ -336,46 +336,103 @@
 
 
     </div>
-    <div class="col-1">
+    <div class="col-lg-2">
+        <div class="row">
 
-        @* <a class="button mt-4 mb-2" asp-controller="Autor" asp-action="Index"> Autores</a> *@
-        <a class="button mt-4 mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal"> Autores</a>
-
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-center" id="exampleModalLabel">Registrar Autor</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                        <div class="modal-body text-center">
-                            <div class="mb-4">
-                               
-                                <button id="btnRegistrar" class="button mb-2">Registro</button>
-                               
-                                <button id="btnVerAutores" class="button mb-2">Ver Autores</button>
+            <div class="col-lg-10">
+                <a class="button mt-4 mb-2" data-bs-toggle="modal" data-bs-target="#exampleModal"> Autores</a>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-center" id="exampleModalLabel">Registrar Autor</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                            <div class="modal-body text-center">
+                                <div class="mb-4">
+                                
+                                    <button id="btnRegistrar" class="button mb-2">Registro</button>
+                                
+                                    <button id="btnVerAutores" class="button mb-2">Ver Autores</button>
+                                </div>
+                        
+                            <div id="formularioRegistro" style="display:none;">
+                                <form asp-controller="Autor" asp-action="CreateAutor" id="formulario" method="post" onsubmit="validateCreateFormAutor(event)">
+                                
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                        <div class="row g-2">
+                                            <hr>
+                                            <div class="col-md">
+                                                
+                                                <div class="form-form">
+                                                    <label name="NombreAutor" class="control-label">Nombre Autor</label>  
+                                                    <input name="NombreAutor" class="form-control"/>  
+                                                </div>
+                                            </div>
+                                            <div class="col-md">
+                                                <div class="form-form">
+                                                    <label name="Nacionalidad" class="control-label">Nacionalidad</label>  
+                                                    <input name="Nacionalidad" class="form-control"/>
+                                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end mt-2">
+                                            <button id="autorbton" class="button" type="submit">
+                                                Crear
+                                            </button>
+                                        </div>
+                                </form>
                             </div>
-                       
-                        <div id="formularioRegistro" style="display:none;">
-                            <form asp-controller="Autor" asp-action="CreateAutor" id="formulario" method="post" onsubmit="validateCreateFormAutor(event)">
-                               
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <!-- Lista de autores -->
+                            <div id="listaAutores" style="display:none;">
+                                <hr>
+                                <h5>Lista de Autores</h5>
+                                <div id="autoresModalBody">
+                                    <!-- Aquí se cargarán los autores dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-10">
+                <a class="button mt-4 mb-2"  data-bs-toggle="modal" data-bs-target="#generosModal"> Géneros</a>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="generosModal" tabindex="-1" aria-labelledby="generosModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title text-center" id="generosModalLabel">Registrar Género</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                                    <div class="mb-4">
+                                        
+                                        <button id="btnRegistrarGenero" class="button mb-2">Registro</button>
+                                    
+                                        <button id="btnVerGeneros" class="button mb-2">Ver Géneros</button>
+                                    </div>
+                        
+                            <div id="formularioRegistroGenero" style="display:none;">
+                                <form asp-controller="Generos" asp-action="CreateGenero" id="formularioGenero" method="post" onsubmit="validateCreateFormGeneros(event)">
+                                    
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                                     <div class="row g-2">
                                         <hr>
                                         <div class="col-md">
-                                            
-                                            <div class="form-form">
-                                                <label name="NombreAutor" class="control-label">Nombre Autor</label>  
-                                                <input name="NombreAutor" class="form-control"/>  
-                                            </div>
                                         </div>
                                         <div class="col-md">
                                             <div class="form-form">
-                                                <label name="Nacionalidad" class="control-label">Nacionalidad</label>  
-                                                <input name="Nacionalidad" class="form-control"/>
-                                            
+                                                <label name="NombreGenero" class="control-label">Nombre Género</label>  
+                                                <input name="NombreGenero" class="form-control"/>  
                                             </div>
+                                        </div>
+                                        <div class="col-md">
                                         </div>
                                     </div>
                                     <div class="d-flex justify-content-end mt-2">
@@ -383,78 +440,25 @@
                                             Crear
                                         </button>
                                     </div>
-                            </form>
-                        </div>
-                        <!-- Lista de autores -->
-                        <div id="listaAutores" style="display:none;">
-                            <hr>
-                            <h5>Lista de Autores</h5>
-                            <div id="autoresModalBody">
-                                <!-- Aquí se cargarán los autores dinámicamente -->
+                                </form>
+                            </div>
+                            <!-- Lista de géneros -->
+                            <div id="listaGeneros" style="display:none;">
+                                <hr>
+                                <h5>Lista de Géneros</h5>
+                                <div id="generosModalBody">
+                                    <!-- Aquí se cargarán los géneros dinámicamente -->
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <a class="button mt-4 mb-2"  data-bs-toggle="modal" data-bs-target="#generosModal"> Géneros</a>
 
-        <!-- Modal -->
-        <div class="modal fade" id="generosModal" tabindex="-1" aria-labelledby="generosModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-center" id="generosModalLabel">Registrar Género</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                                <div class="mb-4">
-                                    
-                                    <button id="btnRegistrarGenero" class="button mb-2">Registro</button>
-                                   
-                                    <button id="btnVerGeneros" class="button mb-2">Ver Géneros</button>
-                                </div>
-                       
-                        <div id="formularioRegistroGenero" style="display:none;">
-                            <form asp-controller="Generos" asp-action="CreateGenero" id="formularioGenero" method="post" onsubmit="validateCreateFormGeneros(event)">
-                                
-                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                                <div class="row g-2">
-                                    <hr>
-                                    <div class="col-md">
-                                    </div>
-                                    <div class="col-md">
-                                        <div class="form-form">
-                                            <label name="NombreGenero" class="control-label">Nombre Género</label>  
-                                            <input name="NombreGenero" class="form-control"/>  
-                                        </div>
-                                    </div>
-                                    <div class="col-md">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mt-2">
-                                    <button id="autorbton" class="button" type="submit">
-                                        Crear
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- Lista de géneros -->
-                        <div id="listaGeneros" style="display:none;">
-                            <hr>
-                            <h5>Lista de Géneros</h5>
-                            <div id="generosModalBody">
-                                <!-- Aquí se cargarán los géneros dinámicamente -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="col-lg-10">
+                <a class="button mt-4 mb-2" asp-controller="Ejemplar" asp-action="Index"> Ejemplares</a>
             </div>
         </div>
-
-        <a class="button mt-4 mb-2" asp-controller="Ejemplar" asp-action="Index"> Ejemplares</a>
-
     </div>
 </div>
 

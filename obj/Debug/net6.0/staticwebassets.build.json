@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "uAZc5MnzXzeXrWmK0z3PlvetJsanLdqZ9IfFSljpk1Y=",
+  "Hash": "39JYpHJxr3Q5tSIYoLtMWgfKg8l/znoffmuXAPfbg/0=",
   "Source": "tallerbiblioteca",
   "BasePath": "_content/tallerbiblioteca",
   "Mode": "Default",
@@ -8687,23 +8687,6 @@
       "OriginalItemSpec": "wwwroot\\js\\Configuracion.js"
     },
     {
-      "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Configuracion2.js",
-      "SourceId": "tallerbiblioteca",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\",
-      "BasePath": "_content/tallerbiblioteca",
-      "RelativePath": "js/Configuracion2.js",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\js\\Configuracion2.js"
-    },
-    {
       "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\es.js",
       "SourceId": "tallerbiblioteca",
       "SourceType": "Discovered",
@@ -8753,23 +8736,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\Libros.js"
-    },
-    {
-      "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Libros2.js",
-      "SourceId": "tallerbiblioteca",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\",
-      "BasePath": "_content/tallerbiblioteca",
-      "RelativePath": "js/Libros2.js",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\js\\Libros2.js"
     },
     {
       "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Login.js",
@@ -8838,23 +8804,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\site.js"
-    },
-    {
-      "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\site2.js",
-      "SourceId": "tallerbiblioteca",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\",
-      "BasePath": "_content/tallerbiblioteca",
-      "RelativePath": "js/site2.js",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\js\\site2.js"
     },
     {
       "Identity": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Usuarios.js",

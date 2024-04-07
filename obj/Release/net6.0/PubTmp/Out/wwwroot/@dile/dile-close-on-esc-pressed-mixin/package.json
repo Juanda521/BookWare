@@ -1,0 +1,32 @@
+{
+  "name": "@dile/dile-close-on-esc-pressed-mixin",
+  "version": "2.0.2",
+  "description": "Mixin function to create components that close themselves pressing the Esc key",
+  "keywords": [
+    "slide",
+    "slide down",
+    "slide up",
+    "animation",
+    "effect",
+    "mixin"
+  ],
+  "type": "module",
+  "author": "midesweb <miguel@desarrolloweb.com>",
+  "homepage": "https://github.com/Polydile/dile-components",
+  "license": "MIT",
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Polydile/dile-components.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Polydile/dile-components/issues"
+  },
+  "gitHead": "b404cf91b5ed5788d9ec6c1560299569accb7cce"
+}

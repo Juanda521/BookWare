@@ -18,6 +18,7 @@ namespace tallerbiblioteca.Services
       
         public void SendEmail(SendEmailDTO correo)
         {
+           
             var email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_config.GetSection("Email:UserName").Value));
             email.To.Add(MailboxAddress.Parse(correo.Para));
@@ -35,12 +36,15 @@ namespace tallerbiblioteca.Services
             );
 
             smtp.Authenticate( _config.GetSection("Email:UserName").Value, _config.GetSection("Email:PassWord").Value);
-
+              Console.WriteLine("vamos a enviar el correo");
             smtp.Send(email);
+              Console.WriteLine("enviamos  el correo");
             smtp.Disconnect(true);
         }
 
         public SendEmailDTO EmailRegisterUser(string destinatario){
+            Console.WriteLine("vamos a preparar el correo");
+             Console.WriteLine(destinatario);
             return new(){
                 Para  = destinatario,
                 Asunto = "Registro a Aplicatívo Bookware",

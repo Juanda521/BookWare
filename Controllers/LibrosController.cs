@@ -7,6 +7,7 @@ using tallerbiblioteca.Models;
 using tallerbiblioteca.Services;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Cors;
 
 namespace tallerbiblioteca.Controllers
 {
@@ -218,6 +219,7 @@ namespace tallerbiblioteca.Controllers
                 {
                     Id  =libro.Id,
                     Titulo = libro.Nombre,
+                    Imagen = libro.ImagenLibro,
                     Cantidad  = libro.CantidadLibros,
                     Ejemplares = ejemplaresJson,
                     AutoresRelacionados = autoresJson,

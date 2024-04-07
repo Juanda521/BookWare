@@ -15,6 +15,7 @@
                     {
                         <p class="text-danger">@ViewData["ErrorMessage"]</p>
                     }
+                    <span id="mensaje-error" style="color: red;"></span>
                 </div>
                 <div class="d-grid gap-2">
                     <button type="submit" class="button btn-lg">Enviar</button>
@@ -24,6 +25,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function validarNumeros() {
+  var input = document.getElementById('correo');
+  var mensajeError = document.getElementById('mensaje-error');
+  var valor = input.value;
+  if (/[^0-9]/.test(valor)) {
+    mensajeError.textContent = 'Por favor ingresa solo números.';
+  } else {
+    mensajeError.textContent = '';
+  }
+  
+}
+document.getElementById('correo').addEventListener('keyup', validarNumeros);
+</script>
 @if (ViewData["Encontrados"] != null && ViewData["Encontrados"].ToString() == "True")
 {
    <script>

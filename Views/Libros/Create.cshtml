@@ -12,7 +12,7 @@
 <hr />
 
 <div class="d-flex justify-content-center fs-4">
-    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 75%; font-size: 0.9em;">
         <div class="card-body">
             <form asp-action="Create" id="formularioLibros" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -29,7 +29,7 @@
                     <span asp-validation-for="Descripcion" class="text-danger"></span>
                 </div>
                 <div class="row mt-2  fw-bold">
-                    <div class="col-6 col-lg-6">
+                    <div class="col-lg-6 col-12">
 
                         <div class="form-group mb-2">
                             <label for="GeneroIds" class="required">Géneros:</label>
@@ -38,7 +38,7 @@
                         </div>
 
                     </div>
-                    <div class="col-5 col-lg-6 ">
+                    <div class="col-lg-6 col-12 ">
                         <div class="form-group">
                             <label for="AutorIds" class="required">Autores:</label>
                             <select asp-for="AutorIds" name="AutorIds" id="AutorIds" asp-items="ViewBag.Autores"></select>
@@ -57,9 +57,9 @@
 
                 <div class="form-group mt-2 d-flex">
                     @* <button class="boton medium" type="submit">Registrar</button> *@
-                    <button id="botonRegistrar" class="button me-5" type="submit">Registrar</button>
+                    <button id="botonRegistrar" class="button col-lg-5 col-7 me-1" type="submit">Registrar</button>
                 
-                    <a class="Eliminar"  asp-action="Index">Regresar</a>
+                    <button class="Eliminar col-lg-5 ms-1 col-6"><a  asp-action="Index">Regresar</a></button>
                 </div>
             </form>
         </div>

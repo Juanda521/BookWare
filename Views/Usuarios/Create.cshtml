@@ -5,7 +5,7 @@
     ViewData["Title"] = "Crear Usuario";
 }
 <div class="d-flex justify-content-center">
-    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 50%; font-size: 0.9em;">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="width: 75%; font-size: 0.9em;">
         <div class="card-body">
         <h1 class="card-title text-center">Crear usuario</h1>
         <hr/>
@@ -59,9 +59,9 @@
                     <span asp-validation-for="Correo" class="text-danger"></span>
                 </div>
                 <input asp-for="Estado" type="hidden" value="ACTIVO" />
-                <div class="mt-3 text-center" style="display: flex; justify-content: center;">
-                    <button class="button" type="submit" style="margin-right: 10px;">Registrar</button>
-                    <a class="Eliminar" asp-action="Index" style="align-self: center;">Regresar</a>
+                <div class="mt-3 row  text-center" style="display: flex; justify-content: center;">
+                    <button class="button col-lg-5 mb-1" type="submit" style="margin-right: 10px;">Registrar</button>
+                    <a class="Eliminar col-lg-5" asp-action="Index" style="align-self: center;">Regresar</a>
                 </div>
 
             </form>

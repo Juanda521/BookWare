@@ -2037,20 +2037,12 @@
       "PackagePath": "staticwebassets\\js\\Configuracion.js"
     },
     {
-      "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Configuracion2.js",
-      "PackagePath": "staticwebassets\\js\\Configuracion2.js"
-    },
-    {
       "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\EventManager.js",
       "PackagePath": "staticwebassets\\js\\EventManager.js"
     },
     {
       "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Libros.js",
       "PackagePath": "staticwebassets\\js\\Libros.js"
-    },
-    {
-      "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Libros2.js",
-      "PackagePath": "staticwebassets\\js\\Libros2.js"
     },
     {
       "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\Login.js",
@@ -2075,10 +2067,6 @@
     {
       "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
-    },
-    {
-      "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\js\\site2.js",
-      "PackagePath": "staticwebassets\\js\\site2.js"
     },
     {
       "Id": "C:\\Users\\ASUS\\Desktop\\BookWare\\BookWare\\tallerbiblioteca\\wwwroot\\lib\\bootstrap\\LICENSE",

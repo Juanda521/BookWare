@@ -51,8 +51,26 @@ namespace tallerbiblioteca.Services
             Console.WriteLine("Usuario despúes"+usuario.Name);
             usuario.Apellido = usuario.Apellido.ToLower();
             _context.Add(usuario);
-            _emailServices.SendEmail(_emailServices.EmailRegisterUser(usuario.Correo));
-            return (await _context.SaveChangesAsync() > 0) ? true : false;
+            try
+            {
+                _emailServices.SendEmail(_emailServices.EmailRegisterUser(usuario.Correo));
+            }
+            catch (Exception ex)
+            {
+                
+                Console.WriteLine("Ha ocurrido un error al enviar el correo electrónico: " + ex.Message);
+
+            }
+            bool final;
+            if (await _context.SaveChangesAsync() > 0){
+                Console.WriteLine("se registro el usuario");
+                final = true;
+            }else{
+                 Console.WriteLine("no se registro el usuario");
+                final  =false;
+            };
+            
+            return final;
         }
 
         public string Encryptar(string cadena_encriptar){
@@ -273,13 +291,15 @@ namespace tallerbiblioteca.Services
                 return true;
             }
         }
-        public (int,string,Usuario) RecuperarContraseña(int NumeroDocumento)
+        public async Task<(int,string,Usuario)> RecuperarContraseña(int NumeroDocumento)
         {
+            Console.WriteLine($"este es el numero de documento que esta llegando: {NumeroDocumento}");
             int codigo = 0;
             string mensajeError  =null;
-            var usuario = _context.Usuarios.Include(u=>u.Rol).FirstOrDefault(u =>u.Numero_documento == NumeroDocumento);
+            var usuario = await _context.Usuarios.Include(u=>u.Rol).FirstOrDefaultAsync(u =>u.Numero_documento == NumeroDocumento);
             if (usuario != null)
             {
+                Console.WriteLine($"suspuestamente encontro al usuario{usuario.Numero_documento}");
                 if (usuario.Correo==null)
                 {
                     Console.WriteLine("no hay correo registrado");
