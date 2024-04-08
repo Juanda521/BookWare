@@ -228,7 +228,7 @@ namespace tallerbiblioteca.Services
                 }
                 else
                 {
-                    Console.WriteLine("despues miramos esto");
+                    Console.WriteLine("alguno de los dos no lo esta encontrando");
                 }
             }
             return Status;
@@ -236,7 +236,7 @@ namespace tallerbiblioteca.Services
 
         public async Task<bool> ValidarEjemplarEnPeticion(int id_ejemplar)
         {
-            var ejemplar = await _context.Ejemplares.FirstOrDefaultAsync(p=>p.Id ==  id_ejemplar && p.EstadoEjemplar == "EN PETICION");
+            var ejemplar = await _context.Ejemplares.FirstOrDefaultAsync(p=>p.Id ==  id_ejemplar && p.EstadoEjemplar == "EN PETICION" || p.Id ==  id_ejemplar && p.EstadoEjemplar == "EN PRESTAMO");
 
             if(ejemplar!=null){
                 return true;
@@ -305,7 +305,7 @@ namespace tallerbiblioteca.Services
             return DateTime.Now;
 
         }
-        private async Task<bool> ValidacionPeticionPendiente(Peticiones peticion)
+        public async Task<bool> ValidacionPeticionPendiente(Peticiones peticion)
         {
 
             return await _context.Peticiones.AnyAsync(u => u.Id_usuario == peticion.Id_usuario && u.Estado == "EN ESPERA");

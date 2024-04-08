@@ -372,16 +372,37 @@ namespace tallerbiblioteca.Controllers
             if(_usuariosServices.ValidarUsuarioEnPrestamo(viewModel.Peticion.Id_usuario)){
 
                 Console.WriteLine("Este usuario tiene un prestamo en curso");
-                //codigo 503 declarado para usuarios con prestamos en curso 
-                //  MensajeRespuestaPeticion(503);
-                    return StatusCode(503,"este usuario tiene un prestamo en curso");
+                return StatusCode(503,"este usuario tiene un prestamo en curso");
+            }else if (await _peticionesServices.ValidacionPeticionPendiente(viewModel.Peticion)){
+                return StatusCode(500,"ya existe una peticion en espera de este usuario");
             }else{
-
                 if(await _peticionesServices.ValidarEjemplarEnPeticion(viewModel.Peticion.Id_ejemplar)){
-                       return StatusCode(503,"este ejemplar se encuentra en peticion");
-                }else{
 
-                
+                    if (await _usuariosServices.ValidarUsuarioEnReserva(viewModel.Peticion.Id_usuario)){
+                        return StatusCode(502,"ya existe una reserva asociada a este usuario");
+                    };
+                    Reserva reserva = new(){
+                        IdEjemplar  = viewModel.Peticion.Id_ejemplar,
+                        IdUsuario = viewModel.Peticion.Id_usuario
+                    };
+                    Console.WriteLine($"este es el id del usuario de la reserva: {reserva.IdUsuario}");
+                    int status = await _reservasServices.RegistrarMovil(reserva, viewModel.Id_rol);
+                    Console.WriteLine(status);
+
+                    if (status == 401 || status == 402)
+                    {
+                        // var resultado = new ResponseModel();
+                        // MensajeRespuestaValidacionPermiso(_peticionesServices.MensajeRespuestaValidacionPermiso(status), status);
+                        return Unauthorized("el usuario en linea no tiene permiso de realizar la accion");
+                    }
+                    return Ok("se ha registrado la reserva exitosamente");
+
+                }else{
+                    if (await _usuariosServices.ValidarUsuarioEnReserva(viewModel.Peticion.Id_usuario)){
+                        return StatusCode(502,"ya existe una reserva asociada a este usuario");
+                    };
+
+                    viewModel.Peticion.Motivo = "Prestamo libro";
                     int status = await _peticionesServices.Registrar(viewModel.Id_rol, viewModel.Peticion);
                     Console.WriteLine(status);
 

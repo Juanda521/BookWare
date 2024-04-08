@@ -107,8 +107,8 @@ namespace tallerbiblioteca.Services
                 if (fechaInicio != null && fechaFin != null)
                 {
                     prestamos = prestamos.Where(p =>
-    p.Fecha_inicio >= fechaInicio && p.Fecha_fin <=fechaFin )
-    .ToList();
+                    p.Fecha_inicio >= fechaInicio && p.Fecha_fin <=fechaFin )
+                    .ToList();
 
                 }
 

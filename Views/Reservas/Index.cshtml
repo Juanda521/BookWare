@@ -136,7 +136,7 @@
                 
                     @if (User.FindFirst(ClaimTypes.Role)?.Value == "1")
                     {
-                        @if (item.Estado == "ACTIVO")
+                        @if (item.Estado == "ACTIVA")
                         {
                         <td>
                             <form id="myForm-@item.Id" asp-controller="Peticiones" asp-action="Create" method="post">

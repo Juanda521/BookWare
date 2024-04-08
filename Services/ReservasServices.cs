@@ -16,12 +16,14 @@ namespace tallerbiblioteca.Services
         private EjemplarServices _ejemplarservices;
         private UsuariosServices _usuariosServices;
         private ConfiguracionServices _configuracionServices;
+       
         public ReservasServices(BibliotecaDbContext context, EjemplarServices ejemplarservices, UsuariosServices usuariosServices, ConfiguracionServices configuracionServices)
         {
             _context = context;
             _ejemplarservices = ejemplarservices;
             _usuariosServices = usuariosServices;
             _configuracionServices = configuracionServices;
+     
         }
         public async Task<List<Ejemplar>> obtenerEjemplares()
         {
@@ -54,7 +56,7 @@ namespace tallerbiblioteca.Services
         }
         public async Task<List<Reserva>> ObtenerReservas()
         {
-            return _context.Reserva.Include(r => r.Ejemplar).ThenInclude(l => l.Libro).Include(r => r.Usuario).Where(r => r.Estado == "ACTIVO" || r.Estado=="ACEPTADA")
+            return _context.Reserva.Include(r => r.Ejemplar).ThenInclude(l => l.Libro).Include(r => r.Usuario).Where(r => r.Estado == "ACTIVA" || r.Estado=="ACEPTADA")
                 .ToList();
         }
         public async Task<ResponseModel> Crear(Reserva reserva, ClaimsPrincipal User)
@@ -67,7 +69,7 @@ namespace tallerbiblioteca.Services
                 reserva.Ejemplar = await _ejemplarservices.BuscarEjemplar(reserva.IdEjemplar);
                 reserva.Usuario = await _usuariosServices.Buscar(reserva.IdUsuario);
 
-                reserva.Estado = "ACTIVO";
+                reserva.Estado = "ACTIVA";
                 _context.Reserva.Add(reserva);
                 _context.SaveChanges();
 
@@ -76,6 +78,39 @@ namespace tallerbiblioteca.Services
             return resultado;
 
 
+        }
+
+        public async Task<int> RegistrarMovil(Reserva reserva, int Id_rol)
+        {
+            Console.WriteLine("LLEGAMOS A CREAR....");
+            int status = _configuracionServices.ValidacionConfiguracionActiva("Registrar_reserva", Id_rol);
+            if (status == 200)
+            {
+
+                reserva.FechaReserva = DateTime.Now;
+                Usuario usuario = await _usuariosServices.Buscar(reserva.IdUsuario);
+                Console.WriteLine($"este es el numero de documento del usuarionque va hacer la reserva {usuario.Numero_documento}");
+                var ejemplar = await _ejemplarservices.BuscarEjemplar(reserva.IdEjemplar);
+
+                if (ejemplar != null && usuario != null)
+                {
+                     reserva.Ejemplar = ejemplar;
+                     reserva.Usuario = usuario;
+
+                      reserva.Estado = "ACTIVA";
+                    _context.Add(reserva);
+                    await _context.SaveChangesAsync();
+                    Console.WriteLine("se ha creado la reserva");
+
+                }else{
+                    Console.WriteLine("no esta llegando algun dato");
+                }
+
+               
+               
+
+            }
+            return status;
         }
         public async Task<bool> Buscar(int dato)
         {

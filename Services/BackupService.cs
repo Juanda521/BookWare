@@ -29,7 +29,7 @@ namespace tallerbiblioteca.Services
                 Console.WriteLine("abrimos la conexion");
 
 
-                var commandText = $"BACKUP DATABASE BibliotecaFinal TO DISK = '{backupPath}'";
+                var commandText = $"BACKUP DATABASE db_aa7214_bookwaresena TO DISK = '{backupPath}'";
                 using (var command = new SqlCommand(commandText, connection))
                 {
                     await command.ExecuteNonQueryAsync();

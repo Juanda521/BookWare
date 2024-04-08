@@ -202,9 +202,11 @@ namespace tallerbiblioteca.Services
             var usuario  =await _context.Usuarios.FindAsync(Id);
 
             if(usuario!=null){
+                Console.WriteLine("encontramos al usuario");
                 return usuario;
             }
-            return new();
+            Console.WriteLine("no lo esta encontrando");
+            return null;
         }
 
         public async Task<int> Login(Usuario usuario, HttpContext httpContext)
@@ -350,13 +352,28 @@ namespace tallerbiblioteca.Services
              
                 var prestamoQuery = _context.Prestamos.Include(p => p.Peticion);
 
-                if (prestamoQuery.Any(p => p.Peticion.Usuario.Id == id_usuario && p.Estado == "En curso"))
+                if (prestamoQuery.Any(p => p.Peticion.Usuario.Id == id_usuario && p.Estado == "EN CURSO"))
                 {
                     return true;
                 }
 
                 return false;
         }
+
+         public async Task<bool> ValidarUsuarioEnReserva(int id_usuario){
+
+             
+                var reservaQuery = await _context.Reserva.ToListAsync();
+
+                if (reservaQuery.Any(r=>r.IdUsuario == id_usuario && r.Estado == "ACTIVA"))
+                {
+                    return true;
+                }
+
+                return false;
+        }
+
+
         public async Task<List<Usuario>>Buscar(string busqueda)
         {
             return await _context.Usuarios.Where(u => u.Name.Contains(busqueda) || u.Apellido.Contains(busqueda) || u.Correo.Contains(busqueda) || u.Numero_documento.ToString().Contains(busqueda) || u.Estado.Contains(busqueda)).ToListAsync();

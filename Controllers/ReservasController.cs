@@ -72,7 +72,7 @@ namespace tallerbiblioteca.Controllers
                 {
                     reservas = await _ReservasServices.Buscarporfecha(fecha.Value.Date);
                 }
-                reservas = reservas.OrderBy(p => p.Estado == "ACTIVO" ? 0 : 1).ToList();
+                reservas = reservas.OrderBy(p => p.Estado == "ACTIVA" ? 0 : 1).ToList();
                 int totalItems = reservas.Count;
                 int totalPaginas = (int)Math.Ceiling((double)totalItems / itemsPagina);
 
